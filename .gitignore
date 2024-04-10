@@ -1,0 +1,33 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+#misc
+*.htm
+*.d
+*.crf
+.vscode
+.vs
+*/output/temp/*
+/bmc_gd32f303/projectGD32F103/output/temp
+/bmc_gd32f303/projectGD32F303/output/temp
