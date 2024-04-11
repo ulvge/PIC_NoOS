@@ -57,6 +57,8 @@
 /* External variables --------------------------------------------------------*/
 extern SPI_HandleTypeDef hspi1;
 extern TIM_HandleTypeDef htim7;
+extern DMA_HandleTypeDef g_hdma_usart1_tx;
+extern UART_HandleTypeDef g_uart1Handle;
 
 /* USER CODE BEGIN EV */
 
@@ -184,5 +186,27 @@ void TIM7_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+/**
+  * @brief  This function handles UART interrupt request.  
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to DMA  
+  *         used for USART data transmission     
+  */
+void USART1_IRQHandler(void)
+{
+    HAL_UART_IRQHandler(&g_uart1Handle);
+}
+
+void DMA1_Stream0_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Stream0_IRQn 0 */
+
+  /* USER CODE END DMA1_Stream0_IRQn 0 */
+  HAL_DMA_IRQHandler(&g_hdma_usart1_tx);
+  /* USER CODE BEGIN DMA1_Stream0_IRQn 1 */
+
+  /* USER CODE END DMA1_Stream0_IRQn 1 */
+}
 
 /* USER CODE END 1 */
