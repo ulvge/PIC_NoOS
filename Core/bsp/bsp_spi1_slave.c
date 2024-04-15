@@ -2,14 +2,13 @@
 #include "main.h"
 #include "stm32h7xx_hal.h"
 #include <string.h>
+#include "spi_communication.h"
 
 SPI_HandleTypeDef hspi1;
 
 #define UART1_BUFF_SIZE (200)
 static INT8U g_buffSend[2048];
 static INT8U g_buffRec[UART1_BUFF_SIZE];
-
-static __inline void SPI_ProtocolParsing(uint8_t val);
 
 /**
  * @brief SPI1 Initialization Function
@@ -185,15 +184,4 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
         return;
     }
 }
-
-static __inline void SPI_ProtocolParsing(uint8_t val)
-{
-    /* Prevent unused argument(s) compilation warning */
-    UNUSED(val);
-
-    /* NOTE : This function should not be modified, when the callback is needed,
-              the HAL_SPI_RxCpltCallback should be implemented in the user file
-     */
-}
-
 

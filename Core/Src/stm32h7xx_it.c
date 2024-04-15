@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_it.h"
 #include "main.h"
+#include "bsp_usart2.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -202,6 +203,7 @@ void DMA1_Stream1_IRQHandler(void)
 */
 void USART2_IRQHandler(void)
 {
-  HAL_UART_IRQHandler(&g_uart2Handle);
+  //HAL_UART_IRQHandler(&g_uart2Handle);
+  UART_RxISR_8BIT(&g_uart2Handle);
 }
 /* USER CODE END 1 */

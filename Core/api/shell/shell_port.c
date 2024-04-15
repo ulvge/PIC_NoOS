@@ -10,7 +10,7 @@
  */
 
 #include "shell.h"
-#include "bsp_usart0.h"
+#include "bsp_usart2.h"
 #include "FreeRTOS.h"
 #include "queue.h"
 #include "Types.h"

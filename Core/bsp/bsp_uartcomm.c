@@ -71,7 +71,7 @@ bool UART_getData(USART_TypeDef *usart_periph, uint8_t *p_buffer, uint32_t buffS
 }
 
 
-bool UART_sendByte(USART_TypeDef *usart_periph, uint8_t dat)
+__inline bool UART_sendByte(USART_TypeDef *usart_periph, uint8_t dat)
 {
     return UART_sendData(usart_periph, &dat, 1);
 }

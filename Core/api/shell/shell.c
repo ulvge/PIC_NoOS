@@ -1112,10 +1112,6 @@ int shellSetVar(char *name, int value)
     }
     return shellSetVarValue(shell, command, value);
 }
-//SHELL_EXPORT_CMD(
-//SHELL_CMD_PERMISSION(0)|SHELL_CMD_TYPE(SHELL_TYPE_CMD_FUNC)|SHELL_CMD_DISABLE_RETURN,
-//setVar, shellSetVar, set var);
-
 
 /**
  * @brief shell运行命令
@@ -1756,10 +1752,6 @@ void shellUsers(void)
         shellListUser(shell);
     }
 }
-//SHELL_EXPORT_CMD(
-//SHELL_CMD_PERMISSION(0)|SHELL_CMD_TYPE(SHELL_TYPE_CMD_FUNC)|SHELL_CMD_DISABLE_RETURN,
-//users, shellUsers, list all user);
-
 
 /**
  * @brief shell 输出命令列表(shell调用)
@@ -1788,9 +1780,6 @@ void shellVars(void)
         shellListVar(shell);
     }
 }
-// SHELL_EXPORT_CMD(
-// SHELL_CMD_PERMISSION(0)|SHELL_CMD_TYPE(SHELL_TYPE_CMD_FUNC)|SHELL_CMD_DISABLE_RETURN,
-// vars, shellVars, list all var);
 
 
 /**
@@ -1804,10 +1793,6 @@ void shellKeys(void)
         shellListKey(shell);
     }
 }
-// SHELL_EXPORT_CMD(
-// SHELL_CMD_PERMISSION(0)|SHELL_CMD_TYPE(SHELL_TYPE_CMD_FUNC)|SHELL_CMD_DISABLE_RETURN,
-// keys, shellKeys, list all key);
-
 
 /**
  * @brief shell 清空控制台(shell调用)

@@ -30,7 +30,7 @@ extern "C" {
 #include "stm32h7xx_hal.h"
 
 
-#define DEBUG_UART_PERIPH    USART1
+#define DEBUG_UART_PERIPH    USART2
 
 extern int g_debugLevel;
 /* Exported functions prototypes ---------------------------------------------*/
