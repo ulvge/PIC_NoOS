@@ -54,7 +54,7 @@
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
-          <BrowseInformation>1</BrowseInformation>
+          <BrowseInformation>0</BrowseInformation>
           <ListingPath></ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
@@ -405,9 +405,19 @@
               <FilePath>..\Core\bsp\bsp_uartcomm.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_usart1.c</FileName>
+              <FileName>bsp_spi1_slave.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Core\bsp\bsp_usart1.c</FilePath>
+              <FilePath>..\Core\bsp\bsp_spi1_slave.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\bsp\bsp_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_usart2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\bsp\bsp_usart2.c</FilePath>
             </File>
           </Files>
         </Group>

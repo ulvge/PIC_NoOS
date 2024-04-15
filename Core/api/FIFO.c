@@ -39,27 +39,27 @@ void FIFO_Init(FIFO *fifo, INT8U *array, INT16U deepth)
     fifo->rp = fifo->array;
 }
 
-void FIFO_Reset(FIFO *fifo)
-{
-    fifo->occupy = 0;
-    fifo->rp = fifo->array;
-    fifo->wp = fifo->array;
-}
+// void FIFO_Reset(FIFO *fifo)
+// {
+//     fifo->occupy = 0;
+//     fifo->rp = fifo->array;
+//     fifo->wp = fifo->array;
+// }
 
-BOOLEAN FIFO_Write(FIFO *fifo, INT8U data)
-{
-    if (fifo->occupy >= fifo->deepth) {
-		return FALSE;
-    }
-    uint32_t x=API_EnterCirtical();
-    *fifo->wp++ = data;
-    if (fifo->wp >= fifo->limit) {
-		fifo->wp = fifo->array;
-	}
-    fifo->occupy++;
-    API_ExitCirtical(x);
-    return TRUE;
-}
+// BOOLEAN FIFO_Write(FIFO *fifo, INT8U data)
+// {
+//     if (fifo->occupy >= fifo->deepth) {
+// 		return FALSE;
+//     }
+//     uint32_t x=API_EnterCirtical();
+//     *fifo->wp++ = data;
+//     if (fifo->wp >= fifo->limit) {
+// 		fifo->wp = fifo->array;
+// 	}
+//     fifo->occupy++;
+//     API_ExitCirtical(x);
+//     return TRUE;
+// }
 
 BOOLEAN FIFO_Writes(FIFO *fifo, INT8U *data, INT16U dataSize)
 {

@@ -1,5 +1,5 @@
-#ifndef __BSP_USART0_H
-#define	__BSP_USART0_H
+#ifndef __BSP_USART2_H
+#define	__BSP_USART2_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -9,10 +9,10 @@
 #include <stdbool.h>  
 #include <bsp_uartcomm.h>
 			 
-void UART1_init(void);
-extern DMA_HandleTypeDef g_hdma_usart1_tx;
+void UART2_init(void);
+extern DMA_HandleTypeDef g_hdma_usart2_tx;
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __BSP_USART1_H */
+#endif /* __BSP_USART2_H */

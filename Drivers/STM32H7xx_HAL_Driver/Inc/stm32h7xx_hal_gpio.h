@@ -41,10 +41,19 @@ extern "C" {
   */
 
 /**
+  * @brief  GPIO Bit SET and Bit RESET enumeration
+  */
+typedef enum
+{
+  GPIO_PIN_RESET = 0U,
+  GPIO_PIN_SET
+} GPIO_PinState;
+/**
   * @brief   GPIO Init structure definition
   */
 typedef struct
 {
+  GPIO_TypeDef * PORT;
   uint32_t Pin;       /*!< Specifies the GPIO pins to be configured.
                            This parameter can be any value of @ref GPIO_pins_define */
 
@@ -59,16 +68,9 @@ typedef struct
 
   uint32_t Alternate;  /*!< Peripheral to be connected to the selected pins.
                             This parameter can be a value of @ref GPIO_Alternate_function_selection */
+  GPIO_PinState ActiveSignal;
 } GPIO_InitTypeDef;
 
-/**
-  * @brief  GPIO Bit SET and Bit RESET enumeration
-  */
-typedef enum
-{
-  GPIO_PIN_RESET = 0U,
-  GPIO_PIN_SET
-} GPIO_PinState;
 /**
   * @}
   */

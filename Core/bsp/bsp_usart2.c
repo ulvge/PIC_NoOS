@@ -1,11 +1,11 @@
-#include "bsp_usart1.h"
+#include "bsp_usart2.h"
 #include <string.h>   
 #include <stdarg.h>  
 #include "main.h"
 #include "FIFO.h"
 #include "bsp_uartcomm.h"
 
-UART_HandleTypeDef g_uart1Handle = {
+UART_HandleTypeDef g_uart2Handle = {
     .Instance = USART1,
     .Init.BaudRate = 115200,
     .Init.WordLength = UART_WORDLENGTH_8B,
@@ -20,17 +20,18 @@ UART_HandleTypeDef g_uart1Handle = {
 };
 static UART_PARA_STRUCT g_UARTPara = {
     .periph = USART1,
-    .uartHandle = &g_uart1Handle,
+    .uartHandle = &g_uart2Handle,
 };
 
-DMA_HandleTypeDef g_hdma_usart1_tx;
+DMA_HandleTypeDef g_hdma_usart2_tx;
 
 #define UART1_BUFF_SIZE 	(200)
 static INT8U g_buffSend[2048];
 static INT8U g_buffRec[UART1_BUFF_SIZE];
 static void MX_DMA_Init(void);
+static void HAL_UART_DMATxCpltCallback(DMA_HandleTypeDef *hdma);
 
-void UART1_init(void)
+void UART2_init(void)
 {
 	FIFO_Init(&g_UARTPara.fifo.sfifo, g_buffSend, sizeof(g_buffSend));	
 	FIFO_Init(&g_UARTPara.fifo.rfifo, g_buffRec, sizeof(g_buffRec));
@@ -39,22 +40,23 @@ void UART1_init(void)
 	
     com_registHandler(&g_UARTPara);
 
-    if (HAL_UART_DeInit(&g_uart1Handle) != HAL_OK)
+    if (HAL_UART_DeInit(&g_uart2Handle) != HAL_OK)
     {
         Error_Handler();
     }
-    if (HAL_UART_Init(&g_uart1Handle) != HAL_OK) {
+    if (HAL_UART_Init(&g_uart2Handle) != HAL_OK) {
         Error_Handler();
     }
-    if (HAL_UARTEx_SetTxFifoThreshold(&g_uart1Handle, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK) {
+    if (HAL_UARTEx_SetTxFifoThreshold(&g_uart2Handle, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK) {
         Error_Handler();
     }
-    if (HAL_UARTEx_SetRxFifoThreshold(&g_uart1Handle, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK) {
+    if (HAL_UARTEx_SetRxFifoThreshold(&g_uart2Handle, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK) {
         Error_Handler();
     }
-    if (HAL_UARTEx_DisableFifoMode(&g_uart1Handle) != HAL_OK) {
+    if (HAL_UARTEx_DisableFifoMode(&g_uart2Handle) != HAL_OK) {
         Error_Handler();
     }
+    HAL_DMA_RegisterCallback(&g_hdma_usart2_tx, HAL_DMA_XFER_CPLT_CB_ID, HAL_UART_DMATxCpltCallback);
 }
 
 /**
@@ -67,19 +69,18 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA1_Stream0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+/* DMA1_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+
 }
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *husart)
+static void HAL_UART_DMATxCpltCallback(DMA_HandleTypeDef *hdma)
 {
-    if (husart->Instance == USART1){
-        UART_sendContinue(USART1);
-    }
+    UART_sendContinue(USART1);
 }
 
-// void USART1_IRQHandler(void)
+// void USART2_IRQHandler(void)
 // {
 // #define COM_NUM    COM0
 //     uint8_t res;
