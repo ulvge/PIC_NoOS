@@ -40,6 +40,8 @@
 #define MCLR_PORT                   GPIOC
 #define MCLR_PIN                    GPIO_PIN_13
 
+#define XBEAM_PORT                   GPIOC
+#define XBEAM_PIN                    GPIO_PIN_1
 
 typedef enum
 {
@@ -57,7 +59,8 @@ typedef enum
     GPIO_DAC_A,
     GPIO_DAC_C,
     GPIO_DAC_B,
-
+    
+    GPIO_ADC_XBEAM,
     GPIO_MAX,
 } GPIO_NAMES;
 
@@ -76,6 +79,9 @@ inline extern void GPIO_Set_LD_SLOPE(GPIO_PinState st);
 
 inline extern void GPIO_SetDAC(uint32_t val);
 inline extern bool GPIO_Get_MCLR(void);
+
+int GPIO_isPinActive(GPIO_NAMES alias, GPIO_PinState *config);
+bool GPIO_setPinStatus(GPIO_NAMES alias, FunctionalState isActive, GPIO_PinState *config);
 #ifdef __cplusplus
 }
 #endif

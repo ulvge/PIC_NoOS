@@ -23,6 +23,7 @@
 #include "debug_print.h"
 #include "bsp_spi1_slave.h"
 #include "bsp_gpio.h"
+#include "bsp_adc.h"
 
 
 TIM_HandleTypeDef g_htim5;
@@ -60,6 +61,14 @@ static void MX_TIM5_Init(void);
 
 void StartDefaultTask(void *argument);
 
+static void CPU_CACHE_Enable(void)
+{
+  /* Enable I-Cache */
+  SCB_EnableICache();
+
+  /* Enable D-Cache */
+  SCB_EnableDCache();
+}
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -82,6 +91,8 @@ int main(void)
 
     /* MPU Configuration--------------------------------------------------------*/
     MPU_Config();
+    /* Enable the CPU Cache */
+    CPU_CACHE_Enable();
 
     /* MCU Configuration--------------------------------------------------------*/
 
@@ -95,7 +106,8 @@ int main(void)
     UART_init();
     GPIO_Init();
     SPI1_Init();
-	MX_TIM5_Init();
+    ADC_init();
+    MX_TIM5_Init();
 
     /* Create the thread(s) */
     /* creation of defaultTask */

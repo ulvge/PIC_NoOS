@@ -52,10 +52,10 @@
           <OutputName>PIC18</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>0</CreateHexFile>
+          <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>0</BrowseInformation>
-          <ListingPath></ListingPath>
+          <ListingPath>D:\Users\admin\My Document\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
@@ -429,6 +429,11 @@
               <FileType>1</FileType>
               <FilePath>..\Core\bsp\bsp_usart2.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\bsp\bsp_adc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -453,6 +458,16 @@
               <FileName>shell_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\api\shell\shell_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>gpio_shell.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\api\shell\gpio_shell.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc_shell.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\api\shell\adc_shell.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -659,6 +674,16 @@
               <FileName>stm32h7xx_hal_uart_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_uart_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32h7xx_hal_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32h7xx_hal_adc_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\STM32H7xx_HAL_Driver\Src\stm32h7xx_hal_adc_ex.c</FilePath>
             </File>
           </Files>
         </Group>

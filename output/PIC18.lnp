@@ -7,10 +7,13 @@
 "..\output\bsp_spi1_slave.o"
 "..\output\bsp_gpio.o"
 "..\output\bsp_usart2.o"
+"..\output\bsp_adc.o"
 "..\output\shell.o"
 "..\output\shell_cmd_list.o"
 "..\output\shell_ext.o"
 "..\output\shell_port.o"
+"..\output\gpio_shell.o"
+"..\output\adc_shell.o"
 "..\output\main.o"
 "..\output\freertos.o"
 "..\output\stm32h7xx_it.o"
@@ -39,6 +42,8 @@
 "..\output\stm32h7xx_hal_spi_ex.o"
 "..\output\stm32h7xx_hal_uart.o"
 "..\output\stm32h7xx_hal_uart_ex.o"
+"..\output\stm32h7xx_hal_adc.o"
+"..\output\stm32h7xx_hal_adc_ex.o"
 "..\output\system_stm32h7xx.o"
 "..\output\croutine.o"
 "..\output\event_groups.o"
@@ -53,4 +58,4 @@
 --strict --scatter "..\output\PIC18.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
---list "PIC18.map" -o ..\output\PIC18.axf
+--list "D:\Users\admin\My Document\PIC18.map" -o ..\output\PIC18.axf

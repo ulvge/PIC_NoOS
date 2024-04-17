@@ -3,6 +3,7 @@
 #include "main.h"
 #include "Types.h"
 #include "bsp_gpio.h"
+#include "shell.h"
 
 const static GPIO_InitTypeDef g_gpioConfigComm[] = {
     {GLITCH_SHUTDOWN_PORT, GLITCH_SHUTDOWN_PIN, GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
@@ -144,18 +145,19 @@ GPIO_PinState GPIO_getPinStatus(GPIO_NAMES alias)
     const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[alias];
     return HAL_GPIO_ReadPin(p_gpioCfg->PORT, p_gpioCfg->Pin);
 }
-bool GPIO_isPinActive(GPIO_NAMES alias)
+int GPIO_isPinActive(GPIO_NAMES alias, GPIO_PinState *config)
 {
     if (alias >= ARRARY_SIZE(g_gpioConfigComm))
     {
-        return false;
+        return -1;
     }
     const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[alias];
+    *config = p_gpioCfg->ActiveSignal;
     GPIO_PinState staus = HAL_GPIO_ReadPin(p_gpioCfg->PORT, p_gpioCfg->Pin);
     if (staus == p_gpioCfg->ActiveSignal) {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 /// @brief ActiveSignal  isActive  res
 //          1               1      1
@@ -166,7 +168,7 @@ bool GPIO_isPinActive(GPIO_NAMES alias)
 /// @param alias 
 /// @param isActive 
 /// @return 
-bool GPIO_setPinStatus(GPIO_NAMES alias, FunctionalState isActive)
+bool GPIO_setPinStatus(GPIO_NAMES alias, FunctionalState isActive, GPIO_PinState *config)
 {
     if (alias >= ARRARY_SIZE(g_gpioConfigComm))
     {
@@ -179,6 +181,7 @@ bool GPIO_setPinStatus(GPIO_NAMES alias, FunctionalState isActive)
         return false;
     }
 
+    *config = p_gpioCfg->ActiveSignal;
     HAL_GPIO_WritePin(p_gpioCfg->PORT, p_gpioCfg->Pin, (GPIO_PinState)(p_gpioCfg->ActiveSignal == (GPIO_PinState)isActive));
     return true;
 }
@@ -203,5 +206,4 @@ void GPIO_Init(void)
     GPIO_InitGPIOs(&g_gpioConfigComm[0], ARRARY_SIZE(g_gpioConfigComm));
     EXTI15_10_IRQHandler_Config();
 }
-
 
