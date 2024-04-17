@@ -56,7 +56,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern SPI_HandleTypeDef hspi1;
+extern SPI_HandleTypeDef g_hspi1;
 extern TIM_HandleTypeDef htim7;
 extern DMA_HandleTypeDef g_hdma_usart2_tx;
 extern UART_HandleTypeDef g_uart2Handle;
@@ -166,7 +166,7 @@ void SPI1_IRQHandler(void)
     /* USER CODE BEGIN SPI1_IRQn 0 */
 
     /* USER CODE END SPI1_IRQn 0 */
-    HAL_SPI_IRQHandler(&hspi1);
+    HAL_SPI_IRQHandler(&g_hspi1);
     /* USER CODE BEGIN SPI1_IRQn 1 */
 
     /* USER CODE END SPI1_IRQn 1 */

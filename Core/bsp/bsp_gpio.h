@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>  
+#include "stm32h7xx_hal.h"
 
 
 #define BUSY_PORT                   GPIOA
@@ -51,6 +52,7 @@ typedef enum
     GPIO_MATCH,
     GPIO_LD_POS,
     GPIO_LD_SLOPE,
+    GPIO_MCLR,
 
     GPIO_DAC_A,
     GPIO_DAC_C,
@@ -60,6 +62,20 @@ typedef enum
 } GPIO_NAMES;
 
 extern void GPIO_Init(void);
+
+inline extern bool GPIO_Get_GLITCH_SHUTDOWN(void);
+inline extern bool GPIO_Get_MATCH(void);
+
+inline extern void GPIO_Set_PIC_LED(GPIO_PinState st);
+inline extern void GPIO_Set_INTRPT(GPIO_PinState st);
+inline extern void GPIO_Set_BUSY(GPIO_PinState st);
+inline extern void GPIO_Set_DIRECTION(GPIO_PinState st);
+inline extern void GPIO_Set_SPOT(GPIO_PinState st);
+inline extern void GPIO_Set_LD_POS(GPIO_PinState st);
+inline extern void GPIO_Set_LD_SLOPE(GPIO_PinState st);
+
+inline extern void GPIO_SetDAC(uint32_t val);
+inline extern bool GPIO_Get_MCLR(void);
 #ifdef __cplusplus
 }
 #endif

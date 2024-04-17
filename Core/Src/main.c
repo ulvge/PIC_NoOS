@@ -25,23 +25,7 @@
 #include "bsp_gpio.h"
 
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
+TIM_HandleTypeDef g_htim5;
 
 int g_debugLevel = DBG_INFO;
 __IO uint64_t g_utc_time_firmware_build = 0;
@@ -59,10 +43,10 @@ const osThreadAttr_t defaultTask_attributes = {
 };
 /* Definitions for myTask02 */
 osThreadId_t myTask02Handle;
-const osThreadAttr_t myTask02_attributes = {
-    .name = "myTask02",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityBelowNormal,
+const osThreadAttr_t task_attributes_outputWave = {
+    .name = "outputWave",
+    .stack_size = 128 * 8,
+    .priority = (osPriority_t)osPriorityRealtime,
 };
 /* USER CODE BEGIN PV */
 
@@ -71,10 +55,10 @@ const osThreadAttr_t myTask02_attributes = {
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MPU_Config(void);
+static void MX_TIM5_Init(void);
 
 
 void StartDefaultTask(void *argument);
-void StartTask02(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -111,13 +95,14 @@ int main(void)
     UART_init();
     GPIO_Init();
     SPI1_Init();
+	MX_TIM5_Init();
 
     /* Create the thread(s) */
     /* creation of defaultTask */
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
     /* creation of myTask02 */
-    myTask02Handle = osThreadNew(StartTask02, NULL, &myTask02_attributes);
+    myTask02Handle = osThreadNew(Task_outputWave, NULL, &task_attributes_outputWave);
 
 
     /* Start scheduler */
@@ -217,23 +202,6 @@ void StartDefaultTask(void *argument)
     /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_StartTask02 */
-/**
- * @brief Function implementing the myTask02 thread.
- * @param argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartTask02 */
-void StartTask02(void *argument)
-{
-    /* USER CODE BEGIN StartTask02 */
-    /* Infinite loop */
-    for (;;) {
-        osDelay(1);
-    }
-    /* USER CODE END StartTask02 */
-}
-
 /* MPU Configuration */
 
 void MPU_Config(void)
@@ -283,6 +251,50 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     /* USER CODE END Callback 1 */
 }
 
+/**
+  * @brief TIM5 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM5_Init(void)
+{
+
+  /* USER CODE BEGIN TIM5_Init 0 */
+
+  /* USER CODE END TIM5_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM5_Init 1 */
+
+  /* USER CODE END TIM5_Init 1 */
+  g_htim5.Instance = TIM5;
+  g_htim5.Init.Prescaler = 0;
+  g_htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
+  g_htim5.Init.Period = 4294967295;
+  g_htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  g_htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&g_htim5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&g_htim5, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&g_htim5, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM5_Init 2 */
+
+  /* USER CODE END TIM5_Init 2 */
+  HAL_TIM_Base_Start(&g_htim5);
+}
 /**
  * @brief  This function is executed in case of error occurrence.
  * @retval None

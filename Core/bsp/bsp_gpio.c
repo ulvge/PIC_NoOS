@@ -3,7 +3,6 @@
 #include "main.h"
 #include "Types.h"
 #include "bsp_gpio.h"
-#include "stm32h7xx_hal.h"
 
 const static GPIO_InitTypeDef g_gpioConfigComm[] = {
     {GLITCH_SHUTDOWN_PORT, GLITCH_SHUTDOWN_PIN, GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
@@ -15,6 +14,7 @@ const static GPIO_InitTypeDef g_gpioConfigComm[] = {
     {MATCH_PORT, MATCH_PIN,                     GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
     {LD_POS_PORT, LD_POS_PIN,                   GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
     {LD_SLOPE_PORT, LD_SLOPE_PIN,               GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
+    {MCLR_PORT, MCLR_PIN,                       GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
 
     {GPIOA, GPIO_PIN_15,                        GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
 
@@ -23,29 +23,82 @@ const static GPIO_InitTypeDef g_gpioConfigComm[] = {
 };
 
 
+static const GPIO_InitTypeDef *p_gpioCfg0 = &g_gpioConfigComm[GPIO_GLITCH_SHUTDOWN];
+static const GPIO_InitTypeDef *p_gpioCfg1 = &g_gpioConfigComm[GPIO_PIC_LED];
+static const GPIO_InitTypeDef *p_gpioCfg2 = &g_gpioConfigComm[GPIO_INTRPT];
+static const GPIO_InitTypeDef *p_gpioCfg3 = &g_gpioConfigComm[GPIO_BUSY];
+static const GPIO_InitTypeDef *p_gpioCfg4 = &g_gpioConfigComm[GPIO_DIRECTION];
+static const GPIO_InitTypeDef *p_gpioCfg5 = &g_gpioConfigComm[GPIO_SPOT];
+static const GPIO_InitTypeDef *p_gpioCfg6 = &g_gpioConfigComm[GPIO_MATCH];
+static const GPIO_InitTypeDef *p_gpioCfg7 = &g_gpioConfigComm[GPIO_LD_POS];
+static const GPIO_InitTypeDef *p_gpioCfg8 = &g_gpioConfigComm[GPIO_LD_SLOPE];
+static const GPIO_InitTypeDef *p_gpioCfg9 = &g_gpioConfigComm[GPIO_MCLR];
+
+
 static void HAL_GPIO_SetGroupPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint16_t val)
 {
-  /* get current Output Data Register value */
-  uint32_t odr = GPIOx->ODR & (~GPIO_Pin);
-  GPIOx->ODR = odr | val;
+    /* get current Output Data Register value */
+    uint32_t odr = GPIOx->ODR & (~GPIO_Pin);
+    GPIOx->ODR = odr | val;
 }
-__attribute__((unused)) static void GPIO_SetDAC(uint32_t val)
+inline void GPIO_SetDAC(uint32_t val)
 {
-    const GPIO_InitTypeDef *p_gpioCfg;
+    static const GPIO_InitTypeDef *p_gpioCfgA = &g_gpioConfigComm[GPIO_DAC_A];
+    static const GPIO_InitTypeDef *p_gpioCfgC = &g_gpioConfigComm[GPIO_DAC_C];
+    static const GPIO_InitTypeDef *p_gpioCfgB = &g_gpioConfigComm[GPIO_DAC_B];
    
-    p_gpioCfg = &g_gpioConfigComm[GPIO_DAC_A];
-    HAL_GPIO_SetGroupPin(p_gpioCfg->PORT, p_gpioCfg->Pin, (val & BITS(11, 11)) << 4);
+    HAL_GPIO_SetGroupPin(p_gpioCfgA->PORT, p_gpioCfgA->Pin, (val & BITS(11, 11)) << 4);
 
-    p_gpioCfg = &g_gpioConfigComm[GPIO_DAC_C];
-    HAL_GPIO_SetGroupPin(p_gpioCfg->PORT, p_gpioCfg->Pin, (val & BITS(8, 10)) >> 2);
+    HAL_GPIO_SetGroupPin(p_gpioCfgC->PORT, p_gpioCfgC->Pin, (val & BITS(8, 10)) >> 2);
     
-    p_gpioCfg = &g_gpioConfigComm[GPIO_DAC_B];
-    HAL_GPIO_SetGroupPin(p_gpioCfg->PORT, p_gpioCfg->Pin,(val & BITS(0, 7)) << 2);
-
-    p_gpioCfg = &g_gpioConfigComm[GPIO_LD_POS];
-    HAL_GPIO_WritePin(p_gpioCfg->PORT, p_gpioCfg->Pin, (GPIO_PinState)(p_gpioCfg->ActiveSignal == (GPIO_PinState)GPIO_PIN_SET));
-    //GPIO_setPinStatus(GPIO_LD_POS, ENABLE);
+    HAL_GPIO_SetGroupPin(p_gpioCfgB->PORT, p_gpioCfgB->Pin,(val & BITS(0, 7)) << 2);
 }
+
+inline bool GPIO_Get_GLITCH_SHUTDOWN(void)
+{
+    return (bool)HAL_GPIO_ReadPin(p_gpioCfg0->PORT, p_gpioCfg0->Pin);
+}
+
+inline void GPIO_Set_PIC_LED(GPIO_PinState st)
+{
+    HAL_GPIO_WritePin(p_gpioCfg1->PORT, p_gpioCfg1->Pin, (GPIO_PinState)(p_gpioCfg1->ActiveSignal == st));
+}
+inline void GPIO_Set_INTRPT(GPIO_PinState st)
+{
+    HAL_GPIO_WritePin(p_gpioCfg2->PORT, p_gpioCfg2->Pin, (GPIO_PinState)(p_gpioCfg2->ActiveSignal == st));
+}
+
+inline void GPIO_Set_BUSY(GPIO_PinState st)
+{
+    HAL_GPIO_WritePin(p_gpioCfg3->PORT, p_gpioCfg3->Pin, (GPIO_PinState)(p_gpioCfg3->ActiveSignal == st));
+}
+inline void GPIO_Set_DIRECTION(GPIO_PinState st)
+{
+    HAL_GPIO_WritePin(p_gpioCfg4->PORT, p_gpioCfg4->Pin, (GPIO_PinState)(p_gpioCfg4->ActiveSignal == st));
+}
+inline void GPIO_Set_SPOT(GPIO_PinState st)
+{
+    HAL_GPIO_WritePin(p_gpioCfg5->PORT, p_gpioCfg5->Pin, (GPIO_PinState)(p_gpioCfg5->ActiveSignal == st));
+}
+
+inline bool GPIO_Get_MATCH(void)
+{
+    return (bool)HAL_GPIO_ReadPin(p_gpioCfg6->PORT, p_gpioCfg6->Pin);
+}
+inline void GPIO_Set_LD_POS(GPIO_PinState st)
+{
+    HAL_GPIO_WritePin(p_gpioCfg7->PORT, p_gpioCfg7->Pin, (GPIO_PinState)(p_gpioCfg7->ActiveSignal == st));
+}
+inline void GPIO_Set_LD_SLOPE(GPIO_PinState st)
+{
+    HAL_GPIO_WritePin(p_gpioCfg8->PORT, p_gpioCfg8->Pin, (GPIO_PinState)(p_gpioCfg8->ActiveSignal == st));
+}
+inline bool GPIO_Get_MCLR(void)
+{
+    return (bool)HAL_GPIO_ReadPin(p_gpioCfg9->PORT, p_gpioCfg9->Pin);
+}
+
+
 static void GPIO_InitGPIOs(const GPIO_InitTypeDef *config, uint32_t size)
 {
     const GPIO_InitTypeDef *p_gpioCfg;
@@ -130,11 +183,25 @@ bool GPIO_setPinStatus(GPIO_NAMES alias, FunctionalState isActive)
     return true;
 }
 
+
+/**
+  * @brief  Configures EXTI lines 15 to 10 (connected to PC.13 pin) in interrupt mode
+  * @param  None
+  * @retval None
+  */
+static void EXTI15_10_IRQHandler_Config(void)
+{
+    /* Enable and set EXTI lines 15 to 10 Interrupt to the lowest priority */
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+}
+
 void GPIO_Init(void)
 {
     MX_GPIO_Init();
     
     GPIO_InitGPIOs(&g_gpioConfigComm[0], ARRARY_SIZE(g_gpioConfigComm));
+    EXTI15_10_IRQHandler_Config();
 }
 
 

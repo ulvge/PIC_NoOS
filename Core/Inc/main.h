@@ -29,10 +29,13 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
 
-
+#ifndef STM32H7A3xx
+#define STM32H7A3xx
+#endif
 #define DEBUG_UART_PERIPH    USART2
 
 extern int g_debugLevel;
+extern void Task_outputWave(void *argument);
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 

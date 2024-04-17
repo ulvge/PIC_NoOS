@@ -2,6 +2,7 @@
 "..\output\api_utc.o"
 "..\output\fifo.o"
 "..\output\spi_communication.o"
+"..\output\output_wave.o"
 "..\output\bsp_uartcomm.o"
 "..\output\bsp_spi1_slave.o"
 "..\output\bsp_gpio.o"

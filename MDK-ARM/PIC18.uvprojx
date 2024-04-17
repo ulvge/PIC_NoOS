@@ -338,7 +338,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,STM32H7A3xx</Define>
+              <Define>USE_HAL_DRIVER</Define>
               <Undefine></Undefine>
               <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;..\Core\bsp;..\Core\api;..\Core\api\shell</IncludePath>
             </VariousControls>
@@ -398,6 +398,11 @@
               <FileName>spi_communication.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\api\spi_communication.c</FilePath>
+            </File>
+            <File>
+              <FileName>output_wave.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\api\output_wave.c</FilePath>
             </File>
           </Files>
         </Group>

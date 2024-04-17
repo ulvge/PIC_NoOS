@@ -120,6 +120,13 @@ typedef unsigned char  BOOLEAN;
 #define BITS(start, end)             ((0xFFFFFFFFUL << (start)) & (0xFFFFFFFFUL >> (31U - (uint32_t)(end))))
 #define GET_BITS(regval, start, end) (((regval) & BITS((start),(end))) >> (start))
 		 
+
+#define BIG_LITTLE_SWAP16(x)        (uint16_t)((((x) & 0xFF00) >> 8) | (((x) & 0x00FF) << 8))
+#define BIG_LITTLE_SWAP32(x)        (uint32_t)((((x) & 0xFF000000) >> 24) | (((x) & 0x00FF0000) >> 8) | \
+                                               (((x) & 0x0000FF00) << 8)  | (((x) & 0x000000FF) << 24))
+
+
+
 #define PACKED __attribute__ ((packed))
 
 
