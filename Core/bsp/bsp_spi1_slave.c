@@ -1,11 +1,21 @@
 #include "FIFO.h"
 #include "main.h"
+#include "shell_ext.h"
+#include "shell_port.h"
+#include "debug_print.h"
+#include "bsp_spi1_slave.h"
+
 #include "stm32h7xx_hal.h"
 #include <string.h>
 #include "spi_communication.h"
+#include "output_wave.h"
+
+#define SPI_DIAG_LIMIT_MAX_xUS 5
+#define SPI_DIAG_LIMIT_MAX_CLK  OUTPUT_DELAY_xUS(SPI_DIAG_LIMIT_MAX_xUS)
 
 SPI_HandleTypeDef g_hspi1;
 
+Diagnosis g_diagnosis;
 /**
  * @brief SPI1 Initialization Function
  * @param None
@@ -48,6 +58,33 @@ void SPI1_Init(void)
     //HAL_SPI_Receive_IT(&g_hspi1, g_buffRec, sizeof(g_buffRec));
 }
 
+inline void bsp_spi_DiagReceved()
+{
+    g_diagnosis.recevedDurationThis = (g_diagnosis.recevedRespondClk - g_diagnosis.recevedStartClk) / OUTPUT_DELAY_0U1S;
+    if (g_diagnosis.recevedDurationThis > g_diagnosis.recevedMaxDuration) {
+        g_diagnosis.recevedMaxDuration = g_diagnosis.recevedDurationThis;
+    }
+    if (g_diagnosis.recevedDurationThis > SPI_DIAG_LIMIT_MAX_xUS){
+        g_diagnosis.recevedRespondTimeoutCnt++;
+    }
+}
+inline void bsp_spi_DiagSendStart(void)
+{
+    g_diagnosis.sendStartClk = Get_dealyTimer_cnt();
+}
+inline void bsp_spi_DiagSendFinished(uint32_t sendTimes)
+{
+    g_diagnosis.sendFinishedClk = Get_dealyTimer_cnt();
+    if (sendTimes == 0){
+        return;
+    }
+    g_diagnosis.sendCntThis = sendTimes;
+    g_diagnosis.sendAverageTimeThis = ((g_diagnosis.sendFinishedClk - g_diagnosis.sendStartClk) / OUTPUT_DELAY_1US) / sendTimes;
+    if (g_diagnosis.sendAverageTimeThis > g_diagnosis.sendAverageTimeMax) {
+        g_diagnosis.sendAverageTimeMax = g_diagnosis.sendAverageTimeThis;
+    }
+}
+
 /**
  * @brief  Handle SPI interrupt request.
  * @param  hspi: pointer to a SPI_HandleTypeDef structure that contains
@@ -56,10 +93,12 @@ void SPI1_Init(void)
  */
 void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
 {
-    uint32_t itsource = hspi->Instance->IER;
-    uint32_t itflag = hspi->Instance->SR;
-    uint32_t trigger = itsource & itflag;
-    uint32_t cfg1 = hspi->Instance->CFG1;
+    static uint32_t itsource,itflag,trigger;
+
+    g_diagnosis.recevedStartClk = Get_dealyTimer_cnt();
+    itsource = hspi->Instance->IER;
+    itflag = hspi->Instance->SR;
+    trigger = itsource & itflag;
 
     HAL_SPI_StateTypeDef State = hspi->State;
 
@@ -69,7 +108,9 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
         //hspi->RxISR(hspi);  // HAL_SPI_Receive_IT  SPI_RxISR_8BIT 
         
         SPI_ProtocolParsing(*((__IO uint8_t *)(&hspi->Instance->RXDR)));
-		return;
+        g_diagnosis.recevedRespondClk = Get_dealyTimer_cnt();
+        bsp_spi_DiagReceved();
+        return;
     }
 
     /* SPI in Error Treatment --------------------------------------------------*/
@@ -120,4 +161,31 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
         return;
     }
 }
+
+// shell command
+static void display_usage(void)
+{
+    LOG_RAW("\t\tSPI, Get its real-time performance \r\n");
+    return;
+}
+
+static int spi_shell(int argc, char *argv[])
+{
+    if (argc != 1)
+    {
+        display_usage();
+        return 0;
+    }
+    LOG_RAW(" *****  SPI diganosis *****\r\n\r\n");
+    LOG_RAW("\t receve, this=[ %d.%d us], max[ %d.%d us], timeoutCnt=[ %d ]\r\n", 
+            g_diagnosis.recevedDurationThis / 10, g_diagnosis.recevedMaxDuration % 10, 
+            g_diagnosis.recevedMaxDuration / 10, g_diagnosis.recevedMaxDuration % 10, 
+            g_diagnosis.recevedRespondTimeoutCnt);
+
+    LOG_RAW("\t send Avg, this=[ %d us], max=[ %d us], send cnt=[ %d ]\r\n", 
+            g_diagnosis.sendAverageTimeThis, g_diagnosis.sendAverageTimeMax, g_diagnosis.sendCntThis);
+
+    return 0;
+}
+SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN) | SHELL_CMD_DISABLE_RETURN, spi, spi_shell, Get its real-time performance);
 

@@ -7,7 +7,7 @@
 
 const static GPIO_InitTypeDef g_gpioConfigComm[] = {
     {GLITCH_SHUTDOWN_PORT, GLITCH_SHUTDOWN_PIN, GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
-    {PIC_LED_PORT, PIC_LED_PIN,                 GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
+    {PIC_LED_PORT, PIC_LED_PIN,                 GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
     {INTRPT_PORT, INTRPT_PIN,                   GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
     {BUSY_PORT, BUSY_PIN,                       GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
     {DIRECTION_PORT, DIRECTION_PIN,             GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
@@ -15,7 +15,7 @@ const static GPIO_InitTypeDef g_gpioConfigComm[] = {
     {MATCH_PORT, MATCH_PIN,                     GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
     {LD_POS_PORT, LD_POS_PIN,                   GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
     {LD_SLOPE_PORT, LD_SLOPE_PIN,               GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
-    {MCLR_PORT, MCLR_PIN,                       GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
+    {MCLR_PORT, MCLR_PIN,                       GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
 
     {GPIOA, GPIO_PIN_15,                        GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
 
@@ -54,7 +54,9 @@ inline void GPIO_SetDAC(uint32_t val)
     
     HAL_GPIO_SetGroupPin(p_gpioCfgB->PORT, p_gpioCfgB->Pin,(val & BITS(0, 7)) << 2);
 }
-
+/// @brief A pause signal sent by the host
+/// @param  
+/// @return 
 inline bool GPIO_Get_GLITCH_SHUTDOWN(void)
 {
     return (bool)HAL_GPIO_ReadPin(p_gpioCfg0->PORT, p_gpioCfg0->Pin);
@@ -64,11 +66,14 @@ inline void GPIO_Set_PIC_LED(GPIO_PinState st)
 {
     HAL_GPIO_WritePin(p_gpioCfg1->PORT, p_gpioCfg1->Pin, (GPIO_PinState)(p_gpioCfg1->ActiveSignal == st));
 }
+/// @brief send finished
+/// @param st is need actived
 inline void GPIO_Set_INTRPT(GPIO_PinState st)
 {
     HAL_GPIO_WritePin(p_gpioCfg2->PORT, p_gpioCfg2->Pin, (GPIO_PinState)(p_gpioCfg2->ActiveSignal == st));
 }
-
+/// @brief is sending
+/// @param st is need actived
 inline void GPIO_Set_BUSY(GPIO_PinState st)
 {
     HAL_GPIO_WritePin(p_gpioCfg3->PORT, p_gpioCfg3->Pin, (GPIO_PinState)(p_gpioCfg3->ActiveSignal == st));
@@ -81,7 +86,9 @@ inline void GPIO_Set_SPOT(GPIO_PinState st)
 {
     HAL_GPIO_WritePin(p_gpioCfg5->PORT, p_gpioCfg5->Pin, (GPIO_PinState)(p_gpioCfg5->ActiveSignal == st));
 }
-
+/// @brief is host receved finished
+/// @param  
+/// @return 
 inline bool GPIO_Get_MATCH(void)
 {
     return (bool)HAL_GPIO_ReadPin(p_gpioCfg6->PORT, p_gpioCfg6->Pin);

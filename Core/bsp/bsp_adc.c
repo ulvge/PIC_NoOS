@@ -6,7 +6,8 @@ ADC_HandleTypeDef AdcHandle;
 ADC_ChannelConfTypeDef        sConfig;
 
 #define ADC_CONVERTED_DATA_BUFFER_SIZE   (8)
-ALIGN_32BYTES (static uint16_t   g_ADCxConvertedData[ADC_CONVERTED_DATA_BUFFER_SIZE]);
+
+static uint16_t   g_ADCxConvertedData[ADC_CONVERTED_DATA_BUFFER_SIZE] __attribute__((aligned(32)));
 
 #define ADC_VOLTAGE_INCREMENT   0.0008059f
 #define ADC_3V3_5V_K            1.55556f
@@ -69,15 +70,15 @@ __attribute__((unused)) static void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* 
     g_adcConvertFinished = true;
 }
 
-float adc_get_value(void)
+float ADC_get_value(void)
 {
-    uint32_t res = 0;
+    uint32_t adcSum = 0;
     for (size_t i = 0; i < ADC_CONVERTED_DATA_BUFFER_SIZE; i++)
     {
-        res += g_ADCxConvertedData[i];
+        adcSum += g_ADCxConvertedData[i];
     }
 
-    float adc3V3 = (res * ADC_VOLTAGE_INCREMENT) / ADC_CONVERTED_DATA_BUFFER_SIZE ;
-    float adc5V = adc3V3 * ADC_3V3_5V_K;
-    return adc5V;
+    float vol3V3 = (adcSum * ADC_VOLTAGE_INCREMENT) / ADC_CONVERTED_DATA_BUFFER_SIZE ;
+    float vol5V = vol3V3 * ADC_3V3_5V_K;
+    return vol5V;
 }

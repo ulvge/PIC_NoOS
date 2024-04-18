@@ -263,6 +263,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     /* USER CODE END Callback 1 */
 }
 
+inline uint32_t Get_dealyTimer_cnt(void)
+{
+    return g_htim5.Instance->CNT;
+}
 /**
   * @brief TIM5 Initialization Function
   * @param None

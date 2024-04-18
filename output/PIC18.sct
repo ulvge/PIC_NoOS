@@ -10,6 +10,8 @@ LR_IROM1 0x08000000 0x00080000  {    ; load region size_region
    .ANY (+XO)
   }
   RW_IRAM1 0x20000000 0x00020000  {  ; RW data
+    spi_communication.o (+ZI +RW)
+    output_wave.o (+ZI +RW)
    .ANY (+RW +ZI)
   }
   RW_IRAM2 0x24000000 0x00100000  {
@@ -17,8 +19,3 @@ LR_IROM1 0x08000000 0x00080000  {    ; load region size_region
   }
 }
 
-LR_IROM2 0x08100000 0x00080000  {
-  ER_IROM2 0x08100000 0x00080000  {  ; load address = execution address
-   .ANY (+RO)
-  }
-}

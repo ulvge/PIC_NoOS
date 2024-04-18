@@ -34,8 +34,10 @@ extern "C" {
 #endif
 #define DEBUG_UART_PERIPH    USART2
 
+extern TIM_HandleTypeDef g_htim5;
 extern int g_debugLevel;
 extern void Task_outputWave(void *argument);
+extern inline uint32_t Get_dealyTimer_cnt(void);
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 

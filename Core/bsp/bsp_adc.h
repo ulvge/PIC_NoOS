@@ -26,7 +26,7 @@
 #define ADCx_CHANNEL                    ADC_CHANNEL_11
 
 extern void ADC_init(void);
-extern float adc_get_value(void);
+extern float ADC_get_value(void);
 #endif /* __BSP_ADC_H */
 
 

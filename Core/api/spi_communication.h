@@ -9,13 +9,11 @@
 #include <stdint.h>
 
 
-
-
 // 定义宏
 #define PROTOCOL_DATA_ID 0x03
 #define PROTOCOL_CMD_CMD 0x0b
 
-#define SPI_RECV_BUFF_GROUP_COUNT 100
+#define SPI_RECV_BUFF_GROUP_COUNT 100     // 128K 32000
 #define PROTOCOL_CMD_FILED_LEN 4
 
 
@@ -43,11 +41,11 @@ typedef struct {
     uint8_t isRecvedOverflow;
     uint8_t isSending;
 
-    uint16_t count;
+    uint16_t count __attribute__((aligned(2)));
     struct {
         uint16_t position;
         uint16_t slope;
-    } data[SPI_RECV_BUFF_GROUP_COUNT];
+    } data[SPI_RECV_BUFF_GROUP_COUNT] __attribute__((aligned(2)));
 } ProtocolData;
 
 // 定义第二种协议的数据结构
@@ -55,11 +53,11 @@ typedef struct {
     uint8_t *wp;
     uint16_t writeByteCount;
 
-    uint16_t reSendTimes;
+    uint16_t reSendTimes __attribute__((aligned(2)));
     uint8_t sleepUsWave;
     uint8_t sleepUsGroupData;
     uint8_t isRecvedFinished;
-} ProtocolCmd;
+}__attribute__ ((packed)) ProtocolCmd ;
 
 
 extern ProtocolData g_protocolData;

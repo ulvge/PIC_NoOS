@@ -58,4 +58,4 @@
 --strict --scatter "..\output\PIC18.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
---list "D:\Users\admin\My Document\PIC18.map" -o ..\output\PIC18.axf
+--list "..\output\PIC18.map" -o ..\output\PIC18.axf

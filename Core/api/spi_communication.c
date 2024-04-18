@@ -9,11 +9,17 @@
 #include "output_wave.h"
 #include "Types.h"
 
-ProtocolData g_protocolData __attribute__((aligned(2)));
-ProtocolCmd g_protocolCmd;
+//ProtocolCmd g_protocolCmd __attribute__((at(0x20000000)));
+//ProtocolData g_protocolData __attribute__((at(0x20000000 + sizeof(ProtocolCmd))));
 
+ProtocolCmd g_protocolCmd;
+ProtocolData g_protocolData;
+
+static BaseType_t xHigherPriorityTaskWoken_YES = pdTRUE;
+static BaseType_t xHigherPriorityTaskWoken_NO = pdFALSE;
 static PROTOCOL_TYPE g_protocol_type;
 static FSM_RecvEvent g_FSM_RecvEvent;
+
 
 inline static void SPI_ProtocolInit()
 {
@@ -31,9 +37,14 @@ inline static void SPI_ProtocolError()
 
 inline static void SPI_SendSem()
 {
-    if (!g_protocolData.isSending & g_protocolData.recvedGroupCount) {
+    if (g_protocolData.isSending || !g_protocolData.recvedGroupCount) {
+        return;
+    }
+    if (xSemaphoreTake(g_sem_isSending, 0) == pdTRUE) {// not sending
         g_protocolData.isSending = true;
-        xSemaphoreGive(g_sem_recvedWaveData);
+        xSemaphoreGiveFromISR(g_sem_isSending, &xHigherPriorityTaskWoken_NO);
+
+        xSemaphoreGiveFromISR(g_sem_recvedWaveData, &xHigherPriorityTaskWoken_YES);
     }
 }
 void SPI_ProtocolParsing(uint8_t val)
