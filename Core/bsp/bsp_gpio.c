@@ -202,7 +202,7 @@ bool GPIO_setPinStatus(GPIO_NAMES alias, FunctionalState isActive, GPIO_PinState
 static void EXTI15_10_IRQHandler_Config(void)
 {
     /* Enable and set EXTI lines 15 to 10 Interrupt to the lowest priority */
-    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 2, 0);
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn, IRQHANDLER_PRIORITY_GPIO, 0);
     HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 

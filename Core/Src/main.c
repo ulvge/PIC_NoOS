@@ -24,43 +24,46 @@
 #include "bsp_spi1_slave.h"
 #include "bsp_gpio.h"
 #include "bsp_adc.h"
-
-
-TIM_HandleTypeDef g_htim5;
-
-int g_debugLevel = DBG_INFO;
-__IO uint64_t g_utc_time_firmware_build = 0;
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow3,
-};
-/* Definitions for myTask02 */
-osThreadId_t myTask02Handle;
-const osThreadAttr_t task_attributes_outputWave = {
-    .name = "outputWave",
-    .stack_size = 128 * 8,
-    .priority = (osPriority_t)osPriorityRealtime,
-};
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
+#include "shell.h"
+#include "api_utc.h"
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MPU_Config(void);
 static void MX_TIM5_Init(void);
-
-
 void StartDefaultTask(void *argument);
 
+TIM_HandleTypeDef g_htim5;
+int g_debugLevel = DBG_INFO;
+static __IO uint64_t g_utc_time_firmware_build = 0;
+static const char *projectInfo =
+    "\r\n"
+    "********************************************\r\n"
+    "************   BOARD   INFO      ************\r\n"
+    "********************************************\r\n"
+    "Build:    "__DATE__
+    "  "__TIME__
+    "\r\n"
+    "Soft Version:  " SOFT_VERSION " \r\n"
+    "Copyright: (c) HXZY\r\n"
+    "********************************************\r\n"
+    "\r\n";
+    
+
+/* Definitions for outputWave Task */
+__attribute__((unused)) static osThreadId_t g_taskHandle_OutputWave;
+static const osThreadAttr_t task_attributes_outputWave = {
+    .name = "outputWave",
+    .stack_size = 128 * 8,
+    .priority = (osPriority_t)osPriorityRealtime,
+};
+/* Definitions for shell Task */
+__attribute__((unused)) static osThreadId_t g_taskHandle_Shell;
+static const osThreadAttr_t task_attributes_Shell = {
+    .name = "shell",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityBelowNormal,
+};
 static void CPU_CACHE_Enable(void)
 {
   /* Enable I-Cache */
@@ -69,14 +72,13 @@ static void CPU_CACHE_Enable(void)
   /* Enable D-Cache */
   SCB_EnableDCache();
 }
-/* USER CODE BEGIN PFP */
 
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
+static void DebugConfig(void)
+{
+    __HAL_DBGMCU_FREEZE_WWDG1();
+    __HAL_DBGMCU_FREEZE_TIM5();
+    __HAL_DBGMCU_FREEZE_TIM5();
+}
 
 /**
  * @brief  The application entry point.
@@ -84,52 +86,40 @@ static void CPU_CACHE_Enable(void)
  */
 int main(void)
 {
-
-    /* USER CODE BEGIN 1 */
-
-    /* USER CODE END 1 */
-
+    g_utc_time_firmware_build = currentSecsSinceEpoch(__DATE__, __TIME__);
     /* MPU Configuration--------------------------------------------------------*/
     MPU_Config();
     /* Enable the CPU Cache */
     CPU_CACHE_Enable();
 
-    /* MCU Configuration--------------------------------------------------------*/
-
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init(); // set HAL_NVIC_SetPriorityGrouping
-
-    SystemClock_Config();   // set clock, 
+    // set AHB and APB buses clocks, 
+    SystemClock_Config(); 
 
     /* Initialize all configured peripherals */
-
     UART_init();
+    LOG_I("%s", projectInfo); 
     GPIO_Init();
     SPI1_Init();
     ADC_init();
     MX_TIM5_Init();
+    DebugConfig();
+    LOG_I("init other peripherals over\r\n");
 
-    /* Create the thread(s) */
-    /* creation of defaultTask */
-    defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-
-    /* creation of myTask02 */
-    myTask02Handle = osThreadNew(Task_outputWave, NULL, &task_attributes_outputWave);
-
+    /* creation of outputWave */
+    g_taskHandle_OutputWave = osThreadNew(Task_outputWave, NULL, &task_attributes_outputWave);
+    /* creation of shell */
+    g_taskHandle_Shell = osThreadNew(shellTask, NULL, &task_attributes_Shell);
+    LOG_I("create all task finished and succeed\r\n");
 
     /* Start scheduler */
     osKernelStart();
 
     /* We should never get here as control is now taken by the scheduler */
 
-    /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
     while (1) {
-        /* USER CODE END WHILE */
-
-        /* USER CODE BEGIN 3 */
     }
-    /* USER CODE END 3 */
 }
 
 /**
@@ -189,29 +179,6 @@ void SystemClock_Config(void)
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) {
         Error_Handler();
     }
-}
-
-
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
- * @brief  Function implementing the defaultTask thread.
- * @param  argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
-{
-    /* USER CODE BEGIN 5 */
-    /* Infinite loop */
-    for (;;) {
-        osDelay(1);
-    }
-    /* USER CODE END 5 */
 }
 
 /* MPU Configuration */

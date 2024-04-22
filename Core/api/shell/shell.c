@@ -17,7 +17,6 @@
 #include "task.h"
 #include "queue.h"
 #include "shell_port.h"
-#include "mcro_def.h"
 
 #if SHELL_USING_CMD_EXPORT == 1
 /**
@@ -1731,9 +1730,7 @@ void shellTask(void *param)
     {
         if (shell->read && shell->read(&data) == true)
         {
-			if (data != STOP_BYTE) {
-				shellHandler(shell, data);
-			}
+            shellHandler(shell, data);
         } else {
             vTaskDelay(30);
         }

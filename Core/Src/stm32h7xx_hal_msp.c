@@ -73,7 +73,7 @@ void HAL_MspInit(void)
 
     /* System interrupt init*/
     /* PendSV_IRQn interrupt configuration */
-    HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
+    HAL_NVIC_SetPriority(PendSV_IRQn, IRQHANDLER_PRIORITY_PENDSV, 0);
 
     /* USER CODE BEGIN MspInit 1 */
 
@@ -128,7 +128,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         /* SPI1 interrupt Init */
-        HAL_NVIC_SetPriority(SPI1_IRQn, 5, 0);
+        HAL_NVIC_SetPriority(SPI1_IRQn, IRQHANDLER_PRIORITY_SPI, 0);
         HAL_NVIC_EnableIRQ(SPI1_IRQn);
         /* USER CODE BEGIN SPI1_MspInit 1 */
 
@@ -227,7 +227,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     __HAL_LINKDMA(huart,hdmatx,g_hdma_usart2_tx);
 
     /* USART2 interrupt Init */
-    HAL_NVIC_SetPriority(USART2_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(USART2_IRQn, IRQHANDLER_PRIORITY_UART, 0);
     HAL_NVIC_EnableIRQ(USART2_IRQn);
   /* USER CODE BEGIN USART2_MspInit 1 */
 
@@ -310,7 +310,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
   __HAL_LINKDMA(hadc, DMA_Handle, DmaHandle);
 
   /* NVIC configuration for DMA Input data interrupt */
-//   HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, 1, 0);
+//   HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, IRQHANDLER_PRIORITY_ADC, 0);
 //   HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn); 
 }
 

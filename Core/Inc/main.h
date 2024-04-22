@@ -34,6 +34,23 @@ extern "C" {
 #endif
 #define DEBUG_UART_PERIPH    USART2
 
+#define    HARDWARE_VERSION     "1.0"
+#define    SOFT_VERSION         "1.0"
+
+
+// config IRQ HANDLER_PRIORITY
+#define IRQHANDLER_PRIORITY_TICK        TICK_INT_PRIORITY
+#define IRQHANDLER_PRIORITY_PENDSV      IRQHANDLER_PRIORITY_TICK
+
+#define IRQHANDLER_PRIORITY_ADC         14
+#define IRQHANDLER_PRIORITY_UART_DMA    14
+#define IRQHANDLER_PRIORITY_UART        14
+
+#define IRQHANDLER_PRIORITY_SPI         8
+
+#define IRQHANDLER_PRIORITY_GPIO        5
+// config IRQ HANDLER_PRIORITY end
+
 extern TIM_HandleTypeDef g_htim5;
 extern int g_debugLevel;
 extern void Task_outputWave(void *argument);

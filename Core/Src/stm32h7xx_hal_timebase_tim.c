@@ -45,16 +45,6 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 
     uint32_t uwPrescalerValue;
     uint32_t pFLatency;
-    /*Configure the TIM7 IRQ priority */
-    if (TickPriority < (1UL << __NVIC_PRIO_BITS)) {
-        HAL_NVIC_SetPriority(TIM7_IRQn, TickPriority, 0U);
-
-        /* Enable the TIM7 global Interrupt */
-        HAL_NVIC_EnableIRQ(TIM7_IRQn);
-        uwTickPrio = TickPriority;
-    } else {
-        return HAL_ERROR;
-    }
 
     /* Enable TIM7 clock */
     __HAL_RCC_TIM7_CLK_ENABLE();
@@ -91,7 +81,19 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 
     if (HAL_TIM_Base_Init(&htim7) == HAL_OK) {
         /* Start the TIM time Base generation in interrupt mode */
-        return HAL_TIM_Base_Start_IT(&htim7);
+        if ( HAL_TIM_Base_Start_IT(&htim7) == HAL_OK) {
+            /* Enable the TIM7 global Interrupt */
+            HAL_NVIC_EnableIRQ(TIM7_IRQn);
+            /*Configure the TIM7 IRQ priority */
+            if (TickPriority < (1UL << __NVIC_PRIO_BITS)) {
+                HAL_NVIC_SetPriority(TIM7_IRQn, TickPriority, 0U);
+
+                uwTickPrio = TickPriority;
+                return HAL_OK;
+            } else {
+                return HAL_ERROR;
+            }
+        }
     }
 
     /* Return function status */

@@ -21,7 +21,7 @@
 
 static void display_usage(void)
 {
-    LOG_RAW("\t\tadc ,read voltage of pin \r\n");
+    LOG_RAW("\t\tadc ,read voltage from pin \r\n");
     return;
 }
 
