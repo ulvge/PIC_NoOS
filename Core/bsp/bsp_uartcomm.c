@@ -8,12 +8,12 @@
 #define UART_NUM_TOTAL 1
 
 static UART_PARA_STRUCT *g_pUARTSHandler[UART_NUM_TOTAL] = {NULL};	
-bool g_isPrintUseFifo = true;
+bool g_isPrintNoBlock = true;
 
 //use FIFO
 int fputc(int ch, FILE *f)
 {
-    if (g_isPrintUseFifo) {
+    if (g_isPrintNoBlock) {
         return UART_sendByte(DEBUG_UART_PERIPH, ch);
     } else {
         return UART_sendDataBlock(DEBUG_UART_PERIPH, (uint8_t *)&ch, 1);

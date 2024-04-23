@@ -265,6 +265,8 @@ typedef struct tskTaskControlBlock 			/* The old naming convention is used to pr
 
 	#if ( ( portSTACK_GROWTH > 0 ) || ( configRECORD_STACK_HIGH_ADDRESS == 1 ) )
 		StackType_t		*pxEndOfStack;		/*< Points to the highest valid address for the stack. */
+	#else
+        UBaseType_t     uxSizeOfStack;      /*< Support For CmBacktrace >*/
 	#endif
 
 	#if ( portCRITICAL_NESTING_IN_TCB == 1 )
@@ -874,6 +876,7 @@ UBaseType_t x;
 			pxNewTCB->pxEndOfStack = pxTopOfStack;
 		}
 		#endif /* configRECORD_STACK_HIGH_ADDRESS */
+        pxNewTCB->uxSizeOfStack = ulStackDepth;   /*< Support For CmBacktrace >*/
 	}
 	#else /* portSTACK_GROWTH */
 	{
@@ -5285,6 +5288,30 @@ const TickType_t xConstTickCount = xTickCount;
 	#endif /* INCLUDE_vTaskSuspend */
 }
 
+/*-----------------------------------------------------------*/
+/*< Support For CmBacktrace >*/
+uint32_t * vTaskStackAddr()
+{
+    return pxCurrentTCB->pxStack;
+}
+
+uint32_t vTaskStackSize()
+{
+    #if ( portSTACK_GROWTH > 0 )
+    
+    return (pxNewTCB->pxEndOfStack - pxNewTCB->pxStack + 1);
+    
+    #else /* ( portSTACK_GROWTH > 0 )*/
+    
+    return pxCurrentTCB->uxSizeOfStack;
+    
+    #endif /* ( portSTACK_GROWTH > 0 )*/
+}
+
+char * vTaskName()
+{
+    return pxCurrentTCB->pcTaskName;
+}
 /* Code below here allows additional code to be inserted into this source file,
 especially where access to file scope functions and data is needed (for example
 when performing module tests). */

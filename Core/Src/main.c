@@ -26,6 +26,7 @@
 #include "bsp_adc.h"
 #include "shell.h"
 #include "api_utc.h"
+#include "cm_backtrace.h"
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -64,7 +65,7 @@ static const osThreadAttr_t task_attributes_Shell = {
     .stack_size = 128 * 4,
     .priority = (osPriority_t)osPriorityBelowNormal,
 };
-static void CPU_CACHE_Enable(void)
+__attribute__((unused)) static void CPU_CACHE_Enable(void)
 {
   /* Enable I-Cache */
   SCB_EnableICache();
@@ -90,7 +91,7 @@ int main(void)
     /* MPU Configuration--------------------------------------------------------*/
     MPU_Config();
     /* Enable the CPU Cache */
-    CPU_CACHE_Enable();
+    //CPU_CACHE_Enable();
 
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init(); // set HAL_NVIC_SetPriorityGrouping
@@ -106,6 +107,8 @@ int main(void)
     MX_TIM5_Init();
     DebugConfig();
     LOG_I("init other peripherals over\r\n");
+    /* CmBacktrace initialize */
+    cm_backtrace_init("CmBacktrace", HARDWARE_VERSION, SOFT_VERSION);
 
     /* creation of outputWave */
     g_taskHandle_OutputWave = osThreadNew(Task_outputWave, NULL, &task_attributes_outputWave);
