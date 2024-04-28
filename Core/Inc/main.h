@@ -28,6 +28,8 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
+#include "cmsis_os.h"
+		
 
 #ifndef STM32H7A3xx
 #define STM32H7A3xx
@@ -51,12 +53,15 @@ extern "C" {
 #define IRQHANDLER_PRIORITY_GPIO        5
 // config IRQ HANDLER_PRIORITY end
 
+extern BaseType_t xHigherPriorityTaskWoken_YES;
+extern BaseType_t xHigherPriorityTaskWoken_NO;
+
 extern TIM_HandleTypeDef g_htim5;
 extern int g_debugLevel;
 extern void Task_outputWave(void *argument);
 extern inline uint32_t Get_dealyTimer_cnt(void);
 /* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
+extern void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 

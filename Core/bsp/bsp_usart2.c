@@ -4,6 +4,7 @@
 #include "main.h"
 #include "FIFO.h"
 #include "bsp_uartcomm.h"
+#include "uart_monitor.h"
 
 UART_HandleTypeDef g_uart2Handle = {
     .Instance = USART2,
@@ -77,7 +78,7 @@ static void MX_DMA_Init(void)
 
 static void HAL_UART_DMATxCpltCallback(DMA_HandleTypeDef *hdma)
 {
-    UART_sendContinue(USART2);
+    uart_PostdMsg(false);
 }
 
 void UART_RxISR_8BIT(UART_HandleTypeDef *huart)

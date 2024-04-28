@@ -6,26 +6,6 @@
 #include "stdint.h" 
 #include "task.h"
 
-// extern __asm uint32_t vPortGetIPSR(void);
-// __inline uint32_t API_EnterCirtical(void) 
-// {
-//     if (vPortGetIPSR()) {
-//         return taskENTER_CRITICAL_FROM_ISR();
-//     }
-//     else {
-//         taskENTER_CRITICAL();
-//         return 0;
-//     }
-// }
-// __inline void API_ExitCirtical(uint32_t x) 
-// {
-//     if (vPortGetIPSR()) {
-//         taskEXIT_CRITICAL_FROM_ISR(x);
-//     }
-//     else{
-//         taskEXIT_CRITICAL();
-//     }
-// }
 /************************************************************************************************************
    FIFO  底层接口层
 ******************************************************************/

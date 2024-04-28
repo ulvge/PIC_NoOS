@@ -4,6 +4,9 @@
 #include "bsp_uartcomm.h"
 #include "bsp_usart2.h"
 #include "task.h"
+#include "cmsis_os.h"
+#include "semphr.h"
+#include "uart_monitor.h"
 
 #define UART_NUM_TOTAL 1
 
@@ -78,28 +81,15 @@ __inline bool UART_sendByte(USART_TypeDef *usart_periph, uint8_t dat)
 
 bool UART_sendData(USART_TypeDef *usart_periph, uint8_t *str, uint16_t len)
 {
-    // 如果buff中，有数据，说明上次的还没发送完，则先写到buff中
-    // 如果buff中，没有数据了，检测是否已经发送完成。如果busy，则写到buff中；如果idle，则发送
-
     UART_PARA_STRUCT *uartPara = com_getHandler(usart_periph);
     if (uartPara == NULL) {
         return false;
     }
-    // 如果buff没有数据，且 uart 空闲，则直接发送
-    if (FIFO_Empty(&(uartPara->fifo.sfifo)) & (uartPara->uartHandle->gState == HAL_UART_STATE_READY))
-    {
-        if(HAL_UART_Transmit_DMA(uartPara->uartHandle, (uint8_t*)str, len)!= HAL_OK)
-        {
-            Error_Handler();
-            return false;
-        }
+
+    if (FIFO_Writes(&uartPara->fifo.sfifo, str, len) == FALSE){
+        return false;
     }
-    else{
-        // 则写到buff中
-        if (FIFO_Writes(&uartPara->fifo.sfifo, str, len) == FALSE){
-            return false;
-        }
-    }
+    uart_PostdMsg(false);
 	return true;
 }
 
@@ -157,20 +147,24 @@ void UART_sendContinue(USART_TypeDef *usart_periph)
 	}
     // 1、 array      xxxxx   limit
     // 2、 array xx       xxx limit
-    uint32_t x=API_EnterCirtical();
-    if (fifo->rp + fifo->occupy < fifo->limit) {
+    bool isNotTail = fifo->rp + fifo->occupy < fifo->limit;
+    if (isNotTail) {
         sendSize = fifo->occupy;
-        fifo->rp += sendSize;
-        fifo->occupy = 0;
     }else{
         sendSize = fifo->limit - fifo->rp;
-        fifo->occupy -= sendSize;
-        fifo->rp = fifo->array;
     }
-    API_ExitCirtical(x);
     if(HAL_UART_Transmit_DMA(uartPara->uartHandle, fifo->rp, sendSize)!= HAL_OK)
     {
-        Error_Handler();
+        uart_PostdMsg(true);
+    }else{
+        uint32_t x=API_EnterCirtical();
+        fifo->occupy -= sendSize;
+        if (isNotTail) {
+            fifo->rp += sendSize;
+        }else{
+            fifo->rp = fifo->array;
+        }
+        API_ExitCirtical(x);
     }
 }
 

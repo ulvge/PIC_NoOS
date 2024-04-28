@@ -27,8 +27,13 @@
 #include "shell.h"
 #include "api_utc.h"
 #include "cm_backtrace.h"
+#include "uart_monitor.h"
+#include "spi_communication.h"
 
 /* Private function prototypes -----------------------------------------------*/
+BaseType_t xHigherPriorityTaskWoken_YES = pdTRUE;
+BaseType_t xHigherPriorityTaskWoken_NO = pdFALSE;
+
 void SystemClock_Config(void);
 static void MPU_Config(void);
 static void MX_TIM5_Init(void);
@@ -57,6 +62,20 @@ static const osThreadAttr_t task_attributes_outputWave = {
     .name = "outputWave",
     .stack_size = 128 * 8,
     .priority = (osPriority_t)osPriorityRealtime,
+};
+/* Definitions for WriteBack Task */
+__attribute__((unused)) static osThreadId_t g_taskHandle_writeBack;
+static const osThreadAttr_t task_attributes_writeBack = {
+    .name = "writeBack",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityHigh,
+};
+/* Definitions for uartMonitor Task */
+__attribute__((unused)) static osThreadId_t g_taskHandle_uartMonitor;
+static const osThreadAttr_t task_attributes_uartMonitor = {
+    .name = "uartMonitor",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for shell Task */
 __attribute__((unused)) static osThreadId_t g_taskHandle_Shell;
@@ -112,8 +131,12 @@ int main(void)
 
     /* creation of outputWave */
     g_taskHandle_OutputWave = osThreadNew(Task_outputWave, NULL, &task_attributes_outputWave);
+    /* creation of WriteBack */
+    g_taskHandle_writeBack = osThreadNew(Task_WriteBack, NULL, &task_attributes_writeBack);
     /* creation of shell */
     g_taskHandle_Shell = osThreadNew(shellTask, NULL, &task_attributes_Shell);
+    /* creation of outputWave */
+    g_taskHandle_uartMonitor = osThreadNew(Task_uartMonitor, NULL, &task_attributes_uartMonitor);
     LOG_I("create all task finished and succeed\r\n");
 
     /* Start scheduler */
@@ -285,7 +308,7 @@ static void MX_TIM5_Init(void)
  * @brief  This function is executed in case of error occurrence.
  * @retval None
  */
-void Error_Handler(void)
+inline void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler_Debug */
     /* User can add his own implementation to report the HAL error return state */
