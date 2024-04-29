@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+#include "freertos.h"
 #include "bsp_uartcomm.h"
 #include "debug_print.h"
 #include "bsp_spi1_slave.h"
@@ -56,34 +56,6 @@ static const char *projectInfo =
     "\r\n";
     
 
-/* Definitions for outputWave Task */
-__attribute__((unused)) static osThreadId_t g_taskHandle_OutputWave;
-static const osThreadAttr_t task_attributes_outputWave = {
-    .name = "outputWave",
-    .stack_size = 128 * 8,
-    .priority = (osPriority_t)osPriorityRealtime,
-};
-/* Definitions for WriteBack Task */
-__attribute__((unused)) static osThreadId_t g_taskHandle_writeBack;
-static const osThreadAttr_t task_attributes_writeBack = {
-    .name = "writeBack",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityHigh,
-};
-/* Definitions for uartMonitor Task */
-__attribute__((unused)) static osThreadId_t g_taskHandle_uartMonitor;
-static const osThreadAttr_t task_attributes_uartMonitor = {
-    .name = "uartMonitor",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
-};
-/* Definitions for shell Task */
-__attribute__((unused)) static osThreadId_t g_taskHandle_Shell;
-static const osThreadAttr_t task_attributes_Shell = {
-    .name = "shell",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityBelowNormal,
-};
 __attribute__((unused)) static void CPU_CACHE_Enable(void)
 {
   /* Enable I-Cache */
@@ -119,28 +91,29 @@ int main(void)
 
     /* Initialize all configured peripherals */
     UART_init();
-    LOG_I("%s", projectInfo); 
+    LOG_RAW("%s", projectInfo); 
     GPIO_Init();
     SPI1_Init();
     ADC_init();
     MX_TIM5_Init();
     DebugConfig();
-    LOG_I("init other peripherals over\r\n");
+    LOG_RAW("init other peripherals over\r\n");
     /* CmBacktrace initialize */
     cm_backtrace_init("CmBacktrace", HARDWARE_VERSION, SOFT_VERSION);
 
     /* creation of outputWave */
-    g_taskHandle_OutputWave = osThreadNew(Task_outputWave, NULL, &task_attributes_outputWave);
+    xTaskCreate(Task_outputWave, "outputWave", 128 * 8, NULL, 48, NULL );
     /* creation of WriteBack */
-    g_taskHandle_writeBack = osThreadNew(Task_WriteBack, NULL, &task_attributes_writeBack);
+    xTaskCreate(Task_WriteBack, "writeBack", 128 * 4, NULL, 40, NULL );
+    /* creation of uartMonitor */
+    xTaskCreate(Task_uartMonitor, "uartMonitor", 128 * 4, NULL, 24, NULL );
     /* creation of shell */
-    g_taskHandle_Shell = osThreadNew(shellTask, NULL, &task_attributes_Shell);
-    /* creation of outputWave */
-    g_taskHandle_uartMonitor = osThreadNew(Task_uartMonitor, NULL, &task_attributes_uartMonitor);
+    xTaskCreate(shellTask, "shell", 128 * 4, NULL, 16, NULL );
+
     LOG_I("create all task finished and succeed\r\n");
 
     /* Start scheduler */
-    osKernelStart();
+	vTaskStartScheduler();
 
     /* We should never get here as control is now taken by the scheduler */
 
@@ -174,13 +147,14 @@ void SystemClock_Config(void)
     /** Initializes the RCC Oscillators according to the specified parameters
      * in the RCC_OscInitTypeDef structure.
      */
-    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-    RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
-    RCC_OscInitStruct.HSICalibrationValue = 64;
+    
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-    RCC_OscInitStruct.PLL.PLLM = 4;
-    RCC_OscInitStruct.PLL.PLLN = 30;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLM = 3;
+    RCC_OscInitStruct.PLL.PLLN = 70;
+  
     RCC_OscInitStruct.PLL.PLLP = 2;
     RCC_OscInitStruct.PLL.PLLQ = 2;
     RCC_OscInitStruct.PLL.PLLR = 2;
@@ -202,7 +176,7 @@ void SystemClock_Config(void)
     RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;
     RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV2;
 
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK) {
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_6) != HAL_OK) {
         Error_Handler();
     }
 }

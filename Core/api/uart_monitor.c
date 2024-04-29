@@ -11,9 +11,7 @@ SemaphoreHandle_t g_sem_uartResend;
 
 void Task_uartMonitor(void *param)
 {
-    SPI_ProtocolInit();
-    StaticSemaphore_t recvedWaveDataSemBuffer;
-    g_sem_uartResend = xSemaphoreCreateBinaryStatic(&recvedWaveDataSemBuffer);
+    g_sem_uartResend = xSemaphoreCreateBinary();
     while(1)
     {
         if (xSemaphoreTake(g_sem_uartResend, portMAX_DELAY) == pdTRUE) {

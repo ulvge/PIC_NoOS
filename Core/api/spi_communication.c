@@ -181,8 +181,7 @@ void SPI_ProtocolParsing(uint8_t val)
 
 void Task_WriteBack(void *argument)
 {
-    StaticSemaphore_t recvedSemWriteBackBuffer;
-    g_sem_WriteBack = xSemaphoreCreateBinaryStatic(&recvedSemWriteBackBuffer);
+    g_sem_WriteBack = xSemaphoreCreateBinary();
 
     while (1) {
         if (xSemaphoreTake(g_sem_WriteBack, portMAX_DELAY) == pdTRUE) {

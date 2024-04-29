@@ -28,7 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
-#include "cmsis_os.h"
+#include "freertos.h"
 		
 
 #ifndef STM32H7A3xx

@@ -4,7 +4,7 @@
 #include "bsp_uartcomm.h"
 #include "bsp_usart2.h"
 #include "task.h"
-#include "cmsis_os.h"
+#include "freertos.h"
 #include "semphr.h"
 #include "uart_monitor.h"
 
@@ -89,7 +89,11 @@ bool UART_sendData(USART_TypeDef *usart_periph, uint8_t *str, uint16_t len)
     if (FIFO_Writes(&uartPara->fifo.sfifo, str, len) == FALSE){
         return false;
     }
-    uart_PostdMsg(false);
+    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
+        uart_PostdMsg(false);
+    }else{
+        HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 5000);
+    }
 	return true;
 }
 

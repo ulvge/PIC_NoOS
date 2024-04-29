@@ -55,6 +55,7 @@ static void MX_SPI1_Init(void)
 void SPI1_Init(void)
 {
     MX_SPI1_Init();
+    SPI_ProtocolInit();
     //HAL_SPI_Receive_IT(&g_hspi1, g_buffRec, sizeof(g_buffRec));
 }
 

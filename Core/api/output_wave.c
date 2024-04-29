@@ -9,10 +9,7 @@
 #include "bsp_gpio.h"
 #include "bsp_spi1_slave.h"
 
-StaticSemaphore_t recvedWaveDataSemBuffer;
 SemaphoreHandle_t g_sem_recvedWaveData;
-
-StaticSemaphore_t isSendingDataSemBuffer;
 SemaphoreHandle_t g_sem_isSending;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
@@ -66,8 +63,8 @@ void Task_outputWave(void *argument)
     bool isFirst = true;
     uint16_t reSendCount;
     uint16_t slp;
-    g_sem_recvedWaveData = xSemaphoreCreateBinaryStatic(&recvedWaveDataSemBuffer);
-    g_sem_isSending = xSemaphoreCreateMutexStatic(&isSendingDataSemBuffer);
+    g_sem_recvedWaveData = xSemaphoreCreateBinary();
+    g_sem_isSending = xSemaphoreCreateMutex();
 
     while (1) {
         if (xSemaphoreTake(g_sem_recvedWaveData, portMAX_DELAY) == pdTRUE) {

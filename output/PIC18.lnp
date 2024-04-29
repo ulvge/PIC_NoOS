@@ -57,7 +57,6 @@
 "..\output\stream_buffer.o"
 "..\output\tasks.o"
 "..\output\timers.o"
-"..\output\cmsis_os2.o"
 "..\output\heap_4.o"
 "..\output\port.o"
 --strict --scatter "..\output\PIC18.sct"
