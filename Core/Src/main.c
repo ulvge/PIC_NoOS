@@ -110,7 +110,7 @@ int main(void)
     UART_init();
     LOG_RAW("%s", projectInfo); 
     SPI1_Init();
-    //ADC_init();
+    ADC_init();
     MX_TIM5_Init();
     DebugConfig();
     LOG_RAW("init other peripherals over\r\n");

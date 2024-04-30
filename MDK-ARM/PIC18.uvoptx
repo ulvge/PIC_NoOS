@@ -162,40 +162,25 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>163</LineNumber>
+          <LineNumber>41</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134256784</Address>
+          <Address>134229084</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Core\bsp\bsp_uartcomm.c</Filename>
+          <Filename>..\Core\bsp\bsp_adc.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\PIC18\../Core/bsp/bsp_uartcomm.c\163</Expression>
+          <Expression>\\PIC18\../Core/bsp/bsp_adc.c\41</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>g_uart2Handle.gState</ItemText>
-        </Ww>
-        <Ww>
-          <count>1</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>fifo</ItemText>
-        </Ww>
-        <Ww>
-          <count>2</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>huart-&gt;gState</ItemText>
-        </Ww>
-        <Ww>
-          <count>3</count>
-          <WinNumber>1</WinNumber>
-          <ItemText>IRQCount</ItemText>
+          <ItemText>g_ADCxConvertedData</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -249,6 +234,10 @@
       <pSingCmdsp></pSingCmdsp>
       <pMultCmdsp></pMultCmdsp>
       <SystemViewers>
+        <Entry>
+          <Name>System Viewer\ADC1</Name>
+          <WinId>35903</WinId>
+        </Entry>
         <Entry>
           <Name>System Viewer\DMA1</Name>
           <WinId>35904</WinId>

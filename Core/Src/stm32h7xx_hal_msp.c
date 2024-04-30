@@ -269,7 +269,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
   }
 }
 
-void HAL_ADC_MspInit2(ADC_HandleTypeDef *hadc)
+void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
 {
   GPIO_InitTypeDef          GPIO_InitStruct;
   static DMA_HandleTypeDef         DmaHandle;
@@ -293,7 +293,7 @@ void HAL_ADC_MspInit2(ADC_HandleTypeDef *hadc)
   /*##- 3- Configure DMA #####################################################*/ 
 
   /*********************** Configure DMA parameters ***************************/
-  DmaHandle.Instance                 = DMA1_Stream1;
+  DmaHandle.Instance                 = DMA1_Stream2;
   DmaHandle.Init.Request             = DMA_REQUEST_ADC1;
   DmaHandle.Init.Direction           = DMA_PERIPH_TO_MEMORY;
   DmaHandle.Init.PeriphInc           = DMA_PINC_DISABLE;
@@ -301,7 +301,7 @@ void HAL_ADC_MspInit2(ADC_HandleTypeDef *hadc)
   DmaHandle.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
   DmaHandle.Init.MemDataAlignment    = DMA_MDATAALIGN_HALFWORD;
   DmaHandle.Init.Mode                = DMA_CIRCULAR;
-  DmaHandle.Init.Priority            = DMA_PRIORITY_MEDIUM;
+  DmaHandle.Init.Priority            = DMA_PRIORITY_LOW;
   /* Deinitialize  & Initialize the DMA for new transfer */
   HAL_DMA_DeInit(&DmaHandle);
   HAL_DMA_Init(&DmaHandle);
@@ -310,8 +310,8 @@ void HAL_ADC_MspInit2(ADC_HandleTypeDef *hadc)
   __HAL_LINKDMA(hadc, DMA_Handle, DmaHandle);
 
   /* NVIC configuration for DMA Input data interrupt */
-//   HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, IRQHANDLER_PRIORITY_ADC, 0);
-//   HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn); 
+//   HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, IRQHANDLER_PRIORITY_ADC, 0);
+//   HAL_NVIC_EnableIRQ(DMA1_Stream2_IRQn); 
 }
 
 /**

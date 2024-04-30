@@ -7,9 +7,9 @@ ADC_ChannelConfTypeDef        sConfig;
 
 #define ADC_CONVERTED_DATA_BUFFER_SIZE   (8)
 
-static uint16_t   g_ADCxConvertedData[ADC_CONVERTED_DATA_BUFFER_SIZE] __attribute__((aligned(32)));
+static uint16_t g_ADCxConvertedData[ADC_CONVERTED_DATA_BUFFER_SIZE] __attribute__((section(".MY_SECTION"), aligned(32)));
 
-#define ADC_VOLTAGE_INCREMENT   0.0008059f
+#define ADC_VOLTAGE_INCREMENT   0.01294f
 #define ADC_3V3_5V_K            1.55556f
 
 __attribute__((unused)) static bool g_adcConvertFinished = false;
@@ -23,7 +23,7 @@ void ADC_init(void)
     }
 
     AdcHandle.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV64;                      /* Asynchronous clock mode, input ADC clock divided by 2*/
-    AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;                            /* 16-bit resolution for converted data */
+    AdcHandle.Init.Resolution = ADC_RESOLUTION_8B;                            /* 16-bit resolution for converted data */
     AdcHandle.Init.ScanConvMode = DISABLE;                                     /* Sequencer disabled (ADC conversion on only 1 channel: channel set on rank 1) */
     AdcHandle.Init.EOCSelection = ADC_EOC_SINGLE_CONV;                         /* EOC flag picked-up to indicate conversion end */
     AdcHandle.Init.LowPowerAutoWait = DISABLE;                                 /* Auto-delayed conversion feature disabled */
@@ -53,6 +53,7 @@ void ADC_init(void)
     sConfig.SingleDiff = ADC_SINGLE_ENDED;           /* Single-ended input channel */
     sConfig.OffsetNumber = ADC_OFFSET_NONE;          /* No offset subtraction */
     sConfig.Offset = 0;                              /* Parameter discarded because offset correction is disabled */
+    sConfig.OffsetSignedSaturation = DISABLE;
     if (HAL_ADC_ConfigChannel(&AdcHandle, &sConfig) != HAL_OK) {
         Error_Handler();
     }

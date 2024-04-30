@@ -28,7 +28,7 @@ static UART_PARA_STRUCT g_UARTPara = {
 DMA_HandleTypeDef g_hdma_usart2_tx;
 
 #define UART1_BUFF_SIZE 	(200)
-static INT8U g_buffSend[2048] __attribute__((at(0x24000000)));
+static INT8U g_buffSend[2048] __attribute__((section(".MY_SECTION")));
 static INT8U g_buffRec[UART1_BUFF_SIZE];
 
 void UART2_init(void)
