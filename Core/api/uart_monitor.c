@@ -15,15 +15,17 @@ void Task_uartMonitor(void *param)
     while(1)
     {
         if (xSemaphoreTake(g_sem_uartResend, portMAX_DELAY) == pdTRUE) {
-            vTaskDelay(1);
+            vTaskDelay(10);
             UART_sendContinue(DEBUG_UART_PERIPH);
         }
     }
 }
+
+extern UART_HandleTypeDef g_uart2Handle;
 void uart_PostdMsg(bool isReSend)
 {
     if (isReSend) {
-        LOG_E("When uart sends data, repeated transmission occurs\r\n");
+        //LOG_E("When uart sends data, repeated transmission occurs\r\n");
     }
     if (vPortGetIPSR()) {
         xSemaphoreGiveFromISR(g_sem_uartResend, &xHigherPriorityTaskWoken_NO);

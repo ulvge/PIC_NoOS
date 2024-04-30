@@ -25,6 +25,7 @@
 #include "bsp_gpio.h"
 #include "bsp_adc.h"
 #include "shell.h"
+#include "shell_port.h"
 #include "api_utc.h"
 #include "cm_backtrace.h"
 #include "uart_monitor.h"
@@ -73,6 +74,20 @@ static void DebugConfig(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+/* DMA1_Stream1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, IRQHANDLER_PRIORITY_UART_DMA, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
+}
+/**
  * @brief  The application entry point.
  * @retval int
  */
@@ -90,11 +105,12 @@ int main(void)
     SystemClock_Config(); 
 
     /* Initialize all configured peripherals */
+    GPIO_Init();
+    MX_DMA_Init();
     UART_init();
     LOG_RAW("%s", projectInfo); 
-    GPIO_Init();
     SPI1_Init();
-    ADC_init();
+    //ADC_init();
     MX_TIM5_Init();
     DebugConfig();
     LOG_RAW("init other peripherals over\r\n");
@@ -108,7 +124,7 @@ int main(void)
     /* creation of uartMonitor */
     xTaskCreate(Task_uartMonitor, "uartMonitor", 128 * 4, NULL, 24, NULL );
     /* creation of shell */
-    xTaskCreate(shellTask, "shell", 128 * 4, NULL, 16, NULL );
+    xTaskCreate(shellTask, "shell", 128 * 2, &shell, 16, NULL );
 
     LOG_I("create all task finished and succeed\r\n");
 
@@ -167,7 +183,9 @@ void SystemClock_Config(void)
 
     /** Initializes the CPU, AHB and APB buses clocks
      */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
+                              |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;

@@ -157,7 +157,9 @@ void UART_sendContinue(USART_TypeDef *usart_periph)
     }else{
         sendSize = fifo->limit - fifo->rp;
     }
-    if(HAL_UART_Transmit_DMA(uartPara->uartHandle, fifo->rp, sendSize)!= HAL_OK)
+
+    if(HAL_UART_Transmit(uartPara->uartHandle, fifo->rp, sendSize, 100) != HAL_OK )
+    //if(HAL_UART_Transmit_DMA(uartPara->uartHandle, fifo->rp, sendSize)!= HAL_OK)
     {
         uart_PostdMsg(true);
     }else{

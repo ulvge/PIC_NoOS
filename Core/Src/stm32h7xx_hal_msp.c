@@ -269,7 +269,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
   }
 }
 
-void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
+void HAL_ADC_MspInit2(ADC_HandleTypeDef *hadc)
 {
   GPIO_InitTypeDef          GPIO_InitStruct;
   static DMA_HandleTypeDef         DmaHandle;

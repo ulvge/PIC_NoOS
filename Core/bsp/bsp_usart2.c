@@ -29,22 +29,20 @@ DMA_HandleTypeDef g_hdma_usart2_tx;
 #define UART1_BUFF_SIZE 	(200)
 static INT8U g_buffSend[2048];
 static INT8U g_buffRec[UART1_BUFF_SIZE];
-static void MX_DMA_Init(void);
 static void HAL_UART_DMATxCpltCallback(DMA_HandleTypeDef *hdma);
 
 void UART2_init(void)
 {
-	FIFO_Init(&g_UARTPara.fifo.sfifo, g_buffSend, sizeof(g_buffSend));	
-	FIFO_Init(&g_UARTPara.fifo.rfifo, g_buffRec, sizeof(g_buffRec));
+    FIFO_Init(&g_UARTPara.fifo.sfifo, g_buffSend, sizeof(g_buffSend));	
+    FIFO_Init(&g_UARTPara.fifo.rfifo, g_buffRec, sizeof(g_buffRec));
 
-    MX_DMA_Init();
 	
     com_registHandler(&g_UARTPara);
 
-    if (HAL_UART_DeInit(&g_uart2Handle) != HAL_OK)
-    {
-        Error_Handler();
-    }
+    // if (HAL_UART_DeInit(&g_uart2Handle) != HAL_OK)
+    // {
+    //     Error_Handler();
+    // }
     if (HAL_UART_Init(&g_uart2Handle) != HAL_OK) {
         Error_Handler();
     }
@@ -57,38 +55,26 @@ void UART2_init(void)
     if (HAL_UARTEx_DisableFifoMode(&g_uart2Handle) != HAL_OK) {
         Error_Handler();
     }
+	ATOMIC_SET_BIT(g_uart2Handle.Instance->CR1, USART_CR1_RXNEIE_RXFNEIE);
     HAL_DMA_RegisterCallback(&g_hdma_usart2_tx, HAL_DMA_XFER_CPLT_CB_ID, HAL_UART_DMATxCpltCallback);
 }
 
-/**
-  * Enable DMA controller clock
-  */
-static void MX_DMA_Init(void)
-{
-
-  /* DMA controller clock enable */
-  __HAL_RCC_DMA1_CLK_ENABLE();
-
-  /* DMA interrupt init */
-/* DMA1_Stream1_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Stream1_IRQn, IRQHANDLER_PRIORITY_UART_DMA, 0);
-  HAL_NVIC_EnableIRQ(DMA1_Stream1_IRQn);
-
-}
 
 static void HAL_UART_DMATxCpltCallback(DMA_HandleTypeDef *hdma)
 {
     uart_PostdMsg(false);
 }
 
-void UART_RxISR_8BIT(UART_HandleTypeDef *huart)
+void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
-    uint8_t val;
+    uint32_t isrflags = READ_REG(huart->Instance->ISR);
 
-    /* Check that a Rx process is ongoing */
-    if (huart->RxState == HAL_UART_STATE_BUSY_RX) {
-        val = (uint8_t)READ_REG(huart->Instance->RDR);
-        
-        FIFO_Write(&g_UARTPara.fifo.rfifo, val);
+    /* If no error occurs */
+    /* UART in mode Receiver ---------------------------------------------------*/
+    if ((isrflags & USART_ISR_RXNE_RXFNE) != 0U) {
+        FIFO_Write(&g_UARTPara.fifo.rfifo, (uint8_t)READ_REG(huart->Instance->RDR));
     }
+    __HAL_UART_CLEAR_FLAG(huart, USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE | USART_ISR_RTOF);
 }
+
+

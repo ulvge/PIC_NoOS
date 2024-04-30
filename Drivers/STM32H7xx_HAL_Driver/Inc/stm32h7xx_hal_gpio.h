@@ -53,7 +53,7 @@ typedef enum
   */
 typedef struct
 {
-  GPIO_TypeDef * PORT;
+    GPIO_TypeDef * PORT;
   uint32_t Pin;       /*!< Specifies the GPIO pins to be configured.
                            This parameter can be any value of @ref GPIO_pins_define */
 

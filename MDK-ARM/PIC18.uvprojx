@@ -54,7 +54,7 @@
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
-          <BrowseInformation>1</BrowseInformation>
+          <BrowseInformation>0</BrowseInformation>
           <ListingPath>..\output\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
@@ -201,7 +201,7 @@
             <NoZi1>0</NoZi1>
             <NoZi2>0</NoZi2>
             <NoZi3>0</NoZi3>
-            <NoZi4>0</NoZi4>
+            <NoZi4>1</NoZi4>
             <NoZi5>0</NoZi5>
             <Ro1Chk>0</Ro1Chk>
             <Ro2Chk>0</Ro2Chk>
@@ -338,9 +338,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER</Define>
+              <Define>USE_HAL_DRIVER,STM32H7A3xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang;..\Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;..\Core\bsp;..\Core\api;..\Core\api\shell;..\Core\api\cm_backtrace</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang;..\Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;..\Core\bsp;..\Core\api;..\Core\api\shell;..\Core\api\cm_backtrace;..\Drivers\STM32H7xx_HAL_Driver\Inc\</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

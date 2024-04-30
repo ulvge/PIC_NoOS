@@ -21,6 +21,8 @@
 #include "stm32h7xx_it.h"
 #include "main.h"
 #include "bsp_usart2.h"
+#include "freertos.h"
+#include "task.h" 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -203,7 +205,19 @@ void DMA1_Stream1_IRQHandler(void)
 */
 void USART2_IRQHandler(void)
 {
-  //HAL_UART_IRQHandler(&g_uart2Handle);
-  UART_RxISR_8BIT(&g_uart2Handle);
+  HAL_UART_IRQHandler(&g_uart2Handle);
+  //UART_RxISR_8BIT(&g_uart2Handle);
 }
 /* USER CODE END 1 */
+
+extern void xPortSysTickHandler(void);
+void SysTick_Handler(void)
+{
+	if(xTaskGetSchedulerState()!=taskSCHEDULER_NOT_STARTED)//系统已经运行
+	{
+		xPortSysTickHandler();	
+	}
+}
+
+
+
