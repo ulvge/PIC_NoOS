@@ -338,9 +338,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,STM32H7A3xx</Define>
+              <Define>USE_HAL_DRIVER,STM32H7A3xx,STM32H7xx_LL_Driver</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang;..\Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;..\Core\bsp;..\Core\api;..\Core\api\shell;..\Core\api\cm_backtrace;..\Drivers\STM32H7xx_HAL_Driver\Inc\</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang;..\Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;..\Core\bsp;..\Core\api;..\Core\api\shell;..\Core\api\cm_backtrace</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

@@ -25,7 +25,7 @@ extern UART_HandleTypeDef g_uart2Handle;
 void uart_PostdMsg(bool isReSend)
 {
     if (isReSend) {
-        //LOG_E("When uart sends data, repeated transmission occurs\r\n");
+        LOG_E("When uart sends data, repeated transmission occurs\r\n");
     }
     if (vPortGetIPSR()) {
         xSemaphoreGiveFromISR(g_sem_uartResend, &xHigherPriorityTaskWoken_NO);

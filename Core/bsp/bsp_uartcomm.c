@@ -1,6 +1,5 @@
 #include <string.h>
 #include "main.h"
-//#include "Message.h"
 #include "bsp_uartcomm.h"
 #include "bsp_usart2.h"
 #include "task.h"
@@ -86,13 +85,15 @@ bool UART_sendData(USART_TypeDef *usart_periph, uint8_t *str, uint16_t len)
         return false;
     }
 
-    if (FIFO_Writes(&uartPara->fifo.sfifo, str, len) == FALSE){
-        return false;
-    }
     if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
-        uart_PostdMsg(false);
+        if (FIFO_Writes(&uartPara->fifo.sfifo, str, len) == FALSE){
+            HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 100);
+            return false;
+        }else{
+            uart_PostdMsg(false);
+        }
     }else{
-        HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 5000);
+        HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 100);
     }
 	return true;
 }
@@ -158,8 +159,8 @@ void UART_sendContinue(USART_TypeDef *usart_periph)
         sendSize = fifo->limit - fifo->rp;
     }
 
-    if(HAL_UART_Transmit(uartPara->uartHandle, fifo->rp, sendSize, 100) != HAL_OK )
-    //if(HAL_UART_Transmit_DMA(uartPara->uartHandle, fifo->rp, sendSize)!= HAL_OK)
+    //if(HAL_UART_Transmit(uartPara->uartHandle, fifo->rp, sendSize, 100) != HAL_OK )
+    if(HAL_UART_Transmit_DMA(uartPara->uartHandle, fifo->rp, sendSize)!= HAL_OK)
     {
         uart_PostdMsg(true);
     }else{

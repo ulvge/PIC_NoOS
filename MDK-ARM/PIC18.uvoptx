@@ -162,18 +162,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>199</LineNumber>
+          <LineNumber>163</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134227950</Address>
+          <Address>134256784</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>../Core/Src/stm32h7xx_it.c</Filename>
+          <Filename>..\Core\bsp\bsp_uartcomm.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\PIC18\../Core/Src/stm32h7xx_it.c\199</Expression>
+          <Expression>\\PIC18\../Core/bsp/bsp_uartcomm.c\163</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -191,6 +191,11 @@
           <count>2</count>
           <WinNumber>1</WinNumber>
           <ItemText>huart-&gt;gState</ItemText>
+        </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>IRQCount</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>

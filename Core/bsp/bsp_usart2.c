@@ -5,6 +5,7 @@
 #include "FIFO.h"
 #include "bsp_uartcomm.h"
 #include "uart_monitor.h"
+#include "stm32h7xx_ll_usart.h"
 
 UART_HandleTypeDef g_uart2Handle = {
     .Instance = USART2,
@@ -27,22 +28,16 @@ static UART_PARA_STRUCT g_UARTPara = {
 DMA_HandleTypeDef g_hdma_usart2_tx;
 
 #define UART1_BUFF_SIZE 	(200)
-static INT8U g_buffSend[2048];
+static INT8U g_buffSend[2048] __attribute__((at(0x24000000)));
 static INT8U g_buffRec[UART1_BUFF_SIZE];
-static void HAL_UART_DMATxCpltCallback(DMA_HandleTypeDef *hdma);
 
 void UART2_init(void)
 {
     FIFO_Init(&g_UARTPara.fifo.sfifo, g_buffSend, sizeof(g_buffSend));	
     FIFO_Init(&g_UARTPara.fifo.rfifo, g_buffRec, sizeof(g_buffRec));
-
 	
     com_registHandler(&g_UARTPara);
 
-    // if (HAL_UART_DeInit(&g_uart2Handle) != HAL_OK)
-    // {
-    //     Error_Handler();
-    // }
     if (HAL_UART_Init(&g_uart2Handle) != HAL_OK) {
         Error_Handler();
     }
@@ -55,16 +50,9 @@ void UART2_init(void)
     if (HAL_UARTEx_DisableFifoMode(&g_uart2Handle) != HAL_OK) {
         Error_Handler();
     }
-	ATOMIC_SET_BIT(g_uart2Handle.Instance->CR1, USART_CR1_RXNEIE_RXFNEIE);
-    HAL_DMA_RegisterCallback(&g_hdma_usart2_tx, HAL_DMA_XFER_CPLT_CB_ID, HAL_UART_DMATxCpltCallback);
+	LL_USART_EnableIT_RXNE(g_uart2Handle.Instance);
+    __HAL_DMA_ENABLE_IT(&g_hdma_usart2_tx, DMA_IT_TC);
 }
-
-
-static void HAL_UART_DMATxCpltCallback(DMA_HandleTypeDef *hdma)
-{
-    uart_PostdMsg(false);
-}
-
 void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
     uint32_t isrflags = READ_REG(huart->Instance->ISR);
@@ -74,7 +62,11 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
     if ((isrflags & USART_ISR_RXNE_RXFNE) != 0U) {
         FIFO_Write(&g_UARTPara.fifo.rfifo, (uint8_t)READ_REG(huart->Instance->RDR));
     }
-    __HAL_UART_CLEAR_FLAG(huart, USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE | USART_ISR_RTOF);
+	if (isrflags & USART_ISR_TC){
+		huart->gState = HAL_UART_STATE_READY;
+		uart_PostdMsg(false);
+	}
+    __HAL_UART_CLEAR_FLAG(huart, USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE | USART_ISR_RTOF | USART_ISR_TC);
 }
 
 
