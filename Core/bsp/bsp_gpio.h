@@ -43,6 +43,20 @@
 #define XBEAM_PORT                   GPIOC
 #define XBEAM_PIN                    GPIO_PIN_1
 
+
+/**SPI1 GPIO Configuration
+        PA4     ------> SPI1_NSS
+        PA5     ------> SPI1_SCK
+        PA6     ------> SPI1_MISO
+        PA7     ------> SPI1_MOSI
+        */
+ 
+#define GPIO_SPI1_NSS                   GPIO_PIN_4  
+#define GPIO_SPI1_SCK                   GPIO_PIN_5
+#define GPIO_SPI1_MISO                  GPIO_PIN_6
+#define GPIO_SPI1_MOSI                  GPIO_PIN_7
+
+#define GPIO_SPI1_PORT                  GPIOA
 typedef enum
 {
     GPIO_GLITCH_SHUTDOWN = 0U,
@@ -78,7 +92,6 @@ inline extern void GPIO_Set_LD_POS(GPIO_PinState st);
 inline extern void GPIO_Set_LD_SLOPE(GPIO_PinState st);
 
 inline extern void GPIO_SetDAC(uint32_t val);
-inline extern bool GPIO_Get_MCLR(void);
 
 void GPIO_printIdexAndName(void);
 int GPIO_isPinActive(GPIO_Idex idex, GPIO_PinState *config);

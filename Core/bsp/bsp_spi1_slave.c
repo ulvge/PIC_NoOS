@@ -4,6 +4,7 @@
 #include "shell_port.h"
 #include "debug_print.h"
 #include "bsp_spi1_slave.h"
+#include "bsp_gpio.h"
 
 #include "stm32h7xx_hal.h"
 #include <string.h>
@@ -14,8 +15,11 @@
 #define SPI_DIAG_LIMIT_MAX_CLK  OUTPUT_DELAY_xUS(SPI_DIAG_LIMIT_MAX_xUS)
 
 SPI_HandleTypeDef g_hspi1;
-
 Diagnosis g_diagnosis;
+
+static void SPI_EnableChipSelect() {
+    HAL_GPIO_WritePin(GPIO_SPI1_PORT, GPIO_SPI1_NSS, GPIO_PIN_RESET); // GPIOx 和 GPIO_PIN_CS 是你片选引脚的 GPIO 和引脚号
+}
 /**
  * @brief SPI1 Initialization Function
  * @param None
@@ -30,7 +34,7 @@ static void MX_SPI1_Init(void)
     g_hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
     g_hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
     g_hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
-    g_hspi1.Init.NSS = SPI_NSS_HARD_INPUT;
+    g_hspi1.Init.NSS = SPI_NSS_SOFT;
     g_hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     g_hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     g_hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -56,6 +60,7 @@ void SPI1_Init(void)
 {
     MX_SPI1_Init();
     SPI_ProtocolInit();
+    SPI_EnableChipSelect();
     //HAL_SPI_Receive_IT(&g_hspi1, g_buffRec, sizeof(g_buffRec));
 }
 

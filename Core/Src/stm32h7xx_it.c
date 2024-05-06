@@ -23,6 +23,7 @@
 #include "bsp_usart2.h"
 #include "freertos.h"
 #include "task.h" 
+#include "bsp_gpio.h" 
 /* Private includes ----------------------------------------------------------*/
 
 void static HAL_TIM_IRQHandler_tim7TickOverWrite(void);
@@ -187,6 +188,10 @@ inline void static HAL_TIM_IRQHandler_tim7TickOverWrite(void)
       HAL_IncTick();
     }
   }
+}
+void EXTI15_10_IRQHandler(void)
+{
+    HAL_GPIO_EXTI_IRQHandler(MCLR_PIN);
 }
 
 

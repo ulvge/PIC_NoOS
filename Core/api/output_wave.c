@@ -8,6 +8,7 @@
 #include "spi_communication.h"
 #include "bsp_gpio.h"
 #include "bsp_spi1_slave.h"
+#include "FIFO.h"
 
 SemaphoreHandle_t g_sem_recvedWaveData;
 SemaphoreHandle_t g_sem_isSending;
@@ -15,17 +16,17 @@ SemaphoreHandle_t g_sem_isSending;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     static uint32_t oldStamp, nowStamp;
-    oldStamp = Get_dealyTimer_cnt();
-    vTaskSuspendAll();
-    if (GPIO_Pin == GPIO_PIN_13) {
-        while(GPIO_Get_MCLR()){
+    if (GPIO_Pin == MCLR_PIN) {
+		uint32_t x=API_EnterCirtical();
+		oldStamp = Get_dealyTimer_cnt();
+        while(GPIO_isPinActive(GPIO_MCLR, NULL) == 1){
             nowStamp = Get_dealyTimer_cnt();
             if ((nowStamp - oldStamp) >= OUTPUT_DELAY_4US) {
                 HAL_NVIC_SystemReset();
             }
         }
+		API_ExitCirtical(x);
     }
-    xTaskResumeAll();
 }
 // htim5 run clok: 280M
 // Period = count 280 = 1us

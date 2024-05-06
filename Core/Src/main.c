@@ -246,10 +246,8 @@ inline uint32_t Get_dealyTimer_cnt(void)
   */
 static void MX_TIM5_Init(void)
 {
-
-  /* USER CODE BEGIN TIM5_Init 0 */
-
-  /* USER CODE END TIM5_Init 0 */
+    /* Enable TIM5 clock */
+    __HAL_RCC_TIM5_CLK_ENABLE();
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
