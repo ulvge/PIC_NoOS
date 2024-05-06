@@ -62,7 +62,7 @@ typedef enum
     
     GPIO_ADC_XBEAM,
     GPIO_MAX,
-} GPIO_NAMES;
+} GPIO_Idex;
 
 extern void GPIO_Init(void);
 
@@ -80,8 +80,10 @@ inline extern void GPIO_Set_LD_SLOPE(GPIO_PinState st);
 inline extern void GPIO_SetDAC(uint32_t val);
 inline extern bool GPIO_Get_MCLR(void);
 
-int GPIO_isPinActive(GPIO_NAMES alias, GPIO_PinState *config);
-bool GPIO_setPinStatus(GPIO_NAMES alias, FunctionalState isActive, GPIO_PinState *config);
+void GPIO_printIdexAndName(void);
+int GPIO_isPinActive(GPIO_Idex idex, GPIO_PinState *config);
+bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive, GPIO_PinState *config);
+bool GPIO_getPinName(GPIO_Idex idex, const char **name);
 #ifdef __cplusplus
 }
 #endif

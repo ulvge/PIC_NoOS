@@ -168,7 +168,12 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>g_ADCxConvertedData</ItemText>
+          <ItemText>p_gpioCfg</ItemText>
+        </Ww>
+        <Ww>
+          <count>1</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>GPIOx-&gt;BSRR</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -229,6 +234,10 @@
         <Entry>
           <Name>System Viewer\DMA1</Name>
           <WinId>35904</WinId>
+        </Entry>
+        <Entry>
+          <Name>System Viewer\GPIOC</Name>
+          <WinId>35902</WinId>
         </Entry>
         <Entry>
           <Name>System Viewer\USART2</Name>

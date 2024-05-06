@@ -45,6 +45,7 @@ static void display_usage(void)
     LOG_RAW("\n*** gpio cmd index ***\r\n");
     LOG_RAW("\t-g: get the gpio is actived,eg: gpio -g 0\r\n");
     LOG_RAW("\t-s <active>:set the gpio active,eg: gpio -s 0 1\r\n");
+    GPIO_printIdexAndName();
     return;
 }
 
@@ -81,23 +82,49 @@ static void parse_arguments(int argc, char **argv)
         }
     }
 }
-
+static void int16ToBinaryString(int16_t num, char *binaryString) {
+    int index = 0;
+    bool is0 = true;
+    // 从最高位开始，逐位检查并存放到字符串数组中
+    for (int i = 31; i >= 0; i--) {
+        int bit = GET_BIT(num, i);
+        if (is0 && (bit == 1)) {
+            is0 = false;
+        }
+        if (is0){
+            continue;
+        }
+        binaryString[index++] = GET_BIT(num, i) + '0';
+        // 在每四位之后添加一个空格
+        if (i % 4 == 0 && i != 0)
+            binaryString[index++] = ' ';
+    }
+    // 在字符串末尾添加结束符
+    if (index == 0){
+        binaryString[index++] = '0';
+    }
+    binaryString[index] = '\0';
+}
 static int getGPIOActive(int argc, char **argv, int index)
 {
-    GPIO_NAMES gpioIndex = (GPIO_NAMES)atoi(argv[argc - 1]);
+    GPIO_Idex gpioIndex = (GPIO_Idex)atoi(argv[argc - 1]);
     GPIO_PinState config;
+    const char **name;
     int res = GPIO_isPinActive(gpioIndex, &config);
+    GPIO_getPinName(gpioIndex, name);
     if (res == -1) {
         LOG_RAW("gpio index = %d: get gpio error, check the input para\r\n", gpioIndex);
     }else{
-        LOG_RAW("get gpio,    config ActiveSignal,  is actived\r\n");
-        LOG_RAW("  %d,           %d,                  %d\r\n", gpioIndex, config, res);
+        char binaryString[40];
+        int16ToBinaryString(res, binaryString);
+        LOG_RAW("index ,    name,              config ActiveSignal,  is actived/val \r\n");
+        LOG_RAW("  %d,    %-20s,          %d,               %s\r\n", gpioIndex, *name, config, binaryString);
     }
     return 0;
 }
 static int setGPIOActiveHandler(int argc, char **argv, int index)
 {
-    GPIO_NAMES gpioIndex = (GPIO_NAMES)atoi(argv[argc - 1]);
+    GPIO_Idex gpioIndex = (GPIO_Idex)atoi(argv[argc - 1]);
     FunctionalState isActive = (FunctionalState)atoi(argv[argc - 1]);
     GPIO_PinState config;
     if (!GPIO_setPinStatus(gpioIndex, isActive, &config)) {

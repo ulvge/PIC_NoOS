@@ -1,28 +1,37 @@
 #include <string.h>   
-#include <stdarg.h>  
+#include <stdarg.h> 
 #include "main.h"
 #include "Types.h"
 #include "bsp_gpio.h"
 #include "shell.h"
+#include "debug_print.h"
 
+#define GPIO_GROUP_START  GPIO_DAC_A
+
+#define STR(x) #x
+#define EXPAND(x) STR(x)
+#define PIN_NAME(val) .Name = EXPAND(val), .Pin = val##_PIN
+
+// const static GPIO_InitTypeDef g_gpioConfigComm[] = {
+//     {GLITCH_SHUTDOWN_PORT, PIN_NAME(GLITCH_SHUTDOWN), GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
+// };
 const static GPIO_InitTypeDef g_gpioConfigComm[] = {
-    {GLITCH_SHUTDOWN_PORT, GLITCH_SHUTDOWN_PIN, GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
-    {PIC_LED_PORT, PIC_LED_PIN,                 GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
-    {INTRPT_PORT, INTRPT_PIN,                   GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
-    {BUSY_PORT, BUSY_PIN,                       GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
-    {DIRECTION_PORT, DIRECTION_PIN,             GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
-    {SPOT_PORT, SPOT_PIN,                       GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
-    {MATCH_PORT, MATCH_PIN,                     GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
-    {LD_POS_PORT, LD_POS_PIN,                   GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
-    {LD_SLOPE_PORT, LD_SLOPE_PIN,               GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
-    {MCLR_PORT, MCLR_PIN,                       GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
+    {GLITCH_SHUTDOWN_PORT,  PIN_NAME(GLITCH_SHUTDOWN), GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
+    {PIC_LED_PORT,  		PIN_NAME(PIC_LED),         GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
+    {INTRPT_PORT,  			PIN_NAME(INTRPT),          GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
+    {BUSY_PORT,  			PIN_NAME(BUSY),            GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {DIRECTION_PORT,  		PIN_NAME(DIRECTION),       GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {SPOT_PORT,  			PIN_NAME(SPOT),            GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {MATCH_PORT,  			PIN_NAME(MATCH),           GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {LD_POS_PORT,  			PIN_NAME(LD_POS),          GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
+    {LD_SLOPE_PORT,  		PIN_NAME(LD_SLOPE),        GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
+    {MCLR_PORT,  			PIN_NAME(MCLR),            GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
 
-    {GPIOA, GPIO_PIN_15,                        GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {GPIOA, "GroupA", GPIO_PIN_15,                     GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
 
-    {GPIOC, GPIO_PIN_12 | GPIO_PIN_11 | GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
-    {GPIOB, 0x3fc,                              GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},// GPIO_PIN_9~ GPIO_PIN_2
+    {GPIOC, "GroupC", GPIO_PIN_12 | GPIO_PIN_11 | GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {GPIOB, "GroupB", 0x3fc,                           GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},// GPIO_PIN_9~ GPIO_PIN_2
 };
-
 
 static const GPIO_InitTypeDef *p_gpioCfg0 = &g_gpioConfigComm[GPIO_GLITCH_SHUTDOWN];
 static const GPIO_InitTypeDef *p_gpioCfg1 = &g_gpioConfigComm[GPIO_PIC_LED];
@@ -34,7 +43,6 @@ static const GPIO_InitTypeDef *p_gpioCfg6 = &g_gpioConfigComm[GPIO_MATCH];
 static const GPIO_InitTypeDef *p_gpioCfg7 = &g_gpioConfigComm[GPIO_LD_POS];
 static const GPIO_InitTypeDef *p_gpioCfg8 = &g_gpioConfigComm[GPIO_LD_SLOPE];
 static const GPIO_InitTypeDef *p_gpioCfg9 = &g_gpioConfigComm[GPIO_MCLR];
-
 
 static void HAL_GPIO_SetGroupPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint16_t val)
 {
@@ -116,9 +124,9 @@ static void GPIO_InitGPIOs(const GPIO_InitTypeDef *config, uint32_t size)
     for (uint32_t i = 0; i < size; i++)
     {
         p_gpioCfg = &config[i];
-
         HAL_GPIO_Init(p_gpioCfg->PORT, (GPIO_InitTypeDef *)p_gpioCfg);
-        HAL_GPIO_WritePin(p_gpioCfg->PORT, p_gpioCfg->Pin, p_gpioCfg->ActiveSignal);
+		uint32_t st = !p_gpioCfg->ActiveSignal;
+        HAL_GPIO_WritePin(p_gpioCfg->PORT, p_gpioCfg->Pin, (GPIO_PinState)st);
     }
 }
 /**
@@ -143,28 +151,58 @@ static void MX_GPIO_Init(void)
 }
 
 
-GPIO_PinState GPIO_getPinStatus(GPIO_NAMES alias)
+GPIO_PinState GPIO_getPinStatus(GPIO_Idex idex)
 {
-    if (alias >= ARRARY_SIZE(g_gpioConfigComm))
+    if (idex >= ARRARY_SIZE(g_gpioConfigComm))
     {
         return GPIO_PIN_RESET;
     }
-    const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[alias];
+    const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[idex];
     return HAL_GPIO_ReadPin(p_gpioCfg->PORT, p_gpioCfg->Pin);
 }
-int GPIO_isPinActive(GPIO_NAMES alias, GPIO_PinState *config)
+int GPIO_isPinActive(GPIO_Idex idex, GPIO_PinState *config)
 {
-    if (alias >= ARRARY_SIZE(g_gpioConfigComm))
+    if (idex >= ARRARY_SIZE(g_gpioConfigComm))
     {
         return -1;
     }
-    const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[alias];
+    const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[idex];
     *config = p_gpioCfg->ActiveSignal;
-    GPIO_PinState staus = HAL_GPIO_ReadPin(p_gpioCfg->PORT, p_gpioCfg->Pin);
-    if (staus == p_gpioCfg->ActiveSignal) {
-        return 1;
+    if (idex <= GPIO_GROUP_START){
+        GPIO_PinState staus = HAL_GPIO_ReadPin(p_gpioCfg->PORT, p_gpioCfg->Pin);
+        if (staus == p_gpioCfg->ActiveSignal) {
+            return 1;
+        }
+		return 0;
+    }else{
+        /* get current Output Data Register value */
+        uint32_t odr = p_gpioCfg->PORT->ODR & (~p_gpioCfg->Pin);
+        uint32_t res;
+        if (idex == GPIO_DAC_C){
+            res = GET_BITS(odr, 10, 12);
+        }else{
+            res = GET_BITS(odr, 2, 9);
+        }
+        return res;
     }
-    return 0;
+}
+
+bool GPIO_getPinName(GPIO_Idex idex, const char **name)
+{
+    if (idex >= ARRARY_SIZE(g_gpioConfigComm))
+    {
+        return false;
+    }
+    *name = g_gpioConfigComm[idex].Name;
+    return true;
+}
+void GPIO_printIdexAndName(void)
+{
+    LOG_RAW("GPIO table: idx    |     name\r\n");
+    for (uint32_t i = 0; i < ARRARY_SIZE(g_gpioConfigComm); i++)
+    {
+        LOG_RAW("%14d         %s\r\n", i, g_gpioConfigComm[i].Name);
+    }
 }
 /// @brief ActiveSignal  isActive  res
 //          1               1      1
@@ -175,20 +213,22 @@ int GPIO_isPinActive(GPIO_NAMES alias, GPIO_PinState *config)
 /// @param alias 
 /// @param isActive 
 /// @return 
-bool GPIO_setPinStatus(GPIO_NAMES alias, FunctionalState isActive, GPIO_PinState *config)
+bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive, GPIO_PinState *config)
 {
-    if (alias >= ARRARY_SIZE(g_gpioConfigComm))
+    if (idex >= ARRARY_SIZE(g_gpioConfigComm))
     {
         return false;
     }
-    const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[alias];
+    const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[idex];
 
     if ((p_gpioCfg->Mode < GPIO_MODE_OUTPUT_PP) || (p_gpioCfg->Mode > GPIO_MODE_AF_OD))
     {
         return false;
     }
 
-    *config = p_gpioCfg->ActiveSignal;
+    if (config != NULL){
+        *config = p_gpioCfg->ActiveSignal;
+    }
     HAL_GPIO_WritePin(p_gpioCfg->PORT, p_gpioCfg->Pin, (GPIO_PinState)(p_gpioCfg->ActiveSignal == (GPIO_PinState)isActive));
     return true;
 }
