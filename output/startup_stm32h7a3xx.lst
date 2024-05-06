@@ -441,9 +441,9 @@ ARM Macro Assembler    Page 7
   244 00000000                 IMPORT           SystemInit
   245 00000000                 IMPORT           __main
   246 00000000         
-  247 00000000 4809            LDR              R0, =SystemInit
+  247 00000000 4806            LDR              R0, =SystemInit
   248 00000002 4780            BLX              R0
-  249 00000004 4809            LDR              R0, =__main
+  249 00000004 4806            LDR              R0, =__main
   250 00000006 4700            BX               R0
   251 00000008                 ENDP
   252 00000008         
@@ -972,43 +972,31 @@ ARM Macro Assembler    Page 15
   577 0000001C         ;*******************************************************
                        ************************
   578 0000001C                 IF               :DEF:__MICROLIB
-  585 0000001C         
+  579 0000001C         
 
 
 
 ARM Macro Assembler    Page 16 
 
 
-  586 0000001C                 IMPORT           __use_two_region_memory
-  587 0000001C                 EXPORT           __user_initial_stackheap
-  588 0000001C         
-  589 0000001C         __user_initial_stackheap
-  590 0000001C         
-  591 0000001C 4804            LDR              R0, =  Heap_Mem
-  592 0000001E 4905            LDR              R1, =(Stack_Mem + Stack_Size)
-  593 00000020 4A05            LDR              R2, = (Heap_Mem +  Heap_Size)
-  594 00000022 4B06            LDR              R3, = Stack_Mem
-  595 00000024 4770            BX               LR
-  596 00000026         
-  597 00000026 00 00           ALIGN
-  598 00000028         
-  599 00000028                 ENDIF
-  600 00000028         
-  601 00000028                 END
+  580 0000001C                 EXPORT           __initial_sp
+  581 0000001C                 EXPORT           __heap_base
+  582 0000001C                 EXPORT           __heap_limit
+  583 0000001C         
+  584 0000001C                 ELSE
+  599                          ENDIF
+  600 0000001C         
+  601 0000001C                 END
               00000000 
               00000000 
-              00000000 
-              00000400 
-              00000400 
-              00000000 
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M7.fp.dp --apcs=
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M7.fp.sp --apcs=
 interwork --depend=..\output\startup_stm32h7a3xx.d -o..\output\startup_stm32h7a
 3xx.o -I../Core/Inc -I.\RTE\_PIC18 -IC:\Users\admin\AppData\Local\Arm\Packs\ARM
 \CMSIS\5.9.0\CMSIS\Core\Include -IC:\Users\admin\AppData\Local\Arm\Packs\Keil\S
-TM32H7xx_DFP\3.1.1\Drivers\CMSIS\Device\ST\STM32H7xx\Include --predefine="__UVI
-SION_VERSION SETA 538" --predefine="_RTE_ SETA 1" --predefine="STM32H7A3xx SETA
- 1" --predefine="_RTE_ SETA 1" --list=..\output\startup_stm32h7a3xx.lst startup
-_stm32h7a3xx.s
+TM32H7xx_DFP\3.1.1\Drivers\CMSIS\Device\ST\STM32H7xx\Include --predefine="__MIC
+ROLIB SETA 1" --predefine="__UVISION_VERSION SETA 538" --predefine="_RTE_ SETA 
+1" --predefine="STM32H7A3xx SETA 1" --predefine="_RTE_ SETA 1" --list=..\output
+\startup_stm32h7a3xx.lst startup_stm32h7a3xx.s
 
 
 
@@ -1029,9 +1017,8 @@ Symbol: Stack_Mem
    Definitions
       At line 35 in file startup_stm32h7a3xx.s
    Uses
-      At line 592 in file startup_stm32h7a3xx.s
-      At line 594 in file startup_stm32h7a3xx.s
-
+      None
+Comment: Stack_Mem unused
 __initial_sp 00000400
 
 Symbol: __initial_sp
@@ -1039,7 +1026,8 @@ Symbol: __initial_sp
       At line 36 in file startup_stm32h7a3xx.s
    Uses
       At line 60 in file startup_stm32h7a3xx.s
-Comment: __initial_sp used once
+      At line 580 in file startup_stm32h7a3xx.s
+
 3 symbols
 
 
@@ -1061,25 +1049,24 @@ Symbol: Heap_Mem
    Definitions
       At line 47 in file startup_stm32h7a3xx.s
    Uses
-      At line 591 in file startup_stm32h7a3xx.s
-      At line 593 in file startup_stm32h7a3xx.s
-
+      None
+Comment: Heap_Mem unused
 __heap_base 00000000
 
 Symbol: __heap_base
    Definitions
       At line 46 in file startup_stm32h7a3xx.s
    Uses
-      None
-Comment: __heap_base unused
+      At line 581 in file startup_stm32h7a3xx.s
+Comment: __heap_base used once
 __heap_limit 00000400
 
 Symbol: __heap_limit
    Definitions
       At line 48 in file startup_stm32h7a3xx.s
    Uses
-      None
-Comment: __heap_limit unused
+      At line 582 in file startup_stm32h7a3xx.s
+Comment: __heap_limit used once
 4 symbols
 
 
@@ -2556,15 +2543,7 @@ Relocatable symbols
       At line 78 in file startup_stm32h7a3xx.s
       At line 299 in file startup_stm32h7a3xx.s
 
-__user_initial_stackheap 0000001C
-
-Symbol: __user_initial_stackheap
-   Definitions
-      At line 589 in file startup_stm32h7a3xx.s
-   Uses
-      At line 587 in file startup_stm32h7a3xx.s
-Comment: __user_initial_stackheap used once
-146 symbols
+145 symbols
 
 
 
@@ -2578,8 +2557,7 @@ Symbol: Heap_Size
       At line 43 in file startup_stm32h7a3xx.s
    Uses
       At line 47 in file startup_stm32h7a3xx.s
-      At line 593 in file startup_stm32h7a3xx.s
-
+Comment: Heap_Size used once
 Stack_Size 00000400
 
 Symbol: Stack_Size
@@ -2587,8 +2565,7 @@ Symbol: Stack_Size
       At line 32 in file startup_stm32h7a3xx.s
    Uses
       At line 35 in file startup_stm32h7a3xx.s
-      At line 592 in file startup_stm32h7a3xx.s
-
+Comment: Stack_Size used once
 __Vectors_Size 000002AC
 
 Symbol: __Vectors_Size
@@ -2620,13 +2597,5 @@ Symbol: __main
    Uses
       At line 249 in file startup_stm32h7a3xx.s
 Comment: __main used once
-__use_two_region_memory 00000000
-
-Symbol: __use_two_region_memory
-   Definitions
-      At line 586 in file startup_stm32h7a3xx.s
-   Uses
-      None
-Comment: __use_two_region_memory unused
-3 symbols
-500 symbols in table
+2 symbols
+497 symbols in table

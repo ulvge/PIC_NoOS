@@ -70,7 +70,6 @@ static void DebugConfig(void)
 {
     __HAL_DBGMCU_FREEZE_WWDG1();
     __HAL_DBGMCU_FREEZE_TIM5();
-    __HAL_DBGMCU_FREEZE_TIM5();
 }
 
 /**
@@ -235,18 +234,6 @@ void MPU_Config(void)
  * @param  htim : TIM handle
  * @retval None
  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    /* USER CODE BEGIN Callback 0 */
-
-    /* USER CODE END Callback 0 */
-    if (htim->Instance == TIM7) {
-        HAL_IncTick();
-    }
-    /* USER CODE BEGIN Callback 1 */
-
-    /* USER CODE END Callback 1 */
-}
 
 inline uint32_t Get_dealyTimer_cnt(void)
 {
@@ -326,3 +313,22 @@ void assert_failed(uint8_t *file, uint32_t line)
     /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+void vApplicationIdleHook( void )
+{
+    static bool isPrinted = false;
+    uint32_t tickNow = HAL_GetTick();
+    if (tickNow % 1000 == 0) {
+        if (!isPrinted) {
+            uint32_t freq = HAL_RCC_GetHCLKFreq();
+            printf("freq = %d\r\n", freq);
+            isPrinted = true;
+        }
+    }else{
+        isPrinted = false;
+    }
+}
+void vPortSetupTimerInterrupt( void )
+{
+
+}

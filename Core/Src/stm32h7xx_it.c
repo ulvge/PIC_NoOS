@@ -24,44 +24,17 @@
 #include "freertos.h"
 #include "task.h" 
 /* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-/* USER CODE END Includes */
 
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN TD */
+void static HAL_TIM_IRQHandler_tim7TickOverWrite(void);
 
-/* USER CODE END TD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
-
-/* Private function prototypes -----------------------------------------------*/
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern SPI_HandleTypeDef g_hspi1;
 extern TIM_HandleTypeDef htim7;
 extern DMA_HandleTypeDef g_hdma_usart2_tx;
 extern UART_HandleTypeDef g_uart2Handle;
+
+extern void xPortSysTickHandler(void);
 
 /* USER CODE BEGIN EV */
 
@@ -179,13 +152,11 @@ void SPI1_IRQHandler(void)
  */
 void TIM7_IRQHandler(void)
 {
-    /* USER CODE BEGIN TIM7_IRQn 0 */
-
-    /* USER CODE END TIM7_IRQn 0 */
-    HAL_TIM_IRQHandler(&htim7);
-    /* USER CODE BEGIN TIM7_IRQn 1 */
-
-    /* USER CODE END TIM7_IRQn 1 */
+    HAL_TIM_IRQHandler_tim7TickOverWrite();
+    if(xTaskGetSchedulerState()!=taskSCHEDULER_NOT_STARTED)
+	{
+		xPortSysTickHandler();
+	}
 }
 
 /**
@@ -202,16 +173,20 @@ void USART2_IRQHandler(void)
   HAL_UART_IRQHandler(&g_uart2Handle);
   //UART_RxISR_8BIT(&g_uart2Handle);
 }
-/* USER CODE END 1 */
 
-extern void xPortSysTickHandler(void);
-void SysTick_Handler(void)
+inline void static HAL_TIM_IRQHandler_tim7TickOverWrite(void)
 {
-	if(xTaskGetSchedulerState()!=taskSCHEDULER_NOT_STARTED)//系统已经运行
-	{
-		xPortSysTickHandler();	
-	}
+//  uint32_t itsource = htim7.Instance->DIER;
+//  uint32_t itflag   = htim7.Instance->SR;
+	/* TIM Update event */
+  if ((htim7.Instance->SR & (TIM_FLAG_UPDATE)) == (TIM_FLAG_UPDATE))
+  {
+    if ((htim7.Instance->DIER & (TIM_IT_UPDATE)) == (TIM_IT_UPDATE))
+    {
+      __HAL_TIM_CLEAR_FLAG(&htim7, TIM_FLAG_UPDATE);
+      HAL_IncTick();
+    }
+  }
 }
-
 
 

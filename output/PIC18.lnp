@@ -1,4 +1,4 @@
---cpu Cortex-M7.fp.dp
+--cpu Cortex-M7.fp.sp
 "..\output\api_utc.o"
 "..\output\fifo.o"
 "..\output\spi_communication.o"
@@ -59,7 +59,7 @@
 "..\output\timers.o"
 "..\output\heap_4.o"
 "..\output\port.o"
---strict --scatter "..\output\PIC18.sct"
+--library_type=microlib --strict --scatter "..\output\PIC18.sct"
 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "..\output\PIC18.map" -o ..\output\PIC18.axf
