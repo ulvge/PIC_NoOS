@@ -85,15 +85,16 @@ bool UART_sendData(USART_TypeDef *usart_periph, uint8_t *str, uint16_t len)
         return false;
     }
 
-    if (xTaskGetSchedulerState() == taskSCHEDULER_RUNNING) {
+    if (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) {
+        HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 10);
+    }else{
         if (FIFO_Writes(&uartPara->fifo.sfifo, str, len) == FALSE){
-            HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 100);
+            HAL_UART_Transmit_DMA(uartPara->uartHandle, (uint8_t*)str, len);
+            //HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 10);
             return false;
         }else{
             uart_PostdMsg(false);
         }
-    }else{
-        HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 100);
     }
 	return true;
 }

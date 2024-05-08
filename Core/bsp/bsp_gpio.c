@@ -13,26 +13,58 @@
 #define PIN_NAME(val) .Name = EXPAND(val), .Pin = val##_PIN
 
 // const static GPIO_InitTypeDef g_gpioConfigComm[] = {
-//     {GLITCH_SHUTDOWN_PORT, PIN_NAME(GLITCH_SHUTDOWN), GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
+//     {GLITCH_SHUTDOWN_PORT,  PIN_NAME(GLITCH_SHUTDOWN), GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
+//     {PIC_LED_PORT,  		PIN_NAME(PIC_LED),         GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
+//     {INTRPT_PORT,  			PIN_NAME(INTRPT),          GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
+//     {BUSY_PORT,  			PIN_NAME(BUSY),            GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {DIRECTION_PORT,  		PIN_NAME(DIRECTION),       GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {SPOT_PORT,  			PIN_NAME(SPOT),            GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {MATCH_PORT,  			PIN_NAME(MATCH),           GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {LD_POS_PORT,  			PIN_NAME(LD_POS),          GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
+//     {LD_SLOPE_PORT,  		PIN_NAME(LD_SLOPE),        GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
+//     {MCLR_PORT,  			PIN_NAME(MCLR),            GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
+
+//     {PLUS_COUNT_PORT,  		PIN_NAME(PLUS_COUNT),      GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {INTEGRATE_PORT,  		PIN_NAME(INTEGRATE),        GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {POS_EQUALS_PORT,  		PIN_NAME(POS_EQUALS),      GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {LD_MSLOPE_PORT,  		PIN_NAME(LD_MSLOPE),       GPIO_MODE_INPUT, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {RUN_LED_PORT,  		PIN_NAME(RUN_LED),         GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+
+//     {GPIOA, "GroupA", GPIO_PIN_15,                     GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+
+//     {GPIOC, "GroupC", GPIO_PIN_12 | GPIO_PIN_11 | GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {GPIOD, "GroupD", GPIO_PIN_2,                       GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+//     {GPIOB, "GroupB", 0x3f8,                           GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},// GPIO_PIN_9~ GPIO_PIN_2
 // };
+
 const static GPIO_InitTypeDef g_gpioConfigComm[] = {
-    {GLITCH_SHUTDOWN_PORT,  PIN_NAME(GLITCH_SHUTDOWN), GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
+    {GLITCH_SHUTDOWN_PORT,  PIN_NAME(GLITCH_SHUTDOWN), GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
     {PIC_LED_PORT,  		PIN_NAME(PIC_LED),         GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
     {INTRPT_PORT,  			PIN_NAME(INTRPT),          GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
     {BUSY_PORT,  			PIN_NAME(BUSY),            GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
     {DIRECTION_PORT,  		PIN_NAME(DIRECTION),       GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
     {SPOT_PORT,  			PIN_NAME(SPOT),            GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
-    {MATCH_PORT,  			PIN_NAME(MATCH),           GPIO_MODE_INPUT,     GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
-    {LD_POS_PORT,  			PIN_NAME(LD_POS),          GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
-    {LD_SLOPE_PORT,  		PIN_NAME(LD_SLOPE),        GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},
-    {MCLR_PORT,  			PIN_NAME(MCLR),            GPIO_MODE_IT_FALLING, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
+    {MATCH_PORT,  			PIN_NAME(MATCH),           GPIO_MODE_INPUT,     GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {LD_POS_PORT,  			PIN_NAME(LD_POS),          GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {LD_SLOPE_PORT,  		PIN_NAME(LD_SLOPE),        GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {MCLR_PORT,  			PIN_NAME(MCLR),            GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
 
-    {GPIOA, "GroupA", GPIO_PIN_15,                     GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {PLUS_COUNT_PORT,  		PIN_NAME(PLUS_COUNT),      GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {INTEGRATE_PORT,  		PIN_NAME(INTEGRATE),        GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {POS_EQUALS_PORT,  		PIN_NAME(POS_EQUALS),      GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {LD_MSLOPE_PORT,  		PIN_NAME(LD_MSLOPE),       GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {RUN_LED_PORT,  		PIN_NAME(RUN_LED),         GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
+    {GPIO_SPI1_PORT,    "GPIO_SPI1_NSS", GPIO_SPI1_NSS, GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_SET},
 
-    {GPIOC, "GroupC", GPIO_PIN_12 | GPIO_PIN_11 | GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},
-    {GPIOB, "GroupB", 0x3fc,                           GPIO_MODE_OUTPUT_PP, GPIO_PULLUP, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},// GPIO_PIN_9~ GPIO_PIN_2
+    {GPIOA, "GroupA", GPIO_PIN_15,                     GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_MEDIUM, NULL, GPIO_PIN_SET},
+
+    {GPIOC, "GroupC", GPIO_PIN_12 | GPIO_PIN_11 | GPIO_PIN_10, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_MEDIUM, NULL, GPIO_PIN_SET},
+    {GPIOD, "GroupD", GPIO_PIN_2,                       GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_MEDIUM, NULL, GPIO_PIN_SET},
+    {GPIOB, "GroupB", 0x3f8,                           GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_MEDIUM, NULL, GPIO_PIN_SET},// GPIO_PIN_9~ GPIO_PIN_2
 };
-
+const static GPIO_InitTypeDef g_gpioConfigDebug[] = {
+    {XBEAM_PORT, PIN_NAME(XBEAM), GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_SET},//adc
+};
 static const GPIO_InitTypeDef *p_gpioCfg1 = &g_gpioConfigComm[GPIO_PIC_LED];
 static const GPIO_InitTypeDef *p_gpioCfg2 = &g_gpioConfigComm[GPIO_INTRPT];
 static const GPIO_InitTypeDef *p_gpioCfg3 = &g_gpioConfigComm[GPIO_BUSY];
@@ -41,23 +73,40 @@ static const GPIO_InitTypeDef *p_gpioCfg5 = &g_gpioConfigComm[GPIO_SPOT];
 static const GPIO_InitTypeDef *p_gpioCfg7 = &g_gpioConfigComm[GPIO_LD_POS];
 static const GPIO_InitTypeDef *p_gpioCfg8 = &g_gpioConfigComm[GPIO_LD_SLOPE];
 
-static void HAL_GPIO_SetGroupPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint16_t val)
+inline static void HAL_GPIO_SetGroupPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint16_t val)
 {
     /* get current Output Data Register value */
     uint32_t odr = GPIOx->ODR & (~GPIO_Pin);
     GPIOx->ODR = odr | val;
 }
-inline void GPIO_SetDAC(uint32_t val)
+inline static uint16_t reverseBits(uint16_t num) {
+    uint16_t result = 0;
+    for(int i = 0; i < 12; i++) {
+        result <<= 1; // 将结果左移一位
+        result |= (num & 1); // 将num的最低位复制到结果的最低位
+        num >>= 1; // 将num右移一位，准备处理下一位
+    }
+    return result;
+}
+
+inline void GPIO_SetDAC(uint16_t val)
 {
     static const GPIO_InitTypeDef *p_gpioCfgA = &g_gpioConfigComm[GPIO_DAC_A];
     static const GPIO_InitTypeDef *p_gpioCfgC = &g_gpioConfigComm[GPIO_DAC_C];
+    static const GPIO_InitTypeDef *p_gpioCfgD = &g_gpioConfigComm[GPIO_DAC_D];
     static const GPIO_InitTypeDef *p_gpioCfgB = &g_gpioConfigComm[GPIO_DAC_B];
-   
-    HAL_GPIO_SetGroupPin(p_gpioCfgA->PORT, p_gpioCfgA->Pin, (val & BITS(11, 11)) << 4);
+	static uint16_t bitVal;
 
-    HAL_GPIO_SetGroupPin(p_gpioCfgC->PORT, p_gpioCfgC->Pin, (val & BITS(8, 10)) >> 2);
-    
-    HAL_GPIO_SetGroupPin(p_gpioCfgB->PORT, p_gpioCfgB->Pin,(val & BITS(0, 7)) << 2);
+    val = reverseBits(val);
+    // PB9~3 PD2   PC12 ~ PC10            PA15
+	bitVal = val & BITS(5, 11);
+    HAL_GPIO_SetGroupPin(p_gpioCfgB->PORT, p_gpioCfgB->Pin, bitVal >> 2); // PB9~3;
+	bitVal = val & BITS(4, 4);
+    HAL_GPIO_SetGroupPin(p_gpioCfgD->PORT, p_gpioCfgD->Pin, bitVal >> 2);// PD2
+	bitVal = val & BITS(1, 3);
+    HAL_GPIO_SetGroupPin(p_gpioCfgC->PORT, p_gpioCfgC->Pin, bitVal << 9);// PC12~10
+	bitVal = val & BITS(0, 0);
+    HAL_GPIO_SetGroupPin(p_gpioCfgA->PORT, p_gpioCfgA->Pin, bitVal << 15);// PA15
 }
 
 inline void GPIO_Set_PIC_LED(GPIO_PinState st)
@@ -84,20 +133,7 @@ inline void GPIO_Set_SPOT(GPIO_PinState st)
 {
     HAL_GPIO_WritePin(p_gpioCfg5->PORT, p_gpioCfg5->Pin, (GPIO_PinState)(p_gpioCfg5->ActiveSignal == st));
 }
-/// @brief A pause signal sent by the host
-/// @param  
-/// @return 
-inline bool GPIO_Get_GLITCH_SHUTDOWN(void)
-{
-    return GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN, NULL) == 1;
-}
-/// @brief is host receved finished
-/// @param  
-/// @return 
-inline bool GPIO_Get_MATCH(void)
-{
-    return GPIO_isPinActive(GPIO_MATCH, NULL) == 1;
-}
+
 inline void GPIO_Set_LD_POS(GPIO_PinState st)
 {
     HAL_GPIO_WritePin(p_gpioCfg7->PORT, p_gpioCfg7->Pin, (GPIO_PinState)(p_gpioCfg7->ActiveSignal == st));
@@ -247,6 +283,7 @@ void GPIO_Init(void)
     MX_GPIO_Init();
     
     GPIO_InitGPIOs(&g_gpioConfigComm[0], ARRARY_SIZE(g_gpioConfigComm));
+    //GPIO_InitGPIOs(&g_gpioConfigDebug[0], ARRARY_SIZE(g_gpioConfigDebug));
     EXTI15_10_IRQHandler_Config();
 }
 

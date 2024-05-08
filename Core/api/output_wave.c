@@ -39,24 +39,64 @@ static void delay_us(uint32_t dly)
         nowStamp = Get_dealyTimer_cnt();
     } while ((nowStamp - oldStamp) < dly);
 }
+
+static void output_LD_POS_EN(uint32_t dly)
+{
+    GPIO_Set_LD_POS(GPIO_PIN_SET);
+    delay_us(dly);
+    GPIO_Set_LD_POS(GPIO_PIN_RESET); 
+    //delay_us(dly);
+}
+
+static void output_LD_SLOPE_EN(uint32_t dly)
+{
+	GPIO_Set_LD_SLOPE(GPIO_PIN_SET);
+	delay_us(dly);
+	GPIO_Set_LD_SLOPE(GPIO_PIN_RESET); 
+	delay_us(dly);
+}
 inline static void output_setDirection(uint16_t val)
 {
-    GPIO_Set_DIRECTION((GPIO_PinState)((val & BIT(12)) == 0));
+    GPIO_Set_DIRECTION((GPIO_PinState)(val & BIT(12)));
 }
-inline static void output_setSpotMode(uint16_t val)
+/// @brief send  mode, is slope
+/// @param val 
+inline static void output_setRunMode(uint16_t val)
 {
-    GPIO_Set_SPOT((GPIO_PinState)((val & BIT(13)) == 0));
+    GPIO_Set_SPOT((GPIO_PinState)(val & BIT(13)));
 }
 
 inline static void output_waitMasterBeReady(void)
 {
-    while (GPIO_Get_GLITCH_SHUTDOWN()) {
+    while (!GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN, NULL)) {
         GPIO_Set_PIC_LED(GPIO_PIN_RESET);
     }
 }
 inline static void output_waitMasterMatch(void)
 {
-    while (GPIO_Get_MATCH()) {
+    while (!GPIO_isPinActive(GPIO_MATCH, NULL)) {
+    }
+}
+void output_debug(void){
+    static int16_t step = 0;
+    static uint16_t dir = 1;
+    while(1){
+        if (dir){
+            step += 100;
+            if (step >= 0x1000){
+                dir = 0;
+            }
+        }else{
+            step -= 100;
+            if (step <= 0){
+                dir = 1;
+                break;
+            }
+        }
+        GPIO_SetDAC(step);
+        GPIO_Set_LD_POS(GPIO_PIN_SET);
+        delay_us(OUTPUT_DELAY_0U1S);
+        GPIO_Set_LD_POS(GPIO_PIN_RESET);
     }
 }
 void Task_outputWave(void *argument)
@@ -66,7 +106,7 @@ void Task_outputWave(void *argument)
     uint16_t slp;
     g_sem_recvedWaveData = xSemaphoreCreateBinary();
     g_sem_isSending = xSemaphoreCreateMutex();
-
+    uint32_t dly = 0x5a00; // 0x5a00 5.7k
     while (1) {
         if (xSemaphoreTake(g_sem_recvedWaveData, portMAX_DELAY) == pdTRUE) {
             bsp_spi_DiagSendStart();
@@ -77,30 +117,30 @@ void Task_outputWave(void *argument)
             isFirst = true;
 
             while (g_protocolCmd.reSendTimes == 0 || reSendCount++ < g_protocolCmd.reSendTimes) {
-                for (size_t i = 0; i < g_protocolData.recvedGroupCount; i++) {
+                for (size_t i = 1; i < g_protocolData.recvedGroupCount; i++) {
                     // wait master ready
-                    output_waitMasterBeReady();     
+                    output_waitMasterBeReady();    
                     GPIO_Set_PIC_LED(GPIO_PIN_SET); // run normal
 
                     slp = g_protocolData.data[i].slope;
-                    output_setSpotMode(slp);    // send slope mode
-                    if (isFirst) {
+                    output_setRunMode(slp);
+                    if (isFirst) 
+					{
                         // send position val
                         GPIO_SetDAC(g_protocolData.data[i].position);
-                        GPIO_Set_LD_POS(GPIO_PIN_SET);
-                        delay_us(OUTPUT_DELAY_0U1S);
-                        GPIO_Set_LD_POS(GPIO_PIN_RESET);
-                        isFirst = false;
+                        output_LD_POS_EN(dly);
+                        //output_debug();
+                        //isFirst = false;
                     }
-                    // send slope val
-                    output_setDirection(slp);   // send Direction
-                    GPIO_SetDAC(slp);
-                    GPIO_Set_LD_SLOPE(GPIO_PIN_SET);
-                    delay_us(OUTPUT_DELAY_0U1S);
-                    GPIO_Set_LD_SLOPE(GPIO_PIN_RESET);
+                    // // send slope val
+                    // output_setDirection(slp);   // send Direction
+                    // GPIO_SetDAC(slp);
+                    // GPIO_Set_LD_SLOPE(GPIO_PIN_SET);
+                    // delay_us(OUTPUT_DELAY_0U1S);
+                    // GPIO_Set_LD_SLOPE(GPIO_PIN_RESET);
                     // wait master match
                     delay_us(g_protocolCmd.sleepUsWave);
-                    output_waitMasterMatch();
+                    //output_waitMasterMatch();
                 }
 
                 delay_us(g_protocolCmd.sleepUsGroupData);

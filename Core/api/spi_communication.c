@@ -6,6 +6,7 @@
 #include <string.h>
 #include "output_wave.h"
 #include "Types.h"
+#include "bsp_uartcomm.h"
 
 //ProtocolCmd g_protocolCmd __attribute__((at(0x20000000)));
 //ProtocolData g_protocolData __attribute__((at(0x20000000 + sizeof(ProtocolCmd))));
@@ -58,7 +59,7 @@ inline static void SPI_SendSemOutputWave()
     if (g_protocolData.isSending || !g_protocolData.recvedGroupCount) {
         return;
     }
-    if (xSemaphoreTake(g_sem_isSending, 0) == pdTRUE) {// not sending
+    if (xSemaphoreTakeFromISR(g_sem_isSending, 0) == pdTRUE) {// not sending
         g_protocolData.isSending = true;
         xSemaphoreGiveFromISR(g_sem_isSending, &xHigherPriorityTaskWoken_NO);
 
@@ -76,13 +77,13 @@ inline static bool SPI_decode_TYPE_DATA(uint8_t val){
                 SPI_ProtocolError();
             }
             break;
-            
-        case RECVEVENT_WAIT_DATA_COUNT_LOW:
-            g_protocolData.count = val;
+
+        case RECVEVENT_WAIT_DATA_COUNT_HI:
+            g_protocolData.count = (val << 8);
             g_FSM_RecvEvent++;
             break;
-        case RECVEVENT_WAIT_DATA_COUNT_HI:
-            g_protocolData.count |= val << 8;
+        case RECVEVENT_WAIT_DATA_COUNT_LOW:
+            g_protocolData.count |= val;
             g_FSM_RecvEvent++;
             break;
         case RECVEVENT_WAIT_DATA_DATA:
@@ -121,14 +122,14 @@ inline static bool SPI_decode_TYPE_WRITEBACK(uint8_t val){
                 SPI_ProtocolError();
             }
             break;
-        case RECVEVENT_WAIT_DATA_COUNT_LOW:
-            g_protocolWriteBack.count = val;
-            g_FSM_RecvEvent++;
-            break;
         case RECVEVENT_WAIT_DATA_COUNT_HI:
-            g_protocolWriteBack.count |= val << 8;
-            g_protocol_type = PROTOCOL_TYPE_UNKNOWN;
+            g_protocolWriteBack.count = val << 8;
+            g_FSM_RecvEvent++;
             return true;
+        case RECVEVENT_WAIT_DATA_COUNT_LOW:
+            g_protocolWriteBack.count |= val;
+            g_protocol_type = PROTOCOL_TYPE_UNKNOWN;
+            break;
         default:
             SPI_ProtocolError();
             break;
@@ -137,23 +138,27 @@ inline static bool SPI_decode_TYPE_WRITEBACK(uint8_t val){
 }
 void SPI_ProtocolParsing(uint8_t val)
 {
+    UART_sendByte(DEBUG_UART_PERIPH, val);
     if (g_protocol_type == PROTOCOL_TYPE_UNKNOWN) {
         switch (val)
         {
         case PROTOCOL_DATA_ID:
+			SPI_ProtocolReset(PROTOCOL_TYPE_DATA);
             g_FSM_RecvEvent = RECVEVENT_WAIT_DATA_HEAD1;
             g_protocol_type = PROTOCOL_TYPE_DATA;
             break;
         case PROTOCOL_DATA_WRITEBACK:
+			SPI_ProtocolReset(PROTOCOL_TYPE_DATA_WRITEBACK);
             g_FSM_RecvEvent = RECVEVENT_WAIT_DATA_HEAD1;
             g_protocol_type = PROTOCOL_TYPE_DATA_WRITEBACK;
             break;
         case PROTOCOL_CMD_CMD:
+			SPI_ProtocolReset(PROTOCOL_TYPE_CMD);
             g_FSM_RecvEvent = RECVEVENT_RECEVED_CMD_ID;
             g_protocol_type = PROTOCOL_TYPE_CMD;
             break;
         default:
-            return;
+            break;
         }
     } else if (g_protocol_type == PROTOCOL_TYPE_DATA) {
         if (SPI_decode_TYPE_DATA(val)){
