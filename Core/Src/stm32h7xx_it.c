@@ -195,3 +195,14 @@ void EXTI15_10_IRQHandler(void)
 }
 
 
+extern SPI_HandleTypeDef g_hspi1;
+#define SPIx_DMA_TX_IRQHandler           DMA1_Stream7_IRQHandler
+/**
+  * @brief  This function handles DMA Tx interrupt request.
+  * @param  None
+  * @retval None
+  */
+void SPIx_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(g_hspi1.hdmatx);
+}

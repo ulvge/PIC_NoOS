@@ -7,6 +7,8 @@
 #include "output_wave.h"
 #include "Types.h"
 #include "bsp_uartcomm.h"
+#include "bsp_spi1_slave.h"
+
 
 //ProtocolCmd g_protocolCmd __attribute__((at(0x20000000)));
 //ProtocolData g_protocolData __attribute__((at(0x20000000 + sizeof(ProtocolCmd))));
@@ -20,6 +22,7 @@ ProtocolWriteBack g_protocolWriteBack;
 static PROTOCOL_TYPE g_protocol_type;
 static FSM_RecvEvent g_FSM_RecvEvent;
 static void SPI_ProtocolReset(PROTOCOL_TYPE type);
+static void SPI_writeBack(void);
 
 void SPI_ProtocolInit(void)
 {
@@ -101,8 +104,8 @@ inline static bool SPI_decode_TYPE_DATA(uint8_t val){
                 if (g_protocolData.recvedGroupCount == g_protocolData.count) {
                     g_protocolData.isRecvedFinished = 1;
                     g_protocol_type = PROTOCOL_TYPE_UNKNOWN;
+					return true;
                 }
-                return true;
             }
             break;
         default:
@@ -125,11 +128,11 @@ inline static bool SPI_decode_TYPE_WRITEBACK(uint8_t val){
         case RECVEVENT_WAIT_DATA_COUNT_HI:
             g_protocolWriteBack.count = val << 8;
             g_FSM_RecvEvent++;
-            return true;
+            break;
         case RECVEVENT_WAIT_DATA_COUNT_LOW:
             g_protocolWriteBack.count |= val;
             g_protocol_type = PROTOCOL_TYPE_UNKNOWN;
-            break;
+            return true;
         default:
             SPI_ProtocolError();
             break;
@@ -138,7 +141,7 @@ inline static bool SPI_decode_TYPE_WRITEBACK(uint8_t val){
 }
 void SPI_ProtocolParsing(uint8_t val)
 {
-    UART_sendByte(DEBUG_UART_PERIPH, val);
+    //UART_sendByte(DEBUG_UART_PERIPH, val);
     if (g_protocol_type == PROTOCOL_TYPE_UNKNOWN) {
         switch (val)
         {
@@ -162,11 +165,12 @@ void SPI_ProtocolParsing(uint8_t val)
         }
     } else if (g_protocol_type == PROTOCOL_TYPE_DATA) {
         if (SPI_decode_TYPE_DATA(val)){
-            SPI_SendSemOutputWave();
+            //SPI_SendSemOutputWave();
         }
     } else if (g_protocol_type == PROTOCOL_TYPE_DATA_WRITEBACK) {
         if(SPI_decode_TYPE_WRITEBACK(val)){
-            xSemaphoreGiveFromISR(g_sem_WriteBack, &xHigherPriorityTaskWoken_YES);
+            SPI_writeBack();
+            //xSemaphoreGiveFromISR(g_sem_WriteBack, &xHigherPriorityTaskWoken_NO);
         }
     } else if (g_protocol_type == PROTOCOL_TYPE_CMD) {
         if (g_protocolCmd.writeByteCount < PROTOCOL_CMD_FILED_LEN) {
@@ -177,22 +181,73 @@ void SPI_ProtocolParsing(uint8_t val)
                 g_protocolCmd.isRecvedFinished = 1;
                 g_protocolCmd.reSendTimes = BIG_LITTLE_SWAP16(g_protocolCmd.reSendTimes);
                 g_protocol_type = PROTOCOL_TYPE_UNKNOWN;
+                SPI_SendSemOutputWave();
             }
         } else {
             SPI_ProtocolError();
         }
     }
 }
-
+typedef struct {
+    uint16_t position;
+    uint16_t slope;
+} protocolData __attribute__((aligned(2)));
+protocolData g_protocolDataBak[3];// __attribute__((section(".MY_SECTION")));;
+static void SPI_swapEndianness(uint16_t *srcArray, uint16_t *destArray, int size) {
+    uint16_t value;
+    for (int i = 0; i < size; i++) {
+        value = srcArray[i];
+        destArray[i] = (value >> 8) | (value << 8);
+    }
+}
+extern SPI_HandleTypeDef g_hspi1;
 void Task_WriteBack(void *argument)
 {
     g_sem_WriteBack = xSemaphoreCreateBinary();
 
     while (1) {
-        if (xSemaphoreTake(g_sem_WriteBack, portMAX_DELAY) == pdTRUE) {
-            //HAL_SPI_Transmit_DMA(&g_hspi1, (uint8_t *)&g_protocolCmd., sizeof(g_protocolWriteBack);
-        }
+        //if (xSemaphoreTake(g_sem_WriteBack, portMAX_DELAY) == pdTRUE)
+		if (0)		
+        {
+            SPI_writeBack();
+        }else{		
+			g_protocolData.recvedGroupCount = 3;
+			g_protocolData.data[0].position = 0x33ff;
+			g_protocolData.data[0].slope = 0x17ff;
+			
+			g_protocolData.data[1].position = 0x3Bff;
+			g_protocolData.data[1].slope = 0x27ff;
+
+			g_protocolData.data[2].position = 0x23ff;
+			g_protocolData.data[2].slope = 0x37ff;
+            //SPI_writeBack();		
+			vTaskDelay(1000);
+		}
     }
 }
 
+void SPI_writeBack(void)
+{
+    if (g_protocolData.recvedGroupCount > SPI_RECV_BUFF_GROUP_COUNT){
+        g_protocolData.recvedGroupCount = SPI_RECV_BUFF_GROUP_COUNT;
+    }
+    SPI_swapEndianness((uint16_t *)g_protocolData.data, (uint16_t *)g_protocolDataBak, g_protocolData.recvedGroupCount * 2);
+
+    //HAL_SPI_Transmit_DMA(&g_hspi1, (uint8_t *)&g_protocolDataBak, g_protocolData.recvedGroupCount * 4);
+    do{
+        HAL_SPI_Abort(&g_hspi1);
+        HAL_StatusTypeDef st = HAL_SPI_Transmit(&g_hspi1, (uint8_t *)g_protocolDataBak, g_protocolData.recvedGroupCount * 4, 500);
+        SPI1_startReceviceIT();
+        switch (st) {
+            case HAL_OK:
+                break;
+            case HAL_TIMEOUT:
+                break;
+            case HAL_ERROR:
+                break;
+            default:
+                break;
+        }
+    } while (0);
+}
 

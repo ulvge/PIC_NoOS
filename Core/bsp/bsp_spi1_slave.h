@@ -22,11 +22,12 @@ typedef struct {
     uint32_t sendAverageTimeMax;    //us
 } Diagnosis;
 
-
+extern DMA_HandleTypeDef g_hdma_spi1_tx;
 extern void SPI1_Init(void);
 extern Diagnosis g_diagnosis;
 extern inline void bsp_spi_DiagSendFinished(uint32_t sendTimes);
 extern inline void bsp_spi_DiagSendStart(void);
+extern void SPI1_startReceviceIT(void);
 
 #ifdef __cplusplus
 }

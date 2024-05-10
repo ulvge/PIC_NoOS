@@ -42,10 +42,9 @@ static void delay_us(uint32_t dly)
 
 static void output_LD_POS_EN(uint32_t dly)
 {
-    GPIO_Set_LD_POS(GPIO_PIN_SET);
-    delay_us(dly);
-    GPIO_Set_LD_POS(GPIO_PIN_RESET); 
-    //delay_us(dly);
+    HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_RESET);
+    delay_us(dly); 
+    HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_SET);
 }
 
 static void output_LD_SLOPE_EN(uint32_t dly)
@@ -126,9 +125,12 @@ void Task_outputWave(void *argument)
                     output_setRunMode(slp);
                     if (isFirst) 
 					{
+                        HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_RESET);
                         // send position val
                         GPIO_SetDAC(g_protocolData.data[i].position);
-                        output_LD_POS_EN(dly);
+                        delay_us(dly); 
+                        HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_SET);
+                        //output_LD_POS_EN(0);
                         //output_debug();
                         //isFirst = false;
                     }
@@ -140,6 +142,7 @@ void Task_outputWave(void *argument)
                     // GPIO_Set_LD_SLOPE(GPIO_PIN_RESET);
                     // wait master match
                     delay_us(g_protocolCmd.sleepUsWave);
+                    //delay_us(10000);
                     //output_waitMasterMatch();
                 }
 

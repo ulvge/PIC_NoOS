@@ -22,6 +22,7 @@
 #include "main.h"
 #include "bsp_usart2.h"
 #include "bsp_adc.h"
+#include "bsp_spi1_slave.h"
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
@@ -80,6 +81,7 @@ void HAL_MspInit(void)
     /* USER CODE END MspInit 1 */
 }
 
+extern SPI_HandleTypeDef g_hspi1;
 /**
  * @brief SPI MSP Initialization
  * This function configures the hardware resources used in this example
@@ -89,7 +91,6 @@ void HAL_MspInit(void)
 void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 {
     GPIO_InitTypeDef GPIO_InitStruct = {0};
-    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
     if (hspi->Instance == SPI1) {
         /* USER CODE BEGIN SPI1_MspInit 0 */
 
@@ -97,16 +98,15 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 
         /** Initializes the peripherals clock
          */
-        PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI1;
-        PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
-        if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
-            Error_Handler();
-        }
-
-        /* Peripheral clock enable */
-        __HAL_RCC_SPI1_CLK_ENABLE();
+        // PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI1;
+        // PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
+        // if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK) {
+        //     Error_Handler();
+        // }
 
         __HAL_RCC_GPIOA_CLK_ENABLE();
+        /* Peripheral clock enable */
+        __HAL_RCC_SPI1_CLK_ENABLE();
         /**SPI1 GPIO Configuration
         PA4     ------> SPI1_NSS
         PA5     ------> SPI1_SCK
@@ -115,10 +115,29 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
         */
         GPIO_InitStruct.Pin = GPIO_SPI1_SCK | GPIO_SPI1_MISO | GPIO_SPI1_MOSI;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        GPIO_InitStruct.Pull = GPIO_PULLUP;
         GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
         GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+        /*##-3- Configure the DMA ##################################################*/
+        /* Configure the DMA handler for Transmission process */
+        // g_hdma_spi1_tx.Instance                 = DMA1_Stream7;
+        // g_hdma_spi1_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+        // g_hdma_spi1_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+        // g_hdma_spi1_tx.Init.MemBurst            = DMA_MBURST_INC4;
+        // g_hdma_spi1_tx.Init.PeriphBurst         = DMA_PBURST_INC4;
+        // g_hdma_spi1_tx.Init.Request             = DMA_REQUEST_SPI1_TX;
+        // g_hdma_spi1_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
+        // g_hdma_spi1_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
+        // g_hdma_spi1_tx.Init.MemInc              = DMA_MINC_ENABLE;
+        // g_hdma_spi1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+        // g_hdma_spi1_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+        // g_hdma_spi1_tx.Init.Mode                = DMA_NORMAL;
+        // g_hdma_spi1_tx.Init.Priority            = DMA_PRIORITY_LOW;
+        // HAL_DMA_Init(&g_hdma_spi1_tx);
+        // /* Associate the initialized DMA handle to the the SPI handle */
+        // __HAL_LINKDMA(hspi, hdmatx, g_hdma_spi1_tx);
 
         /* SPI1 interrupt Init */
         HAL_NVIC_SetPriority(SPI1_IRQn, IRQHANDLER_PRIORITY_SPI, 0);
@@ -273,6 +292,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *hadc)
   /* ADC Periph clock enable */
   ADCx_CLK_ENABLE();
   /* ADC Periph interface clock configuration */
+  __HAL_RCC_CLKP_CONFIG(RCC_CLKPSOURCE_HSE);
   __HAL_RCC_ADC_CONFIG(RCC_ADCCLKSOURCE_CLKP);
   /* Enable DMA clock */
   DMAx_CHANNELx_CLK_ENABLE();

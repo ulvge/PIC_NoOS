@@ -17,6 +17,8 @@
 SPI_HandleTypeDef g_hspi1;
 Diagnosis g_diagnosis;
 
+DMA_HandleTypeDef g_hdma_spi1_tx;
+
 static void SPI_EnableChipSelect() {
     GPIO_setPinStatus(GPIO_SPI1_NSS_IDEX, ENABLE, NULL);
 }
@@ -49,6 +51,7 @@ static void MX_SPI1_Init(void)
     g_hspi1.Init.MasterReceiverAutoSusp = SPI_MASTER_RX_AUTOSUSP_DISABLE;
     g_hspi1.Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_DISABLE;
     g_hspi1.Init.IOSwap = SPI_IO_SWAP_ENABLE;
+    g_hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
     if (HAL_SPI_Init(&g_hspi1) != HAL_OK) {
         Error_Handler();
     }
@@ -56,13 +59,17 @@ static void MX_SPI1_Init(void)
 
     /* USER CODE END SPI1_Init 2 */
 }
-void SPI1_Init(void)
+void SPI1_startReceviceIT(void)
 {
     static uint8_t buffRec;
+    HAL_SPI_Receive_IT(&g_hspi1, &buffRec, sizeof(buffRec));
+}
+void SPI1_Init(void)
+{
     MX_SPI1_Init();
     SPI_ProtocolInit();
     SPI_EnableChipSelect();
-    HAL_SPI_Receive_IT(&g_hspi1, &buffRec, sizeof(buffRec));
+    SPI1_startReceviceIT();
 }
 
 inline void bsp_spi_DiagReceved()
@@ -108,6 +115,7 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
     trigger = itsource & itflag;
 
     HAL_SPI_StateTypeDef State = hspi->State;
+    hspi->State = HAL_SPI_STATE_READY;
 
     /* SPI in mode Receiver ----------------------------------------------------*/
     if (HAL_IS_BIT_CLR(trigger, SPI_FLAG_OVR) && HAL_IS_BIT_SET(trigger, SPI_FLAG_RXP) &&

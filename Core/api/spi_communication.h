@@ -78,6 +78,7 @@ extern ProtocolWriteBack g_protocolWriteBack;
 extern void SPI_ProtocolInit(void);
 extern void SPI_ProtocolParsing(uint8_t val);
 extern void Task_WriteBack(void *argument);
+extern void SPI_writeBack(void);
 #ifdef __cplusplus
 }
 #endif

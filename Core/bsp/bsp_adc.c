@@ -23,7 +23,7 @@ void ADC_init(void)
     }
 
     AdcHandle.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV64;                      /* Asynchronous clock mode, input ADC clock divided by 2*/
-    AdcHandle.Init.Resolution = ADC_RESOLUTION_8B;                            /* 16-bit resolution for converted data */
+    AdcHandle.Init.Resolution = ADC_RESOLUTION_12B;                            /* 16-bit resolution for converted data */
     AdcHandle.Init.ScanConvMode = DISABLE;                                     /* Sequencer disabled (ADC conversion on only 1 channel: channel set on rank 1) */
     AdcHandle.Init.EOCSelection = ADC_EOC_SINGLE_CONV;                         /* EOC flag picked-up to indicate conversion end */
     AdcHandle.Init.LowPowerAutoWait = DISABLE;                                 /* Auto-delayed conversion feature disabled */
@@ -49,7 +49,7 @@ void ADC_init(void)
     /* ### - 3 - Channel configuration ######################################## */
     sConfig.Channel = ADCx_CHANNEL;                  /* Sampled channel number */
     sConfig.Rank = ADC_REGULAR_RANK_1;               /* Rank of sampled channel number ADCx_CHANNEL */
-    sConfig.SamplingTime = ADC_SAMPLETIME_8CYCLES_5; /* Sampling time (number of clock cycles unit) */
+    sConfig.SamplingTime = ADC_SAMPLETIME_810CYCLES_5; /* Sampling time (number of clock cycles unit) */
     sConfig.SingleDiff = ADC_SINGLE_ENDED;           /* Single-ended input channel */
     sConfig.OffsetNumber = ADC_OFFSET_NONE;          /* No offset subtraction */
     sConfig.Offset = 0;                              /* Parameter discarded because offset correction is disabled */

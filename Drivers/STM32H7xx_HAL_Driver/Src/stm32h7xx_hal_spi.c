@@ -845,6 +845,25 @@ HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *hspi, const uint8_t *pData
     return HAL_ERROR;
   }
 
+  __HAL_SPI_DISABLE(hspi);
+  __HAL_UNLOCK(hspi);
+  /* Configure communication direction : 1Line */
+  if (hspi->Init.Direction == SPI_DIRECTION_1LINE)
+  {
+    SPI_1LINE_TX(hspi);
+  }
+  else if (hspi->Init.Direction == SPI_DIRECTION_2LINES)
+  {
+    SPI_2LINES(hspi);
+  }
+  else if (hspi->Init.Direction == SPI_DIRECTION_1LINE)
+  {
+    SPI_2LINES_TX(hspi);
+  }
+
+  /* Set the number of data at current transfer */
+  MODIFY_REG(hspi->Instance->CR2, SPI_CR2_TSIZE, Size);
+
   /* Lock the process */
   __HAL_LOCK(hspi);
 
@@ -861,20 +880,6 @@ HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *hspi, const uint8_t *pData
   hspi->RxXferCount = (uint16_t) 0UL;
   hspi->TxISR       = NULL;
   hspi->RxISR       = NULL;
-
-  /* Configure communication direction : 1Line */
-  if (hspi->Init.Direction == SPI_DIRECTION_1LINE)
-  {
-    SPI_1LINE_TX(hspi);
-  }
-  else
-  {
-    SPI_2LINES_TX(hspi);
-  }
-
-  /* Set the number of data at current transfer */
-  MODIFY_REG(hspi->Instance->CR2, SPI_CR2_TSIZE, Size);
-
   /* Enable SPI peripheral */
   __HAL_SPI_ENABLE(hspi);
 
@@ -3896,11 +3901,12 @@ static void SPI_CloseTransfer(SPI_HandleTypeDef *hspi)
   __HAL_SPI_CLEAR_TXTFFLAG(hspi);
 
   /* Disable SPI peripheral */
-  __HAL_SPI_DISABLE(hspi);
+  //__HAL_SPI_DISABLE(hspi);
 
   /* Disable ITs */
-  __HAL_SPI_DISABLE_IT(hspi, (SPI_IT_EOT | SPI_IT_TXP | SPI_IT_RXP | SPI_IT_DXP | SPI_IT_UDR | SPI_IT_OVR | \
-                              SPI_IT_FRE | SPI_IT_MODF));
+//   __HAL_SPI_DISABLE_IT(hspi, (SPI_IT_EOT | SPI_IT_TXP | SPI_IT_RXP | SPI_IT_DXP | SPI_IT_UDR | SPI_IT_OVR | \
+//                               SPI_IT_FRE | SPI_IT_MODF));
+  __HAL_SPI_DISABLE_IT(hspi, (SPI_IT_TXP | SPI_IT_DXP | SPI_IT_UDR));
 
   /* Disable Tx DMA Request */
   CLEAR_BIT(hspi->Instance->CFG1, SPI_CFG1_TXDMAEN | SPI_CFG1_RXDMAEN);
