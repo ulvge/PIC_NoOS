@@ -30,7 +30,7 @@
 
 extern SemaphoreHandle_t g_sem_recvedWaveData;
 extern SemaphoreHandle_t g_sem_isSending;
-
+extern void SPI_RecOver(void);
 #undef SystemCoreClock
 #ifdef __cplusplus
 }

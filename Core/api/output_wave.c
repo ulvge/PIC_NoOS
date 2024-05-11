@@ -40,19 +40,10 @@ static void delay_us(uint32_t dly)
     } while ((nowStamp - oldStamp) < dly);
 }
 
-static void output_LD_POS_EN(uint32_t dly)
-{
-    HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_RESET);
-    delay_us(dly); 
-    HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_SET);
-}
-
-static void output_LD_SLOPE_EN(uint32_t dly)
-{
-	GPIO_Set_LD_SLOPE(GPIO_PIN_SET);
-	delay_us(dly);
-	GPIO_Set_LD_SLOPE(GPIO_PIN_RESET); 
-	delay_us(dly);
+void SPI_RecOver(void){
+    // GPIO_Set_INTRPT(GPIO_PIN_SET); //PC2
+    // delay_us(OUTPUT_DELAY_1U5S);
+    // GPIO_Set_INTRPT(GPIO_PIN_RESET);
 }
 inline static void output_setDirection(uint16_t val)
 {
@@ -105,7 +96,8 @@ void Task_outputWave(void *argument)
     uint16_t slp;
     g_sem_recvedWaveData = xSemaphoreCreateBinary();
     g_sem_isSending = xSemaphoreCreateMutex();
-    uint32_t dly = 0x5a00; // 0x5a00 5.7k
+    //uint32_t dly = 0x5a00; // 0x5a00 5.7k
+    uint32_t dly = 0x2000; // 0x5a00 5.7k
     while (1) {
         if (xSemaphoreTake(g_sem_recvedWaveData, portMAX_DELAY) == pdTRUE) {
             bsp_spi_DiagSendStart();
@@ -130,19 +122,17 @@ void Task_outputWave(void *argument)
                         GPIO_SetDAC(g_protocolData.data[i].position);
                         delay_us(dly); 
                         HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_SET);
-                        //output_LD_POS_EN(0);
                         //output_debug();
                         //isFirst = false;
                     }
                     // // send slope val
-                    // output_setDirection(slp);   // send Direction
-                    // GPIO_SetDAC(slp);
-                    // GPIO_Set_LD_SLOPE(GPIO_PIN_SET);
-                    // delay_us(OUTPUT_DELAY_0U1S);
-                    // GPIO_Set_LD_SLOPE(GPIO_PIN_RESET);
+                    output_setDirection(slp);   // send Direction
+                    HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_RESET);
+                    GPIO_SetDAC(slp);
+                    delay_us(dly); 
+                    HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_SET);
                     // wait master match
                     delay_us(g_protocolCmd.sleepUsWave);
-                    //delay_us(10000);
                     //output_waitMasterMatch();
                 }
 

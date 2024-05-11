@@ -51,7 +51,7 @@ static void MX_SPI1_Init(void)
     g_hspi1.Init.MasterReceiverAutoSusp = SPI_MASTER_RX_AUTOSUSP_DISABLE;
     g_hspi1.Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_DISABLE;
     g_hspi1.Init.IOSwap = SPI_IO_SWAP_ENABLE;
-    g_hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+    g_hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
     if (HAL_SPI_Init(&g_hspi1) != HAL_OK) {
         Error_Handler();
     }
@@ -61,8 +61,8 @@ static void MX_SPI1_Init(void)
 }
 void SPI1_startReceviceIT(void)
 {
-    static uint8_t buffRec;
-    HAL_SPI_Receive_IT(&g_hspi1, &buffRec, sizeof(buffRec));
+    static uint8_t rxBuffer;
+    HAL_SPI_Receive_IT(&g_hspi1, &rxBuffer, sizeof(rxBuffer));
 }
 void SPI1_Init(void)
 {
@@ -108,6 +108,7 @@ inline void bsp_spi_DiagSendFinished(uint32_t sendTimes)
 void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
 {
     static uint32_t itsource,itflag,trigger;
+    uint32_t handled  = 0UL;
 
     g_diagnosis.recevedStartClk = Get_dealyTimer_cnt();
     itsource = hspi->Instance->IER;
@@ -118,16 +119,26 @@ void HAL_SPI_IRQHandler(SPI_HandleTypeDef *hspi)
     hspi->State = HAL_SPI_STATE_READY;
 
     /* SPI in mode Receiver ----------------------------------------------------*/
-    if (HAL_IS_BIT_CLR(trigger, SPI_FLAG_OVR) && HAL_IS_BIT_SET(trigger, SPI_FLAG_RXP) &&
-        HAL_IS_BIT_CLR(trigger, SPI_FLAG_DXP)) {
+    //if (HAL_IS_BIT_CLR(trigger, SPI_FLAG_OVR) && HAL_IS_BIT_SET(trigger, SPI_FLAG_RXP) && HAL_IS_BIT_CLR(trigger, SPI_FLAG_DXP)) {
+    if (HAL_IS_BIT_CLR(trigger, SPI_FLAG_OVR) && HAL_IS_BIT_SET(trigger, SPI_FLAG_RXP)) {
+        
         //hspi->RxISR(hspi);  // HAL_SPI_Receive_IT  SPI_RxISR_8BIT 
         
         SPI_ProtocolParsing(*((__IO uint8_t *)(&hspi->Instance->RXDR)));
         g_diagnosis.recevedRespondClk = Get_dealyTimer_cnt();
         bsp_spi_DiagReceved();
+        handled = 1UL;
+    }
+    /* SPI in mode Transmitter -------------------------------------------------*/
+    if (HAL_IS_BIT_CLR(trigger, SPI_FLAG_UDR) && HAL_IS_BIT_SET(trigger, SPI_FLAG_TXP))
+    {
+        hspi->TxISR(hspi);
+        handled = 1UL;
+    }
+    if (handled != 0UL)
+    {
         return;
     }
-
     /* Clear EOT/TXTF/SUSP flag */
     __HAL_SPI_CLEAR_EOTFLAG(hspi);
     __HAL_SPI_CLEAR_TXTFFLAG(hspi);

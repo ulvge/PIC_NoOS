@@ -856,7 +856,7 @@ HAL_StatusTypeDef HAL_SPI_Transmit(SPI_HandleTypeDef *hspi, const uint8_t *pData
   {
     SPI_2LINES(hspi);
   }
-  else if (hspi->Init.Direction == SPI_DIRECTION_1LINE)
+  else
   {
     SPI_2LINES_TX(hspi);
   }
@@ -1662,6 +1662,24 @@ HAL_StatusTypeDef HAL_SPI_Transmit_IT(SPI_HandleTypeDef *hspi, const uint8_t *pD
     return HAL_BUSY;
   }
 
+  __HAL_SPI_DISABLE(hspi);
+  __HAL_UNLOCK(hspi);
+  /* Configure communication direction : 1Line */
+  if (hspi->Init.Direction == SPI_DIRECTION_1LINE)
+  {
+    SPI_1LINE_TX(hspi);
+  }
+  else if (hspi->Init.Direction == SPI_DIRECTION_2LINES)
+  {
+    SPI_2LINES(hspi);
+  }
+  else
+  {
+    SPI_2LINES_TX(hspi);
+  }
+
+  /* Set the number of data at current transfer */
+  MODIFY_REG(hspi->Instance->CR2, SPI_CR2_TSIZE, Size);
   /* Lock the process */
   __HAL_LOCK(hspi);
 
@@ -1698,18 +1716,6 @@ HAL_StatusTypeDef HAL_SPI_Transmit_IT(SPI_HandleTypeDef *hspi, const uint8_t *pD
     hspi->TxISR = SPI_TxISR_8BIT;
   }
 
-  /* Configure communication direction : 1Line */
-  if (hspi->Init.Direction == SPI_DIRECTION_1LINE)
-  {
-    SPI_1LINE_TX(hspi);
-  }
-  else
-  {
-    SPI_2LINES_TX(hspi);
-  }
-
-  /* Set the number of data at current transfer */
-  MODIFY_REG(hspi->Instance->CR2, SPI_CR2_TSIZE, Size);
 
   /* Enable SPI peripheral */
   __HAL_SPI_ENABLE(hspi);
@@ -1792,6 +1798,10 @@ HAL_StatusTypeDef HAL_SPI_Receive_IT(SPI_HandleTypeDef *hspi, uint8_t *pData, ui
   if (hspi->Init.Direction == SPI_DIRECTION_1LINE)
   {
     SPI_1LINE_RX(hspi);
+  }
+  else if (hspi->Init.Direction == SPI_DIRECTION_2LINES)
+  {
+    SPI_2LINES(hspi);
   }
   else
   {
@@ -2920,8 +2930,8 @@ void HAL_SPI_IRQHandler2(SPI_HandleTypeDef *hspi)
   if (HAL_IS_BIT_CLR(trigger, SPI_FLAG_OVR) && HAL_IS_BIT_CLR(trigger, SPI_FLAG_UDR) && \
       HAL_IS_BIT_SET(trigger, SPI_FLAG_DXP))
   {
-    hspi->TxISR(hspi);
-    hspi->RxISR(hspi);
+    hspi->TxISR(hspi);//SPI_TxISR_8BIT
+    hspi->RxISR(hspi);//SPI_RxISR_8BIT
     handled = 1UL;
   }
 

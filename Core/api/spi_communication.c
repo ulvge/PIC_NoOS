@@ -23,6 +23,7 @@ static PROTOCOL_TYPE g_protocol_type;
 static FSM_RecvEvent g_FSM_RecvEvent;
 static void SPI_ProtocolReset(PROTOCOL_TYPE type);
 static void SPI_writeBack(void);
+extern SPI_HandleTypeDef g_hspi1;
 
 void SPI_ProtocolInit(void)
 {
@@ -139,6 +140,7 @@ inline static bool SPI_decode_TYPE_WRITEBACK(uint8_t val){
     }
     return false;
 }
+
 void SPI_ProtocolParsing(uint8_t val)
 {
     //UART_sendByte(DEBUG_UART_PERIPH, val);
@@ -165,7 +167,7 @@ void SPI_ProtocolParsing(uint8_t val)
         }
     } else if (g_protocol_type == PROTOCOL_TYPE_DATA) {
         if (SPI_decode_TYPE_DATA(val)){
-            //SPI_SendSemOutputWave();
+            SPI_RecOver();
         }
     } else if (g_protocol_type == PROTOCOL_TYPE_DATA_WRITEBACK) {
         if(SPI_decode_TYPE_WRITEBACK(val)){
@@ -200,28 +202,14 @@ static void SPI_swapEndianness(uint16_t *srcArray, uint16_t *destArray, int size
         destArray[i] = (value >> 8) | (value << 8);
     }
 }
-extern SPI_HandleTypeDef g_hspi1;
 void Task_WriteBack(void *argument)
 {
     g_sem_WriteBack = xSemaphoreCreateBinary();
 
     while (1) {
-        //if (xSemaphoreTake(g_sem_WriteBack, portMAX_DELAY) == pdTRUE)
-		if (0)		
+        if (xSemaphoreTake(g_sem_WriteBack, portMAX_DELAY) == pdTRUE)
         {
-            SPI_writeBack();
-        }else{		
-			g_protocolData.recvedGroupCount = 3;
-			g_protocolData.data[0].position = 0x33ff;
-			g_protocolData.data[0].slope = 0x17ff;
-			
-			g_protocolData.data[1].position = 0x3Bff;
-			g_protocolData.data[1].slope = 0x27ff;
-
-			g_protocolData.data[2].position = 0x23ff;
-			g_protocolData.data[2].slope = 0x37ff;
-            //SPI_writeBack();		
-			vTaskDelay(1000);
+            SPI_writeBack();	
 		}
     }
 }
@@ -235,9 +223,9 @@ void SPI_writeBack(void)
 
     //HAL_SPI_Transmit_DMA(&g_hspi1, (uint8_t *)&g_protocolDataBak, g_protocolData.recvedGroupCount * 4);
     do{
-        HAL_SPI_Abort(&g_hspi1);
-        HAL_StatusTypeDef st = HAL_SPI_Transmit(&g_hspi1, (uint8_t *)g_protocolDataBak, g_protocolData.recvedGroupCount * 4, 500);
-        SPI1_startReceviceIT();
+        //HAL_SPI_Abort(&g_hspi1);
+        HAL_StatusTypeDef st = HAL_SPI_Transmit(&g_hspi1, (uint8_t *)g_protocolDataBak, g_protocolData.recvedGroupCount * 4, 25000);
+        //SPI1_startReceviceIT();
         switch (st) {
             case HAL_OK:
                 break;
@@ -249,5 +237,7 @@ void SPI_writeBack(void)
                 break;
         }
     } while (0);
+    
+    SPI_RecOver();
 }
 
