@@ -30,12 +30,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 }
 // htim5 run clok: 280M
 // Period = count 280 = 1us
-static void delay_us(uint32_t dly)
+static void delay_us(uint32_t us, uint32_t _0us)
 {
     static uint32_t oldStamp, nowStamp;
 
     oldStamp = Get_dealyTimer_cnt();
+    uint32_t dly = OUTPUT_DELAY_1US * us + OUTPUT_DELAY_0U1S * _0us;
     do{
+        if (!g_protocolData.isRecvedFinished){
+            break;
+        }
         nowStamp = Get_dealyTimer_cnt();
     } while ((nowStamp - oldStamp) < dly);
 }
@@ -60,12 +64,25 @@ inline static void output_waitMasterBeReady(void)
 {
     while (!GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN, NULL)) {
         GPIO_Set_PIC_LED(GPIO_PIN_RESET);
+        if (!g_protocolData.isRecvedFinished){
+            return;
+        }
     }
 }
 inline static void output_waitMasterMatch(void)
 {
-    while (!GPIO_isPinActive(GPIO_MATCH, NULL)) {
-    }
+    static GPIO_PinState matchStatusLast = GPIO_PIN_RESET;
+    GPIO_PinState matchStatus;
+    do{
+        if (!g_protocolData.isRecvedFinished){
+            break;
+        }
+        matchStatus = HAL_GPIO_ReadPin(MATCH_PORT, MATCH_PIN);
+    } while (matchStatus == matchStatusLast);
+
+    matchStatusLast = matchStatus;
+    // while (!GPIO_isPinActive(GPIO_MATCH, NULL)) {
+    // }
 }
 void output_debug(void){
     static int16_t step = 0;
@@ -85,7 +102,7 @@ void output_debug(void){
         }
         GPIO_SetDAC(step);
         GPIO_Set_LD_POS(GPIO_PIN_SET);
-        delay_us(OUTPUT_DELAY_0U1S);
+        delay_us(OUTPUT_DELAY_0U1S, 0);
         GPIO_Set_LD_POS(GPIO_PIN_RESET);
     }
 }
@@ -96,8 +113,7 @@ void Task_outputWave(void *argument)
     uint16_t slp;
     g_sem_recvedWaveData = xSemaphoreCreateBinary();
     g_sem_isSending = xSemaphoreCreateMutex();
-    //uint32_t dly = 0x5a00; // 0x5a00 5.7k
-    uint32_t dly = 0x2000; // 0x5a00 5.7k
+    uint32_t dlyUs = 65; // 65 5.7k
     while (1) {
         if (xSemaphoreTake(g_sem_recvedWaveData, portMAX_DELAY) == pdTRUE) {
             bsp_spi_DiagSendStart();
@@ -107,7 +123,7 @@ void Task_outputWave(void *argument)
 
             isFirst = true;
 
-            while (g_protocolCmd.reSendTimes == 0 || reSendCount++ < g_protocolCmd.reSendTimes) {
+            while (g_protocolData.isRecvedFinished && (g_protocolCmd.reSendTimes == 0 || reSendCount++ < g_protocolCmd.reSendTimes)) {
                 for (size_t i = 1; i < g_protocolData.recvedGroupCount; i++) {
                     // wait master ready
                     output_waitMasterBeReady();    
@@ -117,33 +133,32 @@ void Task_outputWave(void *argument)
                     output_setRunMode(slp);
                     if (isFirst) 
 					{
-                        HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_RESET);
                         // send position val
                         GPIO_SetDAC(g_protocolData.data[i].position);
-                        delay_us(dly); 
+                        HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_RESET);
                         HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_SET);
                         //output_debug();
                         //isFirst = false;
                     }
                     // // send slope val
                     output_setDirection(slp);   // send Direction
-                    HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_RESET);
                     GPIO_SetDAC(slp);
-                    delay_us(dly); 
+                    HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_RESET);
                     HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_SET);
                     // wait master match
-                    delay_us(g_protocolCmd.sleepUsWave);
-                    //output_waitMasterMatch();
+                    delay_us(g_protocolCmd.sleepUsWave, 0);
+                    output_waitMasterMatch();
+                    
+                    delay_us(dlyUs, 0); 
                 }
 
-                delay_us(g_protocolCmd.sleepUsGroupData);
+                delay_us(g_protocolCmd.sleepUsGroupData, 0);
             }
-
 
             GPIO_Set_BUSY(GPIO_PIN_RESET);
 
             GPIO_Set_INTRPT(GPIO_PIN_SET);
-            delay_us(OUTPUT_DELAY_1U5S);
+            delay_us(1, 5);
             GPIO_Set_INTRPT(GPIO_PIN_RESET);
 
             bsp_spi_DiagSendFinished(reSendCount);

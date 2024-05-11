@@ -207,8 +207,8 @@ static int spi_shell(int argc, char *argv[])
         return 0;
     }
     LOG_RAW(" *****  SPI diganosis *****\r\n\r\n");
-    LOG_RAW("\t receve, this=[ %d.%d us], max[ %d.%d us], timeoutCnt=[ %d ]\r\n", 
-            g_diagnosis.recevedDurationThis / 10, g_diagnosis.recevedMaxDuration % 10, 
+    LOG_RAW("\t receved,  this=[ %d.%d us], max[ %d.%d us], timeoutCnt=[ %d ]\r\n", 
+            g_diagnosis.recevedDurationThis / 10, g_diagnosis.recevedDurationThis % 10, 
             g_diagnosis.recevedMaxDuration / 10, g_diagnosis.recevedMaxDuration % 10, 
             g_diagnosis.recevedRespondTimeoutCnt);
 

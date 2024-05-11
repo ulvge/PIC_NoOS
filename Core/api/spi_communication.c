@@ -216,6 +216,7 @@ void Task_WriteBack(void *argument)
 
 void SPI_writeBack(void)
 {
+    //static uint8_t unused = 0;
     if (g_protocolData.recvedGroupCount > SPI_RECV_BUFF_GROUP_COUNT){
         g_protocolData.recvedGroupCount = SPI_RECV_BUFF_GROUP_COUNT;
     }
@@ -224,7 +225,8 @@ void SPI_writeBack(void)
     //HAL_SPI_Transmit_DMA(&g_hspi1, (uint8_t *)&g_protocolDataBak, g_protocolData.recvedGroupCount * 4);
     do{
         //HAL_SPI_Abort(&g_hspi1);
-        HAL_StatusTypeDef st = HAL_SPI_Transmit(&g_hspi1, (uint8_t *)g_protocolDataBak, g_protocolData.recvedGroupCount * 4, 25000);
+        HAL_StatusTypeDef st = HAL_SPI_Transmit(&g_hspi1, (uint8_t *)g_protocolDataBak, g_protocolData.recvedGroupCount * 4, 3000);
+        //HAL_StatusTypeDef st = HAL_SPI_Transmit_IT(&g_hspi1, (uint8_t *)g_protocolDataBak, g_protocolData.recvedGroupCount * 4, 3000);
         //SPI1_startReceviceIT();
         switch (st) {
             case HAL_OK:
