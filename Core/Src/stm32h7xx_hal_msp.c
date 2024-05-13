@@ -122,22 +122,25 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 
         /*##-3- Configure the DMA ##################################################*/
         /* Configure the DMA handler for Transmission process */
-        // g_hdma_spi1_tx.Instance                 = DMA1_Stream7;
-        // g_hdma_spi1_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
-        // g_hdma_spi1_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
-        // g_hdma_spi1_tx.Init.MemBurst            = DMA_MBURST_INC4;
-        // g_hdma_spi1_tx.Init.PeriphBurst         = DMA_PBURST_INC4;
-        // g_hdma_spi1_tx.Init.Request             = DMA_REQUEST_SPI1_TX;
-        // g_hdma_spi1_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
-        // g_hdma_spi1_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
-        // g_hdma_spi1_tx.Init.MemInc              = DMA_MINC_ENABLE;
-        // g_hdma_spi1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
-        // g_hdma_spi1_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
-        // g_hdma_spi1_tx.Init.Mode                = DMA_NORMAL;
-        // g_hdma_spi1_tx.Init.Priority            = DMA_PRIORITY_LOW;
-        // HAL_DMA_Init(&g_hdma_spi1_tx);
-        // /* Associate the initialized DMA handle to the the SPI handle */
-        // __HAL_LINKDMA(hspi, hdmatx, g_hdma_spi1_tx);
+        g_hdma_spi1_tx.Instance                 = DMA1_Stream7;
+        g_hdma_spi1_tx.Init.FIFOMode            = DMA_FIFOMODE_DISABLE;
+        g_hdma_spi1_tx.Init.FIFOThreshold       = DMA_FIFO_THRESHOLD_FULL;
+        g_hdma_spi1_tx.Init.MemBurst            = DMA_MBURST_INC4;
+        g_hdma_spi1_tx.Init.PeriphBurst         = DMA_PBURST_INC4;
+        g_hdma_spi1_tx.Init.Request             = DMA_REQUEST_SPI1_TX;
+        g_hdma_spi1_tx.Init.Direction           = DMA_MEMORY_TO_PERIPH;
+        g_hdma_spi1_tx.Init.PeriphInc           = DMA_PINC_DISABLE;
+        g_hdma_spi1_tx.Init.MemInc              = DMA_MINC_ENABLE;
+        g_hdma_spi1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+        g_hdma_spi1_tx.Init.MemDataAlignment    = DMA_MDATAALIGN_BYTE;
+        g_hdma_spi1_tx.Init.Mode                = DMA_NORMAL;
+        g_hdma_spi1_tx.Init.Priority            = DMA_PRIORITY_LOW;
+        HAL_DMA_Init(&g_hdma_spi1_tx);
+        /* Associate the initialized DMA handle to the the SPI handle */
+        __HAL_LINKDMA(hspi, hdmatx, g_hdma_spi1_tx);
+        /* NVIC configuration for DMA transfer complete interrupt (SPI1_TX) */
+        HAL_NVIC_SetPriority(DMA1_Stream7_IRQn, IRQHANDLER_PRIORITY_SPI_DMA, 1);
+        HAL_NVIC_EnableIRQ(DMA1_Stream7_IRQn);
 
         /* SPI1 interrupt Init */
         HAL_NVIC_SetPriority(SPI1_IRQn, IRQHANDLER_PRIORITY_SPI, 0);

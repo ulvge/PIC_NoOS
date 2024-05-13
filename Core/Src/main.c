@@ -63,7 +63,7 @@ __attribute__((unused)) static void CPU_CACHE_Enable(void)
   SCB_EnableICache();
 
   /* Enable D-Cache */
-  SCB_EnableDCache();
+  //SCB_EnableDCache();
 }
 
 static void DebugConfig(void)
@@ -96,7 +96,7 @@ int main(void)
     /* MPU Configuration--------------------------------------------------------*/
     MPU_Config();
     /* Enable the CPU Cache */
-    //CPU_CACHE_Enable();
+    CPU_CACHE_Enable();
 
     /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
     HAL_Init(); // set HAL_NVIC_SetPriorityGrouping

@@ -40,7 +40,7 @@ typedef enum {
 typedef struct {
     uint8_t *wp;
     uint32_t recvedGroupCount;
-    uint32_t writeByteCount;
+    uint32_t recvedByteCount;
     uint8_t isRecvedFinished;
     uint8_t isRecvedOverflow;
     uint8_t isSending;
@@ -56,7 +56,7 @@ typedef struct {
 // 发送命令 PROTOCOL_CMD_CMD
 typedef struct {
     uint8_t *wp;
-    uint16_t writeByteCount;
+    uint16_t recvedByteCount;
 //Main Body
     uint16_t reSendTimes __attribute__((aligned(2)));
     uint8_t sleepUsWave;
