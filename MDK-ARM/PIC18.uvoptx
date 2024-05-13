@@ -180,6 +180,11 @@
           <WinNumber>1</WinNumber>
           <ItemText>g_protocolCmd</ItemText>
         </Ww>
+        <Ww>
+          <count>3</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>isReSend</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>

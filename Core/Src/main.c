@@ -118,8 +118,6 @@ int main(void)
 
     /* creation of outputWave */
     xTaskCreate(Task_outputWave, "outputWave", 128 * 8, NULL, 48, NULL );
-    /* creation of WriteBack */
-    xTaskCreate(Task_WriteBack, "writeBack", 128 * 4, NULL, 40, NULL );
     /* creation of uartMonitor */
     xTaskCreate(Task_uartMonitor, "uartMonitor", 128 * 4, NULL, 24, NULL );
     /* creation of shell */

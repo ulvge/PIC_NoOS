@@ -10,8 +10,6 @@
 #include "bsp_spi1_slave.h"
 
 
-SemaphoreHandle_t g_sem_WriteBack;
-
 ProtocolCmd g_protocolCmd;
 ProtocolData g_protocolData;
 ProtocolData g_protocolDataOri __attribute__((section(".MY_SECTION")));
@@ -173,7 +171,6 @@ inline void SPI_ProtocolParsing(uint8_t val)
     } else if (g_protocol_type == PROTOCOL_TYPE_DATA_WRITEBACK) {
         if(SPI_decode_TYPE_WRITEBACK(val)){
             SPI_writeBack();
-            //xSemaphoreGiveFromISR(g_sem_WriteBack, &xHigherPriorityTaskWoken_NO);
         } 
     } else if (g_protocol_type == PROTOCOL_TYPE_CMD) {
         if (g_protocolCmd.recvedByteCount < PROTOCOL_CMD_FILED_LEN) {
@@ -189,18 +186,6 @@ inline void SPI_ProtocolParsing(uint8_t val)
         } else {
             SPI_ProtocolError();
         }
-    }
-}
-
-void Task_WriteBack(void *argument)
-{
-    g_sem_WriteBack = xSemaphoreCreateBinary();
-
-    while (1) {
-        if (xSemaphoreTake(g_sem_WriteBack, portMAX_DELAY) == pdTRUE)
-        {
-            SPI_writeBack();	
-		}
     }
 }
 

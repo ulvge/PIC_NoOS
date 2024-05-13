@@ -70,14 +70,11 @@ typedef struct {
     uint16_t count __attribute__((aligned(2)));
 }__attribute__ ((packed)) ProtocolWriteBack ;
 
-extern SemaphoreHandle_t g_sem_WriteBack;
-
 extern ProtocolData g_protocolData;
 extern ProtocolCmd g_protocolCmd;
 extern ProtocolWriteBack g_protocolWriteBack;
 extern void SPI_ProtocolInit(void);
 extern void SPI_ProtocolParsing(uint8_t val);
-extern void Task_WriteBack(void *argument);
 extern void SPI_writeBack(void);
 #ifdef __cplusplus
 }
