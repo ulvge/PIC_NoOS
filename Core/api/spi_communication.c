@@ -11,7 +11,11 @@
 
 
 ProtocolCmd g_protocolCmd;
+#if DATA_BUFF_IN_128K == 1
 ProtocolData g_protocolData;
+#else
+ProtocolData g_protocolData __attribute__((section(".MY_SECTION")));
+#endif
 ProtocolData g_protocolDataOri __attribute__((section(".MY_SECTION")));
 ProtocolWriteBack g_protocolWriteBack;
 

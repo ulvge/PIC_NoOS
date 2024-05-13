@@ -41,7 +41,10 @@ static void MX_TIM5_Init(void);
 void StartDefaultTask(void *argument);
 
 TIM_HandleTypeDef g_htim5;
-int g_debugLevel = DBG_INFO;
+int g_debugLevel = DBG_LOG;
+TaskHandle_t gp_xHandle_Task_outputWave = NULL;
+TaskHandle_t gp_xHandle_Task_uartMonitor = NULL;
+TaskHandle_t gp_xHandle_Task_shell = NULL;
 static __IO uint64_t g_utc_time_firmware_build = 0;
 static const char *projectInfo =
     "\r\n"
@@ -117,11 +120,11 @@ int main(void)
     cm_backtrace_init("CmBacktrace", HARDWARE_VERSION, SOFT_VERSION);
 
     /* creation of outputWave */
-    xTaskCreate(Task_outputWave, "outputWave", 128 * 8, NULL, 48, NULL );
+    xTaskCreate(Task_outputWave, "outputWave", 128 * 4, NULL, 48, &gp_xHandle_Task_outputWave );
     /* creation of uartMonitor */
-    xTaskCreate(Task_uartMonitor, "uartMonitor", 128 * 4, NULL, 24, NULL );
+    xTaskCreate(Task_uartMonitor, "uartMonitor", 128 * 4, NULL, 24, &gp_xHandle_Task_uartMonitor );
     /* creation of shell */
-    xTaskCreate(shellTask, "shell", 128 * 2, &shell, 16, NULL );
+    xTaskCreate(shellTask, "shell", 128 * 2, &shell, 16, &gp_xHandle_Task_shell );
 
     LOG_I("create all task finished and succeed\r\n");
 
@@ -351,6 +354,21 @@ void ToggleAllGPIO(void){
     
     isOn = !isOn;
 }
+void PrintTaskStackHead(void)
+{
+    TaskHandle_t taskHandle[3] = {gp_xHandle_Task_outputWave, gp_xHandle_Task_uartMonitor, gp_xHandle_Task_shell};
+    uint32_t taskStackWaterMark;
+
+    LOG_D("\r\n");
+    LOG_D("    OS,            MinHeapSize = %d\r\n", xPortGetMinimumEverFreeHeapSize());
+    LOG_D("    task           StackHighWaterMark\r\n");
+    for (int i = 0; i < 3; i++) {
+        if (taskHandle[i] != NULL) {
+            taskStackWaterMark = uxTaskGetStackHighWaterMark(taskHandle[i]) * 4;
+            LOG_D("    %-15s %d\r\n", pcTaskGetTaskName(taskHandle[i]), taskStackWaterMark);
+        }
+    }
+}
 void vApplicationIdleHook( void )
 {
     static bool isPrinted = false;
@@ -358,6 +376,7 @@ void vApplicationIdleHook( void )
     if (tickNow % 1000 == 0) {
         if (!isPrinted) {
             isPrinted = true;
+            //PrintTaskStackHead();
             //ToggleAllGPIO();
         }
     }else{

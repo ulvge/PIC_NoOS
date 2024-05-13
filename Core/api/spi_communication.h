@@ -11,11 +11,18 @@
 #include "semphr.h"
 
 // 定义宏
+#define DATA_BUFF_IN_128K 1
+
+#if DATA_BUFF_IN_128K == 1
+#define SPI_RECV_BUFF_GROUP_COUNT 23500     // max: 23500
+#else
+#define SPI_RECV_BUFF_GROUP_COUNT 32000     // 128K 32000
+#endif
+
 #define PROTOCOL_DATA_ID        0x03
 #define PROTOCOL_DATA_WRITEBACK  0x04
 #define PROTOCOL_CMD_CMD 0x0b
 
-#define SPI_RECV_BUFF_GROUP_COUNT 100     // 128K 32000
 #define PROTOCOL_CMD_FILED_LEN 4
 
 typedef enum {
