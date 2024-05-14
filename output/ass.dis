@@ -31,8 +31,8 @@
     Program header entries: 1
     Section header entries: 17
 
-    Program header offset: 1982384 (0x001e3fb0)
-    Section header offset: 1982416 (0x001e3fd0)
+    Program header offset: 1982320 (0x001e3f70)
+    Section header offset: 1982352 (0x001e3f90)
 
     Section header string table index: 16
 
@@ -9429,7 +9429,7 @@
         0x08005ed6:    4288        .B      CMP      r0,r1
         0x08005ed8:    bf88        ..      IT       HI
         0x08005eda:    60f0        .`      STRHI    r0,[r6,#0xc]
-        0x08005edc:    2805        .(      CMP      r0,#5
+        0x08005edc:    2832        2(      CMP      r0,#0x32
         0x08005ede:    d902        ..      BLS      0x8005ee6 ; HAL_SPI_IRQHandler + 102
         0x08005ee0:    6930        0i      LDR      r0,[r6,#0x10]
         0x08005ee2:    1c40        @.      ADDS     r0,r0,#1
@@ -12161,174 +12161,174 @@
         0x08007a34:    2700        .'      MOVS     r7,#0
         0x08007a36:    2001        .       MOVS     r0,#1
         0x08007a38:    9001        ..      STR      r0,[sp,#4]
-        0x08007a3a:    e098        ..      B        0x8007b6e ; Task_outputWave + 402
-        0x08007a3c:    f8d80004    ....    LDR      r0,[r8,#4]
-        0x08007a40:    2401        .$      MOVS     r4,#1
-        0x08007a42:    2801        .(      CMP      r0,#1
-        0x08007a44:    d978        x.      BLS      0x8007b38 ; Task_outputWave + 348
-        0x08007a46:    2100        .!      MOVS     r1,#0
-        0x08007a48:    4608        .F      MOV      r0,r1
-        0x08007a4a:    f7f9ff1b    ....    BL       GPIO_isPinActive ; 0x8001884
-        0x08007a4e:    b958        X.      CBNZ     r0,0x8007a68 ; Task_outputWave + 140
-        0x08007a50:    2000        .       MOVS     r0,#0
-        0x08007a52:    f7f9feed    ....    BL       GPIO_Set_PIC_LED ; 0x8001830
-        0x08007a56:    f898000c    ....    LDRB     r0,[r8,#0xc]
-        0x08007a5a:    b128        (.      CBZ      r0,0x8007a68 ; Task_outputWave + 140
-        0x08007a5c:    2100        .!      MOVS     r1,#0
-        0x08007a5e:    4608        .F      MOV      r0,r1
-        0x08007a60:    f7f9ff10    ....    BL       GPIO_isPinActive ; 0x8001884
-        0x08007a64:    2800        .(      CMP      r0,#0
-        0x08007a66:    d0f3        ..      BEQ      0x8007a50 ; Task_outputWave + 116
-        0x08007a68:    2001        .       MOVS     r0,#1
-        0x08007a6a:    f7f9fee1    ....    BL       GPIO_Set_PIC_LED ; 0x8001830
-        0x08007a6e:    eb080584    ....    ADD      r5,r8,r4,LSL #2
-        0x08007a72:    2000        .       MOVS     r0,#0
-        0x08007a74:    8aae        ..      LDRH     r6,[r5,#0x14]
-        0x08007a76:    f7f9fee9    ....    BL       GPIO_Set_SPOT ; 0x800184c
-        0x08007a7a:    9801        ..      LDR      r0,[sp,#4]
-        0x08007a7c:    b168        h.      CBZ      r0,0x8007a9a ; Task_outputWave + 190
-        0x08007a7e:    8a68        h.      LDRH     r0,[r5,#0x12]
-        0x08007a80:    f7f9fe60    ..`.    BL       GPIO_SetDAC ; 0x8001744
-        0x08007a84:    2200        ."      MOVS     r2,#0
-        0x08007a86:    4648        HF      MOV      r0,r9
-        0x08007a88:    f44f5180    O..Q    MOV      r1,#0x1000
-        0x08007a8c:    f7fcf827    ..'.    BL       HAL_GPIO_WritePin ; 0x8003ade
-        0x08007a90:    2201        ."      MOVS     r2,#1
-        0x08007a92:    4648        HF      MOV      r0,r9
-        0x08007a94:    0311        ..      LSLS     r1,r2,#12
-        0x08007a96:    f7fcf822    ..".    BL       HAL_GPIO_WritePin ; 0x8003ade
-        0x08007a9a:    2000        .       MOVS     r0,#0
-        0x08007a9c:    f7f9feac    ....    BL       GPIO_Set_DIRECTION ; 0x80017f8
-        0x08007aa0:    4630        0F      MOV      r0,r6
-        0x08007aa2:    f7f9fe4f    ..O.    BL       GPIO_SetDAC ; 0x8001744
-        0x08007aa6:    2200        ."      MOVS     r2,#0
-        0x08007aa8:    4648        HF      MOV      r0,r9
-        0x08007aaa:    f44f4180    O..A    MOV      r1,#0x4000
-        0x08007aae:    f7fcf816    ....    BL       HAL_GPIO_WritePin ; 0x8003ade
-        0x08007ab2:    2201        ."      MOVS     r2,#1
-        0x08007ab4:    4648        HF      MOV      r0,r9
-        0x08007ab6:    0391        ..      LSLS     r1,r2,#14
-        0x08007ab8:    f7fcf811    ....    BL       HAL_GPIO_WritePin ; 0x8003ade
-        0x08007abc:    4857        WH      LDR      r0,[pc,#348] ; [0x8007c1c] = 0x200002a0
-        0x08007abe:    7a05        .z      LDRB     r5,[r0,#8]
-        0x08007ac0:    f7faf820    .. .    BL       Get_dealyTimer_cnt ; 0x8001b04
-        0x08007ac4:    4e50        PN      LDR      r6,[pc,#320] ; [0x8007c08] = 0x20000008
-        0x08007ac6:    ebc501c5    ....    RSB      r1,r5,r5,LSL #3
-        0x08007aca:    eb010181    ....    ADD      r1,r1,r1,LSL #2
-        0x08007ace:    6130        0a      STR      r0,[r6,#0x10]
-        0x08007ad0:    f8da0000    ....    LDR      r0,[r10,#0]
-        0x08007ad4:    fbb0f0fb    ....    UDIV     r0,r0,r11
-        0x08007ad8:    2000        .       MOVS     r0,#0
-        0x08007ada:    eb0005c1    ....    ADD      r5,r0,r1,LSL #3
-        0x08007ade:    f898000c    ....    LDRB     r0,[r8,#0xc]
-        0x08007ae2:    b130        0.      CBZ      r0,0x8007af2 ; Task_outputWave + 278
-        0x08007ae4:    f7faf80e    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
-        0x08007ae8:    6170        pa      STR      r0,[r6,#0x14]
-        0x08007aea:    6931        1i      LDR      r1,[r6,#0x10]
-        0x08007aec:    1a40        @.      SUBS     r0,r0,r1
-        0x08007aee:    42a8        .B      CMP      r0,r5
-        0x08007af0:    d3f5        ..      BCC      0x8007ade ; Task_outputWave + 258
-        0x08007af2:    f898100c    ....    LDRB     r1,[r8,#0xc]
-        0x08007af6:    b139        9.      CBZ      r1,0x8007b08 ; Task_outputWave + 300
-        0x08007af8:    f44f6180    O..a    MOV      r1,#0x400
-        0x08007afc:    4648        HF      MOV      r0,r9
-        0x08007afe:    f7fbffe9    ....    BL       HAL_GPIO_ReadPin ; 0x8003ad4
-        0x08007b02:    7831        1x      LDRB     r1,[r6,#0]
-        0x08007b04:    4288        .B      CMP      r0,r1
-        0x08007b06:    d0f4        ..      BEQ      0x8007af2 ; Task_outputWave + 278
-        0x08007b08:    7030        0p      STRB     r0,[r6,#0]
-        0x08007b0a:    f7f9fffb    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
-        0x08007b0e:    6130        0a      STR      r0,[r6,#0x10]
-        0x08007b10:    f8da0000    ....    LDR      r0,[r10,#0]
-        0x08007b14:    9d00        ..      LDR      r5,[sp,#0]
-        0x08007b16:    fbb0f0fb    ....    UDIV     r0,r0,r11
-        0x08007b1a:    f898000c    ....    LDRB     r0,[r8,#0xc]
-        0x08007b1e:    b130        0.      CBZ      r0,0x8007b2e ; Task_outputWave + 338
-        0x08007b20:    f7f9fff0    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
-        0x08007b24:    6170        pa      STR      r0,[r6,#0x14]
-        0x08007b26:    6931        1i      LDR      r1,[r6,#0x10]
-        0x08007b28:    1a40        @.      SUBS     r0,r0,r1
-        0x08007b2a:    42a8        .B      CMP      r0,r5
-        0x08007b2c:    d3f5        ..      BCC      0x8007b1a ; Task_outputWave + 318
-        0x08007b2e:    f8d80004    ....    LDR      r0,[r8,#4]
-        0x08007b32:    1c64        d.      ADDS     r4,r4,#1
-        0x08007b34:    42a0        .B      CMP      r0,r4
-        0x08007b36:    d886        ..      BHI      0x8007a46 ; Task_outputWave + 106
-        0x08007b38:    4838        8H      LDR      r0,[pc,#224] ; [0x8007c1c] = 0x200002a0
-        0x08007b3a:    7a44        Dz      LDRB     r4,[r0,#9]
-        0x08007b3c:    f7f9ffe2    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
-        0x08007b40:    4d31        1M      LDR      r5,[pc,#196] ; [0x8007c08] = 0x20000008
-        0x08007b42:    ebc401c4    ....    RSB      r1,r4,r4,LSL #3
-        0x08007b46:    eb010181    ....    ADD      r1,r1,r1,LSL #2
-        0x08007b4a:    6128        (a      STR      r0,[r5,#0x10]
-        0x08007b4c:    f8da0000    ....    LDR      r0,[r10,#0]
-        0x08007b50:    fbb0f0fb    ....    UDIV     r0,r0,r11
-        0x08007b54:    2000        .       MOVS     r0,#0
-        0x08007b56:    eb0004c1    ....    ADD      r4,r0,r1,LSL #3
-        0x08007b5a:    f898000c    ....    LDRB     r0,[r8,#0xc]
-        0x08007b5e:    b1a0        ..      CBZ      r0,0x8007b8a ; Task_outputWave + 430
-        0x08007b60:    f7f9ffd0    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
-        0x08007b64:    6168        ha      STR      r0,[r5,#0x14]
-        0x08007b66:    6929        )i      LDR      r1,[r5,#0x10]
-        0x08007b68:    1a40        @.      SUBS     r0,r0,r1
-        0x08007b6a:    42a0        .B      CMP      r0,r4
-        0x08007b6c:    d3f5        ..      BCC      0x8007b5a ; Task_outputWave + 382
-        0x08007b6e:    f898000c    ....    LDRB     r0,[r8,#0xc]
-        0x08007b72:    b150        P.      CBZ      r0,0x8007b8a ; Task_outputWave + 430
-        0x08007b74:    4829        )H      LDR      r0,[pc,#164] ; [0x8007c1c] = 0x200002a0
-        0x08007b76:    88c0        ..      LDRH     r0,[r0,#6]
-        0x08007b78:    2800        .(      CMP      r0,#0
-        0x08007b7a:    f43faf5f    ?._.    BEQ      0x8007a3c ; Task_outputWave + 96
-        0x08007b7e:    1c7a        z.      ADDS     r2,r7,#1
-        0x08007b80:    4639        9F      MOV      r1,r7
-        0x08007b82:    b297        ..      UXTH     r7,r2
-        0x08007b84:    4281        .B      CMP      r1,r0
-        0x08007b86:    f4ffaf59    ..Y.    BCC      0x8007a3c ; Task_outputWave + 96
-        0x08007b8a:    2000        .       MOVS     r0,#0
-        0x08007b8c:    f7f9fe26    ..&.    BL       GPIO_Set_BUSY ; 0x80017dc
-        0x08007b90:    2001        .       MOVS     r0,#1
-        0x08007b92:    f7f9fe3f    ..?.    BL       GPIO_Set_INTRPT ; 0x8001814
-        0x08007b96:    f7f9ffb5    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
-        0x08007b9a:    4c1b        .L      LDR      r4,[pc,#108] ; [0x8007c08] = 0x20000008
-        0x08007b9c:    6120         a      STR      r0,[r4,#0x10]
-        0x08007b9e:    f8da0000    ....    LDR      r0,[r10,#0]
-        0x08007ba2:    fbb0f0fb    ....    UDIV     r0,r0,r11
-        0x08007ba6:    eb000080    ....    ADD      r0,r0,r0,LSL #2
-        0x08007baa:    f500758c    ...u    ADD      r5,r0,#0x118
-        0x08007bae:    f898000c    ....    LDRB     r0,[r8,#0xc]
-        0x08007bb2:    b130        0.      CBZ      r0,0x8007bc2 ; Task_outputWave + 486
-        0x08007bb4:    f7f9ffa6    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
-        0x08007bb8:    6160        `a      STR      r0,[r4,#0x14]
-        0x08007bba:    6921        !i      LDR      r1,[r4,#0x10]
-        0x08007bbc:    1a40        @.      SUBS     r0,r0,r1
-        0x08007bbe:    42a8        .B      CMP      r0,r5
-        0x08007bc0:    d3f5        ..      BCC      0x8007bae ; Task_outputWave + 466
-        0x08007bc2:    2000        .       MOVS     r0,#0
-        0x08007bc4:    f7f9fe26    ..&.    BL       GPIO_Set_INTRPT ; 0x8001814
-        0x08007bc8:    4638        8F      MOV      r0,r7
-        0x08007bca:    f001fa35    ..5.    BL       bsp_spi_DiagSendFinished ; 0x8009038
-        0x08007bce:    69e0        .i      LDR      r0,[r4,#0x1c]
-        0x08007bd0:    2100        .!      MOVS     r1,#0
-        0x08007bd2:    f004fdcd    ....    BL       xQueueSemaphoreTake ; 0x800c770
-        0x08007bd6:    2801        .(      CMP      r0,#1
-        0x08007bd8:    d108        ..      BNE      0x8007bec ; Task_outputWave + 528
-        0x08007bda:    2000        .       MOVS     r0,#0
-        0x08007bdc:    f888000e    ....    STRB     r0,[r8,#0xe]
-        0x08007be0:    4603        .F      MOV      r3,r0
-        0x08007be2:    4602        .F      MOV      r2,r0
-        0x08007be4:    4601        .F      MOV      r1,r0
-        0x08007be6:    69e0        .i      LDR      r0,[r4,#0x1c]
-        0x08007be8:    f004fb44    ..D.    BL       xQueueGenericSend ; 0x800c274
-        0x08007bec:    f005f9a8    ....    BL       xTaskResumeAll ; 0x800cf40
-        0x08007bf0:    2800        .(      CMP      r0,#0
-        0x08007bf2:    f47faf10    ....    BNE      0x8007a16 ; Task_outputWave + 58
-        0x08007bf6:    490a        .I      LDR      r1,[pc,#40] ; [0x8007c20] = 0xe000ed04
-        0x08007bf8:    f04f5080    O..P    MOV      r0,#0x10000000
-        0x08007bfc:    6008        .`      STR      r0,[r1,#0]
-        0x08007bfe:    f3bf8f4f    ..O.    DSB      
-        0x08007c02:    f3bf8f6f    ..o.    ISB      
-        0x08007c06:    e706        ..      B        0x8007a16 ; Task_outputWave + 58
+        0x08007a3a:    e09a        ..      B        0x8007b72 ; Task_outputWave + 406
+        0x08007a3c:    1c78        x.      ADDS     r0,r7,#1
+        0x08007a3e:    b287        ..      UXTH     r7,r0
+        0x08007a40:    f8d80004    ....    LDR      r0,[r8,#4]
+        0x08007a44:    2401        .$      MOVS     r4,#1
+        0x08007a46:    2801        .(      CMP      r0,#1
+        0x08007a48:    d978        x.      BLS      0x8007b3c ; Task_outputWave + 352
+        0x08007a4a:    2100        .!      MOVS     r1,#0
+        0x08007a4c:    4608        .F      MOV      r0,r1
+        0x08007a4e:    f7f9ff19    ....    BL       GPIO_isPinActive ; 0x8001884
+        0x08007a52:    b958        X.      CBNZ     r0,0x8007a6c ; Task_outputWave + 144
+        0x08007a54:    2000        .       MOVS     r0,#0
+        0x08007a56:    f7f9feeb    ....    BL       GPIO_Set_PIC_LED ; 0x8001830
+        0x08007a5a:    f898000c    ....    LDRB     r0,[r8,#0xc]
+        0x08007a5e:    b128        (.      CBZ      r0,0x8007a6c ; Task_outputWave + 144
+        0x08007a60:    2100        .!      MOVS     r1,#0
+        0x08007a62:    4608        .F      MOV      r0,r1
+        0x08007a64:    f7f9ff0e    ....    BL       GPIO_isPinActive ; 0x8001884
+        0x08007a68:    2800        .(      CMP      r0,#0
+        0x08007a6a:    d0f3        ..      BEQ      0x8007a54 ; Task_outputWave + 120
+        0x08007a6c:    2001        .       MOVS     r0,#1
+        0x08007a6e:    f7f9fedf    ....    BL       GPIO_Set_PIC_LED ; 0x8001830
+        0x08007a72:    eb080584    ....    ADD      r5,r8,r4,LSL #2
+        0x08007a76:    2000        .       MOVS     r0,#0
+        0x08007a78:    8aae        ..      LDRH     r6,[r5,#0x14]
+        0x08007a7a:    f7f9fee7    ....    BL       GPIO_Set_SPOT ; 0x800184c
+        0x08007a7e:    9801        ..      LDR      r0,[sp,#4]
+        0x08007a80:    b168        h.      CBZ      r0,0x8007a9e ; Task_outputWave + 194
+        0x08007a82:    8a68        h.      LDRH     r0,[r5,#0x12]
+        0x08007a84:    f7f9fe5e    ..^.    BL       GPIO_SetDAC ; 0x8001744
+        0x08007a88:    2200        ."      MOVS     r2,#0
+        0x08007a8a:    4648        HF      MOV      r0,r9
+        0x08007a8c:    f44f5180    O..Q    MOV      r1,#0x1000
+        0x08007a90:    f7fcf825    ..%.    BL       HAL_GPIO_WritePin ; 0x8003ade
+        0x08007a94:    2201        ."      MOVS     r2,#1
+        0x08007a96:    4648        HF      MOV      r0,r9
+        0x08007a98:    0311        ..      LSLS     r1,r2,#12
+        0x08007a9a:    f7fcf820    .. .    BL       HAL_GPIO_WritePin ; 0x8003ade
+        0x08007a9e:    2000        .       MOVS     r0,#0
+        0x08007aa0:    f7f9feaa    ....    BL       GPIO_Set_DIRECTION ; 0x80017f8
+        0x08007aa4:    4630        0F      MOV      r0,r6
+        0x08007aa6:    f7f9fe4d    ..M.    BL       GPIO_SetDAC ; 0x8001744
+        0x08007aaa:    2200        ."      MOVS     r2,#0
+        0x08007aac:    4648        HF      MOV      r0,r9
+        0x08007aae:    f44f4180    O..A    MOV      r1,#0x4000
+        0x08007ab2:    f7fcf814    ....    BL       HAL_GPIO_WritePin ; 0x8003ade
+        0x08007ab6:    2201        ."      MOVS     r2,#1
+        0x08007ab8:    4648        HF      MOV      r0,r9
+        0x08007aba:    0391        ..      LSLS     r1,r2,#14
+        0x08007abc:    f7fcf80f    ....    BL       HAL_GPIO_WritePin ; 0x8003ade
+        0x08007ac0:    4856        VH      LDR      r0,[pc,#344] ; [0x8007c1c] = 0x200002a0
+        0x08007ac2:    7a05        .z      LDRB     r5,[r0,#8]
+        0x08007ac4:    f7faf81e    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
+        0x08007ac8:    4e4f        ON      LDR      r6,[pc,#316] ; [0x8007c08] = 0x20000008
+        0x08007aca:    ebc501c5    ....    RSB      r1,r5,r5,LSL #3
+        0x08007ace:    eb010181    ....    ADD      r1,r1,r1,LSL #2
+        0x08007ad2:    6130        0a      STR      r0,[r6,#0x10]
+        0x08007ad4:    f8da0000    ....    LDR      r0,[r10,#0]
+        0x08007ad8:    fbb0f0fb    ....    UDIV     r0,r0,r11
+        0x08007adc:    2000        .       MOVS     r0,#0
+        0x08007ade:    eb0005c1    ....    ADD      r5,r0,r1,LSL #3
+        0x08007ae2:    f898000c    ....    LDRB     r0,[r8,#0xc]
+        0x08007ae6:    b130        0.      CBZ      r0,0x8007af6 ; Task_outputWave + 282
+        0x08007ae8:    f7faf80c    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
+        0x08007aec:    6170        pa      STR      r0,[r6,#0x14]
+        0x08007aee:    6931        1i      LDR      r1,[r6,#0x10]
+        0x08007af0:    1a40        @.      SUBS     r0,r0,r1
+        0x08007af2:    42a8        .B      CMP      r0,r5
+        0x08007af4:    d3f5        ..      BCC      0x8007ae2 ; Task_outputWave + 262
+        0x08007af6:    f898100c    ....    LDRB     r1,[r8,#0xc]
+        0x08007afa:    b139        9.      CBZ      r1,0x8007b0c ; Task_outputWave + 304
+        0x08007afc:    f44f6180    O..a    MOV      r1,#0x400
+        0x08007b00:    4648        HF      MOV      r0,r9
+        0x08007b02:    f7fbffe7    ....    BL       HAL_GPIO_ReadPin ; 0x8003ad4
+        0x08007b06:    7831        1x      LDRB     r1,[r6,#0]
+        0x08007b08:    4288        .B      CMP      r0,r1
+        0x08007b0a:    d0f4        ..      BEQ      0x8007af6 ; Task_outputWave + 282
+        0x08007b0c:    7030        0p      STRB     r0,[r6,#0]
+        0x08007b0e:    f7f9fff9    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
+        0x08007b12:    6130        0a      STR      r0,[r6,#0x10]
+        0x08007b14:    f8da0000    ....    LDR      r0,[r10,#0]
+        0x08007b18:    9d00        ..      LDR      r5,[sp,#0]
+        0x08007b1a:    fbb0f0fb    ....    UDIV     r0,r0,r11
+        0x08007b1e:    f898000c    ....    LDRB     r0,[r8,#0xc]
+        0x08007b22:    b130        0.      CBZ      r0,0x8007b32 ; Task_outputWave + 342
+        0x08007b24:    f7f9ffee    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
+        0x08007b28:    6170        pa      STR      r0,[r6,#0x14]
+        0x08007b2a:    6931        1i      LDR      r1,[r6,#0x10]
+        0x08007b2c:    1a40        @.      SUBS     r0,r0,r1
+        0x08007b2e:    42a8        .B      CMP      r0,r5
+        0x08007b30:    d3f5        ..      BCC      0x8007b1e ; Task_outputWave + 322
+        0x08007b32:    f8d80004    ....    LDR      r0,[r8,#4]
+        0x08007b36:    1c64        d.      ADDS     r4,r4,#1
+        0x08007b38:    42a0        .B      CMP      r0,r4
+        0x08007b3a:    d886        ..      BHI      0x8007a4a ; Task_outputWave + 110
+        0x08007b3c:    4837        7H      LDR      r0,[pc,#220] ; [0x8007c1c] = 0x200002a0
+        0x08007b3e:    7a44        Dz      LDRB     r4,[r0,#9]
+        0x08007b40:    f7f9ffe0    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
+        0x08007b44:    4d30        0M      LDR      r5,[pc,#192] ; [0x8007c08] = 0x20000008
+        0x08007b46:    ebc401c4    ....    RSB      r1,r4,r4,LSL #3
+        0x08007b4a:    eb010181    ....    ADD      r1,r1,r1,LSL #2
+        0x08007b4e:    6128        (a      STR      r0,[r5,#0x10]
+        0x08007b50:    f8da0000    ....    LDR      r0,[r10,#0]
+        0x08007b54:    fbb0f0fb    ....    UDIV     r0,r0,r11
+        0x08007b58:    2000        .       MOVS     r0,#0
+        0x08007b5a:    eb0004c1    ....    ADD      r4,r0,r1,LSL #3
+        0x08007b5e:    f898000c    ....    LDRB     r0,[r8,#0xc]
+        0x08007b62:    b188        ..      CBZ      r0,0x8007b88 ; Task_outputWave + 428
+        0x08007b64:    f7f9ffce    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
+        0x08007b68:    6168        ha      STR      r0,[r5,#0x14]
+        0x08007b6a:    6929        )i      LDR      r1,[r5,#0x10]
+        0x08007b6c:    1a40        @.      SUBS     r0,r0,r1
+        0x08007b6e:    42a0        .B      CMP      r0,r4
+        0x08007b70:    d3f5        ..      BCC      0x8007b5e ; Task_outputWave + 386
+        0x08007b72:    f898000c    ....    LDRB     r0,[r8,#0xc]
+        0x08007b76:    b138        8.      CBZ      r0,0x8007b88 ; Task_outputWave + 428
+        0x08007b78:    4828        (H      LDR      r0,[pc,#160] ; [0x8007c1c] = 0x200002a0
+        0x08007b7a:    88c0        ..      LDRH     r0,[r0,#6]
+        0x08007b7c:    2800        .(      CMP      r0,#0
+        0x08007b7e:    f43faf5d    ?.].    BEQ      0x8007a3c ; Task_outputWave + 96
+        0x08007b82:    42b8        .B      CMP      r0,r7
+        0x08007b84:    f63faf5a    ?.Z.    BHI      0x8007a3c ; Task_outputWave + 96
+        0x08007b88:    2000        .       MOVS     r0,#0
+        0x08007b8a:    f7f9fe27    ..'.    BL       GPIO_Set_BUSY ; 0x80017dc
+        0x08007b8e:    2001        .       MOVS     r0,#1
+        0x08007b90:    f7f9fe40    ..@.    BL       GPIO_Set_INTRPT ; 0x8001814
+        0x08007b94:    f7f9ffb6    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
+        0x08007b98:    4c1b        .L      LDR      r4,[pc,#108] ; [0x8007c08] = 0x20000008
+        0x08007b9a:    6120         a      STR      r0,[r4,#0x10]
+        0x08007b9c:    f8da0000    ....    LDR      r0,[r10,#0]
+        0x08007ba0:    fbb0f0fb    ....    UDIV     r0,r0,r11
+        0x08007ba4:    eb000080    ....    ADD      r0,r0,r0,LSL #2
+        0x08007ba8:    f500758c    ...u    ADD      r5,r0,#0x118
+        0x08007bac:    f898000c    ....    LDRB     r0,[r8,#0xc]
+        0x08007bb0:    b130        0.      CBZ      r0,0x8007bc0 ; Task_outputWave + 484
+        0x08007bb2:    f7f9ffa7    ....    BL       Get_dealyTimer_cnt ; 0x8001b04
+        0x08007bb6:    6160        `a      STR      r0,[r4,#0x14]
+        0x08007bb8:    6921        !i      LDR      r1,[r4,#0x10]
+        0x08007bba:    1a40        @.      SUBS     r0,r0,r1
+        0x08007bbc:    42a8        .B      CMP      r0,r5
+        0x08007bbe:    d3f5        ..      BCC      0x8007bac ; Task_outputWave + 464
+        0x08007bc0:    2000        .       MOVS     r0,#0
+        0x08007bc2:    f7f9fe27    ..'.    BL       GPIO_Set_INTRPT ; 0x8001814
+        0x08007bc6:    4638        8F      MOV      r0,r7
+        0x08007bc8:    f001fa36    ..6.    BL       bsp_spi_DiagSendFinished ; 0x8009038
+        0x08007bcc:    69e0        .i      LDR      r0,[r4,#0x1c]
+        0x08007bce:    2100        .!      MOVS     r1,#0
+        0x08007bd0:    f004fdce    ....    BL       xQueueSemaphoreTake ; 0x800c770
+        0x08007bd4:    2801        .(      CMP      r0,#1
+        0x08007bd6:    d108        ..      BNE      0x8007bea ; Task_outputWave + 526
+        0x08007bd8:    2000        .       MOVS     r0,#0
+        0x08007bda:    f888000e    ....    STRB     r0,[r8,#0xe]
+        0x08007bde:    4603        .F      MOV      r3,r0
+        0x08007be0:    4602        .F      MOV      r2,r0
+        0x08007be2:    4601        .F      MOV      r1,r0
+        0x08007be4:    69e0        .i      LDR      r0,[r4,#0x1c]
+        0x08007be6:    f004fb45    ..E.    BL       xQueueGenericSend ; 0x800c274
+        0x08007bea:    f005f9a9    ....    BL       xTaskResumeAll ; 0x800cf40
+        0x08007bee:    2800        .(      CMP      r0,#0
+        0x08007bf0:    f47faf11    ....    BNE      0x8007a16 ; Task_outputWave + 58
+        0x08007bf4:    490a        .I      LDR      r1,[pc,#40] ; [0x8007c20] = 0xe000ed04
+        0x08007bf6:    f04f5080    O..P    MOV      r0,#0x10000000
+        0x08007bfa:    6008        .`      STR      r0,[r1,#0]
+        0x08007bfc:    f3bf8f4f    ..O.    DSB      
+        0x08007c00:    f3bf8f6f    ..o.    ISB      
+        0x08007c04:    e707        ..      B        0x8007a16 ; Task_outputWave + 58
     $d
+        0x08007c06:    0000        ..      DCW    0
         0x08007c08:    20000008    ...     DCD    536870920
         0x08007c0c:    58020400    ...X    DCD    1476527104
         0x08007c10:    2000020c    ...     DCD    536871436
@@ -15543,7 +15543,7 @@
     $d
         0x08009bfa:    0000        ..      DCW    0
         0x08009bfc:    333a3731    17:3    DCD    859453233
-        0x08009c00:    32323a35    5:22    DCD    842152501
+        0x08009c00:    38323a37    7:28    DCD    942815799
         0x08009c04:    00000000    ....    DCD    0
         0x08009c08:    2079614d    May     DCD    544825677
         0x08009c0c:    32203331    13 2    DCD    840971057
@@ -18769,7 +18769,7 @@
     vApplicationIdleHook
         0x0800bad8:    b510        ..      PUSH     {r4,lr}
         0x0800bada:    f7f8f805    ....    BL       HAL_GetTick ; 0x8003ae8
-        0x0800bade:    f64031b8    @..1    MOV      r1,#0xbb8
+        0x0800bade:    f44f717a    O.zq    MOV      r1,#0x3e8
         0x0800bae2:    fbb0f2f1    ....    UDIV     r2,r0,r1
         0x0800bae6:    fb010112    ....    MLS      r1,r1,r2,r0
         0x0800baea:    4806        .H      LDR      r0,[pc,#24] ; [0x800bb04] = 0x200001a0
@@ -21777,7 +21777,7 @@
         0x0800da2c:    30322033    3 20    DCD    808591411
         0x0800da30:    20203432    24      DCD    538981426
         0x0800da34:    333a3731    17:3    DCD    859453233
-        0x0800da38:    32323a35    5:22    DCD    842152501
+        0x0800da38:    38323a37    7:28    DCD    942815799
         0x0800da3c:    6f530a0d    ..So    DCD    1867713037
         0x0800da40:    56207466    ft V    DCD    1444967526
         0x0800da44:    69737265    ersi    DCD    1769173605
@@ -22504,7 +22504,7 @@
 
 
 ** Section #8 '.debug_line' (SHT_PROGBITS)
-    Size   : 84696 bytes
+    Size   : 84700 bytes
 
 
 ** Section #9 '.debug_loc' (SHT_PROGBITS)
@@ -22512,7 +22512,7 @@
 
 
 ** Section #10 '.debug_macinfo' (SHT_PROGBITS)
-    Size   : 1394520 bytes
+    Size   : 1394452 bytes
 
 
 ** Section #11 '.debug_pubnames' (SHT_PROGBITS)

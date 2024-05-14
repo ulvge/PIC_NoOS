@@ -123,7 +123,8 @@ void Task_outputWave(void *argument)
 
             isFirst = true;
 
-            while (g_protocolData.isRecvedFinished && (g_protocolCmd.reSendTimes == 0 || reSendCount++ < g_protocolCmd.reSendTimes)) {
+            while (g_protocolData.isRecvedFinished && (g_protocolCmd.reSendTimes == 0 || reSendCount < g_protocolCmd.reSendTimes)) {
+                reSendCount++;
                 for (size_t i = 1; i < g_protocolData.recvedGroupCount; i++) {
                     // wait master ready
                     output_waitMasterBeReady();    

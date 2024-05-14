@@ -12,7 +12,6 @@
 #include "output_wave.h"
 
 #define SPI_DIAG_LIMIT_MAX_xUS 5
-#define SPI_DIAG_LIMIT_MAX_CLK  OUTPUT_DELAY_xUS(SPI_DIAG_LIMIT_MAX_xUS)
 
 SPI_HandleTypeDef g_hspi1;
 Diagnosis g_diagnosis;
@@ -78,7 +77,7 @@ inline void bsp_spi_DiagReceved()
     if (g_diagnosis.recevedDurationThis > g_diagnosis.recevedMaxDuration) {
         g_diagnosis.recevedMaxDuration = g_diagnosis.recevedDurationThis;
     }
-    if (g_diagnosis.recevedDurationThis > SPI_DIAG_LIMIT_MAX_xUS){
+    if (g_diagnosis.recevedDurationThis > SPI_DIAG_LIMIT_MAX_xUS * 10){
         g_diagnosis.recevedRespondTimeoutCnt++;
     }
 }
