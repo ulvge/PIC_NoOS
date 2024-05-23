@@ -51,13 +51,13 @@ void SPI_RecOver(void){
 }
 inline static void output_setDirection(uint16_t val)
 {
-    GPIO_Set_DIRECTION((GPIO_PinState)(val & BIT(12)));
+    GPIO_Set_DIRECTION((GPIO_PinState)(!!(val & BIT(12))));
 }
 /// @brief send  mode, is slope
 /// @param val 
 inline static void output_setRunMode(uint16_t val)
 {
-    GPIO_Set_SPOT((GPIO_PinState)(val & BIT(13)));
+    GPIO_Set_SPOT((GPIO_PinState)(!!(val & BIT(13))));
 }
 
 inline static void output_waitMasterBeReady(void)
@@ -115,7 +115,9 @@ void Task_outputWave(void *argument)
     g_sem_isSending = xSemaphoreCreateMutex();
     uint32_t dlyUs = 65; // 65 5.7k
     while (1) {
+        HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_RESET);
         if (xSemaphoreTake(g_sem_recvedWaveData, portMAX_DELAY) == pdTRUE) {
+            HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_SET);
             bsp_spi_DiagSendStart();
             vTaskSuspendAll();
             GPIO_Set_BUSY(GPIO_PIN_SET);
@@ -125,7 +127,7 @@ void Task_outputWave(void *argument)
 
             while (g_protocolData.isRecvedFinished && (g_protocolCmd.reSendTimes == 0 || reSendCount < g_protocolCmd.reSendTimes)) {
                 reSendCount++;
-                for (size_t i = 1; i < g_protocolData.recvedGroupCount; i++) {
+                for (size_t i = 0; i < g_protocolData.recvedGroupCount; i++) {
                     // wait master ready
                     output_waitMasterBeReady();    
                     GPIO_Set_PIC_LED(GPIO_PIN_SET); // run normal
