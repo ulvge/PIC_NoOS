@@ -44,7 +44,8 @@ static void delay_us(uint32_t us, uint32_t _0us)
     } while ((nowStamp - oldStamp) < dly);
 }
 
-void SPI_RecOver(void){
+void SPI_RecOver(void)
+{
     // GPIO_Set_INTRPT(GPIO_PIN_SET); //PC2
     // delay_us(OUTPUT_DELAY_1U5S);
     // GPIO_Set_INTRPT(GPIO_PIN_RESET);
@@ -118,7 +119,6 @@ void Task_outputWave(void *argument)
         HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_RESET);
         if (xSemaphoreTake(g_sem_recvedWaveData, portMAX_DELAY) == pdTRUE) {
             HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_SET);
-            bsp_spi_DiagSendStart();
             vTaskSuspendAll();
             GPIO_Set_BUSY(GPIO_PIN_SET);
             reSendCount = 0;
@@ -163,8 +163,6 @@ void Task_outputWave(void *argument)
             GPIO_Set_INTRPT(GPIO_PIN_SET);
             delay_us(1, 5);
             GPIO_Set_INTRPT(GPIO_PIN_RESET);
-
-            bsp_spi_DiagSendFinished(reSendCount);
 
             if (xSemaphoreTake(g_sem_isSending, 0) == pdTRUE) {// is sending
                 g_protocolData.isSending = false;

@@ -26,8 +26,6 @@
 #include "bsp_adc.h"
 #include "shell.h"
 #include "shell_port.h"
-#include "api_utc.h"
-#include "cm_backtrace.h"
 #include "uart_monitor.h"
 #include "spi_communication.h"
 
@@ -45,7 +43,6 @@ int g_debugLevel = DBG_LOG;
 TaskHandle_t gp_xHandle_Task_outputWave = NULL;
 TaskHandle_t gp_xHandle_Task_uartMonitor = NULL;
 TaskHandle_t gp_xHandle_Task_shell = NULL;
-static __IO uint64_t g_utc_time_firmware_build = 0;
 static const char *projectInfo =
     "\r\n"
     "********************************************\r\n"
@@ -95,7 +92,6 @@ static void MX_DMA_Init(void)
  */
 int main(void)
 {
-    g_utc_time_firmware_build = currentSecsSinceEpoch(__DATE__, __TIME__);
     /* MPU Configuration--------------------------------------------------------*/
     MPU_Config();
     /* Enable the CPU Cache */
@@ -116,8 +112,6 @@ int main(void)
     ADC_init();
     DebugConfig();
     LOG_RAW("init other peripherals over\r\n");
-    /* CmBacktrace initialize */
-    cm_backtrace_init("CmBacktrace", HARDWARE_VERSION, SOFT_VERSION);
 
     /* creation of outputWave */
     xTaskCreate(Task_outputWave, "outputWave", 128 * 4, NULL, 48, &gp_xHandle_Task_outputWave );
@@ -313,62 +307,6 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-void ToggleAllGPIO(void){
-    static bool isOn = true;
-	printf("ToggleAllGPIO = %s\r\n", isOn ? "on" : "off");
-    // 2 PC13
-    GPIO_setPinStatus(GPIO_MCLR, (FunctionalState)isOn, NULL);
-    // 8 PC0
-    GPIO_setPinStatus(GPIO_PIC_LED, (FunctionalState)isOn, NULL);
-    HAL_GPIO_WritePin(XBEAM_PORT, XBEAM_PIN, (GPIO_PinState)(isOn));
-    GPIO_setPinStatus(GPIO_INTRPT, (FunctionalState)isOn, NULL);
-    GPIO_setPinStatus(GPIO_LD_MSLOPE, (FunctionalState)isOn, NULL);
-    // 14 PA0
-    GPIO_setPinStatus(GPIO_PLUS_COUNT, (FunctionalState)isOn, NULL);
-    GPIO_setPinStatus(GPIO_BUSY, (FunctionalState)isOn, NULL);
-    // 20 PA4
-    HAL_GPIO_WritePin(GPIO_SPI1_PORT, GPIO_SPI1_NSS, (GPIO_PinState)(isOn));
-    HAL_GPIO_WritePin(GPIO_SPI1_PORT, GPIO_SPI1_SCK, (GPIO_PinState)(isOn));
-    HAL_GPIO_WritePin(GPIO_SPI1_PORT, GPIO_SPI1_MISO, (GPIO_PinState)(isOn));
-    HAL_GPIO_WritePin(GPIO_SPI1_PORT, GPIO_SPI1_MOSI, (GPIO_PinState)(isOn));
-    // 25 PC5 PB0~2 PB10
-    GPIO_setPinStatus(GPIO_DIRECTION, (FunctionalState)isOn, NULL);
-    GPIO_setPinStatus(GPIO_SPOT, (FunctionalState)isOn, NULL);
-    GPIO_setPinStatus(GPIO_INTEGRATE, (FunctionalState)isOn, NULL);
-    GPIO_setPinStatus(GPIO_POS_EQUALS, (FunctionalState)isOn, NULL);
-    GPIO_setPinStatus(GPIO_MATCH, (FunctionalState)isOn, NULL);
-    // 33 PB12
-    GPIO_setPinStatus(GPIO_LD_POS, (FunctionalState)isOn, NULL);
-    // 35 PB14
-    GPIO_setPinStatus(GPIO_LD_SLOPE, (FunctionalState)isOn, NULL);
-    GPIO_setPinStatus(GPIO_RUN_LED, (FunctionalState)isOn, NULL);
-    // 42 PA10
-    GPIO_setPinStatus(GPIO_GLITCH_SHUTDOWN, (FunctionalState)isOn, NULL);
-
-    if (isOn){
-        GPIO_SetDAC(0xffff);
-    }else{
-        GPIO_SetDAC(0x0000);
-    }
-    
-    
-    isOn = !isOn;
-}
-void PrintTaskStackHead(void)
-{
-    TaskHandle_t taskHandle[3] = {gp_xHandle_Task_outputWave, gp_xHandle_Task_uartMonitor, gp_xHandle_Task_shell};
-    uint32_t taskStackWaterMark;
-
-    LOG_D("\r\n");
-    LOG_D("    OS,            MinHeapSize = %d\r\n", xPortGetMinimumEverFreeHeapSize());
-    LOG_D("    task           StackHighWaterMark\r\n");
-    for (int i = 0; i < 3; i++) {
-        if (taskHandle[i] != NULL) {
-            taskStackWaterMark = uxTaskGetStackHighWaterMark(taskHandle[i]) * 4;
-            LOG_D("    %-15s %d\r\n", pcTaskGetTaskName(taskHandle[i]), taskStackWaterMark);
-        }
-    }
-}
 void vApplicationIdleHook( void )
 {
     static bool isPrinted = false;
@@ -376,8 +314,6 @@ void vApplicationIdleHook( void )
     if (tickNow % 1000 == 0) {
         if (!isPrinted) {
             isPrinted = true;
-            //PrintTaskStackHead();
-            //ToggleAllGPIO();
         }
     }else{
         isPrinted = false;

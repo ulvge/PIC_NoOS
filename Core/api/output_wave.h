@@ -16,7 +16,7 @@
 #ifndef SystemCoreClock
 #define SystemCoreClock 280000000
 #endif
-#define OUTPUT_DELAY_0U1S   ((SystemCoreClock / (1000000 * 10)))
+#define OUTPUT_DELAY_0U1S   ((SystemCoreClock / (1000000 * 10))) //28
 #define OUTPUT_DELAY_1US (SYSTEM_CORE_CLOCK_PER_X_US)
 #define OUTPUT_DELAY_1U5S (SYSTEM_CORE_CLOCK_PER_X_US + (SYSTEM_CORE_CLOCK_PER_X_US >> 1))
 

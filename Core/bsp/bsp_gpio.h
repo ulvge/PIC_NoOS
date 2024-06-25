@@ -110,7 +110,6 @@ inline extern void GPIO_Set_LD_SLOPE(GPIO_PinState st);
 
 inline extern void GPIO_SetDAC(uint16_t val);
 
-void GPIO_printIdexAndName(void);
 int GPIO_isPinActive(GPIO_Idex idex, GPIO_PinState *config);
 bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive, GPIO_PinState *config);
 bool GPIO_getPinName(GPIO_Idex idex, const char **name);

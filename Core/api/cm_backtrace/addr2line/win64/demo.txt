@@ -1,3 +1,0 @@
-addr2line -e ..\..\..\..\projectGD32F103\output\temp\*.axf -a -f 
-
-addr2line -e ..\..\..\..\projectGD32F303\output\temp\*.axf -a -f 

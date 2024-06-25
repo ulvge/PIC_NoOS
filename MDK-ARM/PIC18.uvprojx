@@ -329,8 +329,8 @@
             <uC99>1</uC99>
             <uGnu>1</uGnu>
             <useXO>0</useXO>
-            <v6Lang>5</v6Lang>
-            <v6LangP>3</v6LangP>
+            <v6Lang>3</v6Lang>
+            <v6LangP>5</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
             <v6Lto>0</v6Lto>
@@ -384,11 +384,6 @@
         <Group>
           <GroupName>api</GroupName>
           <Files>
-            <File>
-              <FileName>api_utc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\api\api_utc.c</FilePath>
-            </File>
             <File>
               <FileName>FIFO.c</FileName>
               <FileType>1</FileType>
@@ -458,11 +453,6 @@
               <FileName>shell_port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\api\shell\shell_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>gpio_shell.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\api\shell\gpio_shell.c</FilePath>
             </File>
             <File>
               <FileName>shell_cmd_list.c</FileName>
@@ -554,21 +544,6 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>cm_backtrace</GroupName>
-          <Files>
-            <File>
-              <FileName>cm_backtrace.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\api\cm_backtrace\cm_backtrace.c</FilePath>
-            </File>
-            <File>
-              <FileName>cmb_fault.S</FileName>
-              <FileType>2</FileType>
-              <FilePath>..\Core\api\cm_backtrace\cmb_fault.S</FilePath>
             </File>
           </Files>
         </Group>

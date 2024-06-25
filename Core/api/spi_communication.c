@@ -1,5 +1,4 @@
 #include "spi_communication.h"
-#include "api_utc.h"
 #include "debug_print.h"
 #include <main.h>
 #include <stdlib.h>
