@@ -11,20 +11,16 @@
 #include "semphr.h"
 
 // 定义宏
-#define DATA_BUFF_IN_128K 1
+#define SPI_RECV_BUFF_GROUP_COUNT 23500
 
-#if DATA_BUFF_IN_128K == 1
-#define SPI_RECV_BUFF_GROUP_COUNT 23500     // max: 23500
-#else
-#define SPI_RECV_BUFF_GROUP_COUNT 32000     // 128K 32000
-#endif
-
+// 协议类型的头
 #define PROTOCOL_DATA_ID        0x03
 #define PROTOCOL_DATA_WRITEBACK  0x04
 #define PROTOCOL_CMD_CMD 0x0b
 
 #define PROTOCOL_CMD_FILED_LEN 4
 
+// 接收状态机
 typedef enum {
     RECVEVENT_WAIT_DATA_ID = 0,
     RECVEVENT_WAIT_DATA_HEAD1,
@@ -36,6 +32,7 @@ typedef enum {
     RECVEVENT_RECEVED_CMD_ID,
 } FSM_RecvEvent;
 
+// 接收到的协议类型
 typedef enum {
     PROTOCOL_TYPE_UNKNOWN = 0,
     PROTOCOL_TYPE_DATA,
@@ -45,12 +42,18 @@ typedef enum {
 
 // 发送数据 PROTOCOL_DATA_ID
 typedef struct {
-    uint8_t *wp;
-    uint32_t recvedGroupCount;
-    uint32_t recvedByteCount;
-    uint8_t isRecvedFinished;
-    uint8_t isRecvedOverflow;
-    uint8_t isSending;
+    // 存放数据的指针
+    uint8_t *wp;   
+    //已经接收到的点位个数             
+    uint32_t recvedGroupCount;  
+    //已经接收到的字节数
+    uint32_t recvedByteCount;    
+    //是否接收完成
+    uint8_t isRecvedFinished;   
+    //是否接溢出
+    uint8_t isRecvedOverflow;  
+    // 是否存在发送 
+    uint8_t isSending;          
 //Main Body
     uint16_t count __attribute__((aligned(2)));
     struct {
@@ -62,8 +65,10 @@ typedef struct {
 
 // 发送命令 PROTOCOL_CMD_CMD
 typedef struct {
-    uint8_t *wp;
-    uint16_t recvedByteCount;
+    // 存放数据的指针
+    uint8_t *wp;    
+    //已经接收到的字节数                  
+    uint16_t recvedByteCount;      
 //Main Body
     uint16_t reSendTimes __attribute__((aligned(2)));
     uint8_t sleepUsWave;

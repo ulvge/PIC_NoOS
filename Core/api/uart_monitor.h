@@ -11,8 +11,6 @@
 
 extern void uart_PostdMsg(bool isReSend);
 extern void Task_uartMonitor(void *param);
-extern SemaphoreHandle_t g_sem_uartResend;
-
 
 #ifdef __cplusplus
 }

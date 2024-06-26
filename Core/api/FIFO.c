@@ -25,7 +25,12 @@ void FIFO_Init(FIFO *fifo, INT8U *array, INT16U deepth)
 //     fifo->rp = fifo->array;
 //     fifo->wp = fifo->array;
 // }
-
+/**
+ * @brief 向FIFO写入数据
+ * @param fifo FIFO结构体指针
+ * @param data 要写入的数据
+ * @return 成功返回true，否则返回false
+ */
 BOOLEAN FIFO_Write(FIFO *fifo, INT8U data)
 {
     if (fifo->occupy >= fifo->deepth) {
@@ -40,7 +45,13 @@ BOOLEAN FIFO_Write(FIFO *fifo, INT8U data)
     API_ExitCirtical(x);
     return TRUE;
 }
-
+/**
+ * @brief 向FIFO写入多个数据
+ * @param fifo FIFO结构体指针
+ * @param data 要写入的数据指针
+ * @param dataSize 要写入的数据数量
+ * @return 成功返回true，否则返回false
+ */
 BOOLEAN FIFO_Writes(FIFO *fifo, INT8U *data, INT16U dataSize)
 {
     if (dataSize > (fifo->deepth - fifo->occupy)) {
@@ -57,7 +68,11 @@ BOOLEAN FIFO_Writes(FIFO *fifo, INT8U *data, INT16U dataSize)
     API_ExitCirtical(x);
     return TRUE;
 }
-
+/**
+ * @brief 检查FIFO是否为空
+ * @param fifo FIFO结构体指针
+ * @return 如果FIFO为空，返回true，否则返回false
+ */
 portINLINE  BOOLEAN FIFO_Empty(FIFO *fifo)
 {
     if (fifo->occupy == 0){
@@ -66,7 +81,12 @@ portINLINE  BOOLEAN FIFO_Empty(FIFO *fifo)
 		return false;
 	}
 }
- 
+ /**
+ * @brief 从FIFO读取数据
+ * @param fifo FIFO结构体指针
+ * @param data 用于存储数据的指针
+ * @return 如果FIFO不为空，返回true，否则返回false
+ */
 BOOLEAN FIFO_Read(FIFO *fifo, INT8U *data)
 {
     if (fifo->occupy == 0) {
@@ -81,7 +101,14 @@ BOOLEAN FIFO_Read(FIFO *fifo, INT8U *data)
     API_ExitCirtical(x);
     return true;
 }
-
+/**
+ * @brief 从FIFO读取多个数据
+ * @param fifo FIFO结构体指针
+ * @param data 用于存储数据的指针
+ * @param dataSize 要读取的数据数量
+ * @param readLen 实际读取到的数据数量
+ * @return 如果FIFO不为空，返回true，否则返回false
+ */
 BOOLEAN FIFO_ReadN(FIFO *fifo, INT8U *data, INT16U dataSize, INT16U *readLen)
 {
     if (fifo->occupy == 0) {

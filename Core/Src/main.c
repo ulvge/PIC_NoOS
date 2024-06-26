@@ -229,7 +229,6 @@ void MPU_Config(void)
  * @param  htim : TIM handle
  * @retval None
  */
-
 inline uint32_t Get_dealyTimer_cnt(void)
 {
     return g_htim5.Instance->CNT;
@@ -306,7 +305,10 @@ void assert_failed(uint8_t *file, uint32_t line)
     /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
+/**
+ * @brief 空闲事件处理函数
+ * @return void
+ */
 void vApplicationIdleHook( void )
 {
     static bool isPrinted = false;
@@ -319,10 +321,18 @@ void vApplicationIdleHook( void )
         isPrinted = false;
     }
 }
+/**
+ * @brief 定时器中断函数
+ * @return void
+ */
 void vPortSetupTimerInterrupt( void )
 {
 
 }
+/**
+ * @brief 重启系统
+ * @return void
+ */
 void Reboot(void){
     HAL_NVIC_SystemReset();
 }

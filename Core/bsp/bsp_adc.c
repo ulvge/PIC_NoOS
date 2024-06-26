@@ -9,7 +9,9 @@ ADC_ChannelConfTypeDef        sConfig;
 
 static uint16_t g_ADCxConvertedData[ADC_CONVERTED_DATA_BUFFER_SIZE] __attribute__((section(".MY_SECTION"), aligned(32)));
 
+// ADC 分辨率
 #define ADC_VOLTAGE_INCREMENT   0.01294f
+// ADC 电压转换系数
 #define ADC_3V3_5V_K            1.55556f
 
 __attribute__((unused)) static bool g_adcConvertFinished = false;
@@ -65,21 +67,27 @@ void ADC_init(void)
         Error_Handler();
     }
 }
-
+/// adc cplt 回调函数
 __attribute__((unused)) static void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
     g_adcConvertFinished = true;
 }
-
+/**
+ * @brief 获取ADC值
+ * @return 返回电压值
+ */
 float ADC_get_value(void)
 {
     uint32_t adcSum = 0;
+    // 取样数据 累加
     for (size_t i = 0; i < ADC_CONVERTED_DATA_BUFFER_SIZE; i++)
     {
         adcSum += g_ADCxConvertedData[i];
     }
-
+    
+    /* 计算平均值 */
     float vol3V3 = (adcSum * ADC_VOLTAGE_INCREMENT) / ADC_CONVERTED_DATA_BUFFER_SIZE ;
+    /* 转换 电压值 */
     float vol5V = vol3V3 * ADC_3V3_5V_K;
     return vol5V;
 }

@@ -12,6 +12,7 @@
 #define EXPAND(x) STR(x)
 #define PIN_NAME(val) .Name = EXPAND(val), .Pin = val##_PIN
 
+// 定义GPIO配置
 const static GPIO_InitTypeDef g_gpioConfigComm[] = {
     {GLITCH_SHUTDOWN_PORT,  PIN_NAME(GLITCH_SHUTDOWN), GPIO_MODE_INPUT, GPIO_NOPULL, GPIO_SPEED_FREQ_HIGH, NULL, GPIO_PIN_RESET},//?
     {PIC_LED_PORT,  		PIN_NAME(PIC_LED),         GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, GPIO_SPEED_FREQ_LOW, NULL, GPIO_PIN_RESET},
@@ -44,13 +45,25 @@ static const GPIO_InitTypeDef *p_gpioCfg4 = &g_gpioConfigComm[GPIO_DIRECTION];
 static const GPIO_InitTypeDef *p_gpioCfg5 = &g_gpioConfigComm[GPIO_SPOT];
 static const GPIO_InitTypeDef *p_gpioCfg7 = &g_gpioConfigComm[GPIO_LD_POS];
 static const GPIO_InitTypeDef *p_gpioCfg8 = &g_gpioConfigComm[GPIO_LD_SLOPE];
-
+/**
+ * @brief 设置GPIO组引脚
+ * @param GPIOx 实例指针
+ * @param GPIO_Pin 组合引脚
+ * @param val 组合值
+ * @return void
+ */
 inline static void HAL_GPIO_SetGroupPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint16_t val)
 {
     /* get current Output Data Register value */
     uint32_t odr = GPIOx->ODR & (~GPIO_Pin);
     GPIOx->ODR = odr | val;
 }
+
+/**
+ * @brief 反转二进制位
+ * @param num 要反转的16位无符号整数
+ * @return 返回反转后的16位无符号整数
+ */
 inline static uint16_t reverseBits(uint16_t num) {
     uint16_t result = 0;
     for(int i = 0; i < 12; i++) {
@@ -60,7 +73,11 @@ inline static uint16_t reverseBits(uint16_t num) {
     }
     return result;
 }
-
+/**
+ * @brief  DAC val, 赋值到对应的引脚
+ * 
+ * @param DAC val 
+ */
 inline void GPIO_SetDAC(uint16_t val)
 {
     static const GPIO_InitTypeDef *p_gpioCfgA = &g_gpioConfigComm[GPIO_DAC_A];
@@ -162,35 +179,33 @@ GPIO_PinState GPIO_getPinStatus(GPIO_Idex idex)
     const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[idex];
     return HAL_GPIO_ReadPin(p_gpioCfg->PORT, p_gpioCfg->Pin);
 }
-int GPIO_isPinActive(GPIO_Idex idex, GPIO_PinState *config)
+/**
+ * @brief 检测GPIO引脚是否被激活
+ * @param idex GPIO引脚索引
+ * @return 成功返回1，否则返回0
+ */
+int GPIO_isPinActive(GPIO_Idex idex)
 {
     if (idex >= ARRARY_SIZE(g_gpioConfigComm))
     {
         return -1;
     }
     const GPIO_InitTypeDef *p_gpioCfg = &g_gpioConfigComm[idex];
-    if (config != NULL){
-        *config = p_gpioCfg->ActiveSignal;
-    }
     if (idex <= GPIO_GROUP_START){
         GPIO_PinState staus = HAL_GPIO_ReadPin(p_gpioCfg->PORT, p_gpioCfg->Pin);
         if (staus == p_gpioCfg->ActiveSignal) {
             return 1;
         }
-		return 0;
-    }else{
-        /* get current Output Data Register value */
-        uint32_t odr = p_gpioCfg->PORT->ODR & (~p_gpioCfg->Pin);
-        uint32_t res;
-        if (idex == GPIO_DAC_C){
-            res = GET_BITS(odr, 10, 12);
-        }else{
-            res = GET_BITS(odr, 2, 9);
-        }
-        return res;
+        return 0;
     }
+    return 0;
 }
-
+/**
+ * @brief 获取GPIO引脚名称
+ * @param idex GPIO引脚索引
+ * @param name 返回的名称指针
+ * @return 成功返回true，否则返回false
+ */
 bool GPIO_getPinName(GPIO_Idex idex, const char **name)
 {
     if (idex >= ARRARY_SIZE(g_gpioConfigComm))
@@ -206,10 +221,13 @@ bool GPIO_getPinName(GPIO_Idex idex, const char **name)
 //          0               0      1
 //          0               1      0
 
-/// @param alias 
-/// @param isActive 
-/// @return 
-bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive, GPIO_PinState *config)
+/**
+ * @brief 设置GPIO引脚状态
+ * @param idex GPIO引脚索引
+ * @param isActive 引脚状态（ACTIVE_HIGH或ACTIVE_LOW）
+ * @return 成功返回true，否则返回false
+ */
+bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive)
 {
     if (idex >= ARRARY_SIZE(g_gpioConfigComm))
     {
@@ -222,9 +240,6 @@ bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive, GPIO_PinState *
         return false;
     }
 
-    if (config != NULL){
-        *config = p_gpioCfg->ActiveSignal;
-    }
     HAL_GPIO_WritePin(p_gpioCfg->PORT, p_gpioCfg->Pin, (GPIO_PinState)(p_gpioCfg->ActiveSignal == (GPIO_PinState)isActive));
     return true;
 }
@@ -241,6 +256,11 @@ static void EXTI15_10_IRQHandler_Config(void)
     HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
+/**
+  * @brief  GPIO_Init: clk & gpio config & IT
+  * @param  None
+  * @retval None
+  */
 void GPIO_Init(void)
 {
     MX_GPIO_Init();

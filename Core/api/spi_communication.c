@@ -10,11 +10,7 @@
 
 
 ProtocolCmd g_protocolCmd;
-#if DATA_BUFF_IN_128K == 1
 ProtocolData g_protocolData;
-#else
-ProtocolData g_protocolData __attribute__((section(".MY_SECTION")));
-#endif
 ProtocolData g_protocolDataOri __attribute__((section(".MY_SECTION")));
 ProtocolWriteBack g_protocolWriteBack;
 
@@ -23,14 +19,20 @@ static FSM_RecvEvent g_FSM_RecvEvent;
 static void SPI_ProtocolReset(PROTOCOL_TYPE type);
 static void SPI_writeBack(void);
 extern SPI_HandleTypeDef g_hspi1;
-
+/**
+ * @brief 协议初始化
+ * @return void
+ */
 void SPI_ProtocolInit(void)
 {
     SPI_ProtocolReset(PROTOCOL_TYPE_DATA);
     SPI_ProtocolReset(PROTOCOL_TYPE_DATA_WRITEBACK);
     SPI_ProtocolReset(PROTOCOL_TYPE_CMD);
 }
-
+/**
+ * @brief 重置协议解析
+ * @return void
+ */
 inline static void SPI_ProtocolReset(PROTOCOL_TYPE type)
 {
     switch (type)
@@ -54,11 +56,18 @@ inline static void SPI_ProtocolReset(PROTOCOL_TYPE type)
     g_protocol_type = PROTOCOL_TYPE_UNKNOWN;
 }
 
+/**
+ * @brief SPI 命令错误， 重置协议解析
+ * @return void
+ */
 inline static void SPI_ProtocolError()
 {
     SPI_ProtocolReset(g_protocol_type);
 }
-
+/**
+ * @brief SPI 数据协议解析完成，准备发送
+ * @return void
+ */
 inline static void SPI_SendSemOutputWave()
 {
     if (g_protocolData.isSending || !g_protocolData.recvedGroupCount) {
@@ -71,6 +80,11 @@ inline static void SPI_SendSemOutputWave()
         xSemaphoreGiveFromISR(g_sem_recvedWaveData, &xHigherPriorityTaskWoken_YES);
     }
 }
+
+/**
+ * @brief SPI 数据协议解析
+ * @return void
+ */
 inline static bool SPI_decode_TYPE_DATA(uint8_t val){
     static uint16_t *pSwap;
     switch (g_FSM_RecvEvent) {
@@ -117,7 +131,10 @@ inline static bool SPI_decode_TYPE_DATA(uint8_t val){
     }
     return false;
 }
-
+/**
+ * @brief SPI 回传协议解析
+ * @return void
+ */
 inline static bool SPI_decode_TYPE_WRITEBACK(uint8_t val){
     switch (g_FSM_RecvEvent) {
         case RECVEVENT_WAIT_DATA_HEAD1:
@@ -142,7 +159,10 @@ inline static bool SPI_decode_TYPE_WRITEBACK(uint8_t val){
     }
     return false;
 }
-
+/**
+ * @brief SPI 协议 解析
+ * @return void
+ */
 inline void SPI_ProtocolParsing(uint8_t val)
 {
     //UART_sendByte(DEBUG_UART_PERIPH, val);
@@ -174,7 +194,7 @@ inline void SPI_ProtocolParsing(uint8_t val)
     } else if (g_protocol_type == PROTOCOL_TYPE_DATA_WRITEBACK) {
         if(SPI_decode_TYPE_WRITEBACK(val)){
             SPI_writeBack();
-        } 
+        }
     } else if (g_protocol_type == PROTOCOL_TYPE_CMD) {
         if (g_protocolCmd.recvedByteCount < PROTOCOL_CMD_FILED_LEN) {
             *g_protocolCmd.wp = val;
@@ -191,7 +211,10 @@ inline void SPI_ProtocolParsing(uint8_t val)
         }
     }
 }
-
+/**
+ * @brief SPI从机数据回传
+ * @return void
+ */
 void SPI_writeBack(void)
 {
     HAL_StatusTypeDef st = HAL_SPI_Transmit_DMA(&g_hspi1, (uint8_t *)&g_protocolDataOri.data, g_protocolData.recvedGroupCount * 4);
@@ -205,7 +228,5 @@ void SPI_writeBack(void)
         default:
             break;
     }
-    
-    SPI_RecOver();
 }
 

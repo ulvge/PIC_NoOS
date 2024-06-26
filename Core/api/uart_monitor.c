@@ -7,8 +7,12 @@
 #include "bsp_uartcomm.h"
 #include "spi_communication.h"
 
-SemaphoreHandle_t g_sem_uartResend;
-
+//申明信号量
+static SemaphoreHandle_t g_sem_uartResend;
+/**
+ * @brief 发送消息函数
+ * @return void
+ */
 void Task_uartMonitor(void *param)
 {
     g_sem_uartResend = xSemaphoreCreateBinary();
@@ -23,6 +27,11 @@ void Task_uartMonitor(void *param)
 
 #define UART_RESEND_MAX_COUNT 2
 extern UART_HandleTypeDef g_uart2Handle;
+/**
+ * @brief 发送消息，有数据要发送
+ * @param isReSend 是否重发
+ * @return void
+ */
 void uart_PostdMsg(bool isReSend)
 {
     static uint8_t errCount = 0;
@@ -36,6 +45,7 @@ void uart_PostdMsg(bool isReSend)
         errCount = 0;
     }
 
+    //发送消息
     if (vPortGetIPSR()) {
         xSemaphoreGiveFromISR(g_sem_uartResend, &xHigherPriorityTaskWoken_NO);
     }else {

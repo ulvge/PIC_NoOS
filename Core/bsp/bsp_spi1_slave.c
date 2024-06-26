@@ -13,9 +13,12 @@
 
 SPI_HandleTypeDef g_hspi1;
 DMA_HandleTypeDef g_hdma_spi1_tx;
-
+/**
+ * @brief 使能SPI1的片选引脚
+ * @return void
+ */
 static void SPI_EnableChipSelect() {
-    GPIO_setPinStatus(GPIO_SPI1_NSS_IDEX, ENABLE, NULL);
+    GPIO_setPinStatus(GPIO_SPI1_NSS_IDEX, ENABLE);
 }
 /**
  * @brief SPI1 Initialization Function
@@ -51,11 +54,19 @@ static void MX_SPI1_Init(void)
         Error_Handler();
     }
 }
+/**
+ * @brief 开始SPI1的接收（中断模式）
+ * @return void
+ */
 void SPI1_startReceviceIT(void)
 {
     static uint8_t rxBuffer;
     HAL_SPI_Receive_IT(&g_hspi1, &rxBuffer, sizeof(rxBuffer));
 }
+/**
+ * @brief SPI1初始化函数
+ * @return void
+ */
 void SPI1_Init(void)
 {
     MX_SPI1_Init();

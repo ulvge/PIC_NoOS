@@ -10,17 +10,17 @@
 #define UART_NUM_TOTAL 1
 
 static UART_PARA_STRUCT *g_pUARTSHandler[UART_NUM_TOTAL] = {NULL};	
-bool g_isPrintNoBlock = true;
 
-//use FIFO
+//打印接口
 int fputc(int ch, FILE *f)
 {
-    if (g_isPrintNoBlock) {
-        return UART_sendByte(DEBUG_UART_PERIPH, ch);
-    } else {
-        return UART_sendDataBlock(DEBUG_UART_PERIPH, (uint8_t *)&ch, 1);
-    }
+    return UART_sendByte(DEBUG_UART_PERIPH, ch);
 }
+/**
+ * @brief 注册 UART,对其统一管理
+ * @param uartPara UART参数结构体指针
+ * @return 成功返回true，否则返回false
+ */
 bool com_registHandler(UART_PARA_STRUCT *uartPara)
 {
     uint32_t i;
@@ -40,6 +40,11 @@ bool com_registHandler(UART_PARA_STRUCT *uartPara)
         return false;
     }
 }
+/**
+ * @brief 获取指定的 UART 参数
+ * @param uartPara 指定的UART
+ * @return 成功返回 Handler，否则返回 NULL
+ */
 UART_PARA_STRUCT *com_getHandler(USART_TypeDef *usart_periph)
 {
     for (uint32_t i = 0; i < UART_NUM_TOTAL; i++)
@@ -53,7 +58,12 @@ UART_PARA_STRUCT *com_getHandler(USART_TypeDef *usart_periph)
     }
     return NULL; //alread exist
 }
-
+/**
+ * @brief 从指定的UART的fifo中获取一个字节的数据
+ * @param usart_periph UART设备的寄存器指针
+ * @param p_buffer 用于存储数据的指针
+ * @return 成功返回true，否则返回false
+ */
 bool UART_getByte(USART_TypeDef *usart_periph, uint8_t *p_buffer)
 {
     UART_PARA_STRUCT *uartPara = com_getHandler(usart_periph);
@@ -63,6 +73,12 @@ bool UART_getByte(USART_TypeDef *usart_periph, uint8_t *p_buffer)
     return FIFO_Read(&uartPara->fifo.rfifo, p_buffer);
 }
 
+/**
+ * @brief 从指定的UART的fifo中获取一些字节的数据
+ * @param usart_periph UART设备的寄存器指针
+ * @param p_buffer 用于存储数据的指针
+ * @return 成功返回true，否则返回false
+ */
 bool UART_getData(USART_TypeDef *usart_periph, uint8_t *p_buffer, uint32_t buffSize, INT16U *retLen)
 {
     UART_PARA_STRUCT *uartPara = com_getHandler(usart_periph);
@@ -73,11 +89,23 @@ bool UART_getData(USART_TypeDef *usart_periph, uint8_t *p_buffer, uint32_t buffS
 }
 
 
+/**
+ * @brief 往指定的UART的fifo中写入一个字节的数据
+ * @param usart_periph UART设备的寄存器指针
+ * @param dat 数据
+ * @return 成功返回true，否则返回false
+ */
 __inline bool UART_sendByte(USART_TypeDef *usart_periph, uint8_t dat)
 {
     return UART_sendData(usart_periph, &dat, 1);
 }
-
+/**
+ * @brief 往指定的UART的fifo中写入一些数据
+ * @param usart_periph UART设备的寄存器指针
+ * @param str 数据指针
+ * @param len 数据长度
+ * @return 成功返回true，否则返回false
+ */
 bool UART_sendData(USART_TypeDef *usart_periph, uint8_t *str, uint16_t len)
 {
     UART_PARA_STRUCT *uartPara = com_getHandler(usart_periph);
@@ -138,7 +166,11 @@ INT8U UART_sendFinally(USART_TypeDef *usart_periph, FIFO_Buf_STRUCT *fifoUart)
         return true;
     }
 }
-
+/**
+ * @brief 继续发送UART数据
+ * @param usart_periph UART设备的寄存器指针
+ * @return void
+ */
 void UART_sendContinue(USART_TypeDef *usart_periph)
 {
     INT16U sendSize;
@@ -175,7 +207,11 @@ void UART_sendContinue(USART_TypeDef *usart_periph)
         API_ExitCirtical(x);
     }
 }
-
+/**
+ * @brief UART init
+ * @param void
+ * @return void
+ */
 void UART_init(void)
 {
     UART2_init();

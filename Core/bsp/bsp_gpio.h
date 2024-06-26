@@ -9,6 +9,7 @@
 #include <stdbool.h>  
 #include "stm32h7xx_hal.h"
 
+// 申明 IO 引脚
 #define PLUS_COUNT_PORT             GPIOA
 #define PLUS_COUNT_PIN              GPIO_PIN_0
 
@@ -58,7 +59,7 @@
 #define XBEAM_PIN                    GPIO_PIN_1
 
 
-/**SPI1 GPIO Configuration
+/**     SPI1 GPIO Configuration
         PA4     ------> SPI1_NSS
         PA5     ------> SPI1_SCK
         PA6     ------> SPI1_MISO
@@ -110,8 +111,8 @@ inline extern void GPIO_Set_LD_SLOPE(GPIO_PinState st);
 
 inline extern void GPIO_SetDAC(uint16_t val);
 
-int GPIO_isPinActive(GPIO_Idex idex, GPIO_PinState *config);
-bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive, GPIO_PinState *config);
+int GPIO_isPinActive(GPIO_Idex idex);
+bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive);
 bool GPIO_getPinName(GPIO_Idex idex, const char **name);
 #ifdef __cplusplus
 }

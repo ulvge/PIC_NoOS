@@ -34,7 +34,7 @@
 #ifndef DBG_SECTION_NAME
 #define DBG_SECTION_NAME    "DBG"
 #endif
-
+// config print out level
 #define DBG_LEVEL         g_debugLevel
 
 #define _DBG_LOG_HDR(lvl_name)                    \
