@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32H7A3xx,STM32H7xx_LL_Driver</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang;..\Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;..\Core\bsp;..\Core\api;..\Core\api\shell;..\Core\api\cm_backtrace</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc;../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/include;..\Middlewares\Third_Party\FreeRTOS\Source\portable\MemMang;..\Middlewares\Third_Party\FreeRTOS\Source\portable\RVDS\ARM_CM7\r0p1;../Drivers/CMSIS/Device/ST/STM32H7xx/Include;..\Core\bsp;..\Core\api;..\Core\api\cm_backtrace</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -399,11 +399,6 @@
               <FileType>1</FileType>
               <FilePath>..\Core\api\output_wave.c</FilePath>
             </File>
-            <File>
-              <FileName>uart_monitor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\api\uart_monitor.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -433,36 +428,6 @@
               <FileName>bsp_adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Core\bsp\bsp_adc.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>shell</GroupName>
-          <Files>
-            <File>
-              <FileName>shell.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\api\shell\shell.c</FilePath>
-            </File>
-            <File>
-              <FileName>shell_ext.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\api\shell\shell_ext.c</FilePath>
-            </File>
-            <File>
-              <FileName>shell_port.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\api\shell\shell_port.c</FilePath>
-            </File>
-            <File>
-              <FileName>shell_cmd_list.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\api\shell\shell_cmd_list.c</FilePath>
-            </File>
-            <File>
-              <FileName>adc_shell.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Core\api\shell\adc_shell.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -26,10 +26,6 @@
 
 #define OUTPUT_DELAY_xUS(x) (x * SYSTEM_CORE_CLOCK_PER_X_US)
 
-
-
-extern SemaphoreHandle_t g_sem_recvedWaveData;
-extern SemaphoreHandle_t g_sem_isSending;
 extern void SPI_RecOver(void);
 #undef SystemCoreClock
 #ifdef __cplusplus

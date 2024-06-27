@@ -37,7 +37,7 @@ extern "C" {
 #define DEBUG_UART_PERIPH    USART2
 
 #define    HARDWARE_VERSION     "1.0"
-#define    SOFT_VERSION         "1.0"
+#define    SOFT_VERSION         "1.1"
 
 
 // config IRQ HANDLER_PRIORITY
@@ -54,12 +54,9 @@ extern "C" {
 #define IRQHANDLER_PRIORITY_GPIO        5
 // config IRQ HANDLER_PRIORITY end
 
-extern BaseType_t xHigherPriorityTaskWoken_YES;
-extern BaseType_t xHigherPriorityTaskWoken_NO;
-
 extern TIM_HandleTypeDef g_htim5;
 extern int g_debugLevel;
-extern void Task_outputWave(void *argument);
+extern void Task_outputWave(void);
 extern inline uint32_t Get_dealyTimer_cnt(void);
 /* Exported functions prototypes ---------------------------------------------*/
 extern void Error_Handler(void);

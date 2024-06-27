@@ -82,9 +82,9 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
     if (HAL_TIM_Base_Init(&htim7) == HAL_OK) {
         /* Start the TIM time Base generation in interrupt mode */
         if ( HAL_TIM_Base_Start_IT(&htim7) == HAL_OK) {
-            /* Enable the TIM7 global Interrupt */
+            /* Enable the TIM7 global Interrupt
             HAL_NVIC_EnableIRQ(TIM7_IRQn);
-            /*Configure the TIM7 IRQ priority */
+            Configure the TIM7 IRQ priority */
             if (TickPriority < (1UL << __NVIC_PRIO_BITS)) {
                 HAL_NVIC_SetPriority(TIM7_IRQn, TickPriority, 0U);
 

@@ -10,8 +10,7 @@
 #include "bsp_spi1_slave.h"
 #include "FIFO.h"
 
-SemaphoreHandle_t g_sem_recvedWaveData;
-SemaphoreHandle_t g_sem_isSending;
+//定义信号量
 /**
  * @brief EXTI中断回调函数
  * @param GPIO_Pin EXTI引脚
@@ -59,8 +58,8 @@ void SPI_RecOver(void)
     // GPIO_Set_INTRPT(GPIO_PIN_RESET);
 }
 /**
- * @brief 等待方向信号
- * @param
+ * @brief 设置方向信号
+ * @param val
  * @return
  */
 inline static void output_setDirection(uint16_t val)
@@ -111,16 +110,14 @@ inline static void output_waitMasterMatch(void)
 /**
  * @brief 输出波形的任务
  */
-void Task_outputWave(void *argument)
+void Task_outputWave(void)
 {
     bool isFirst = true;
     uint16_t reSendCount;
     uint16_t slp;
-    g_sem_recvedWaveData = xSemaphoreCreateBinary();
-    g_sem_isSending = xSemaphoreCreateMutex();
     while (1) {
         HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_RESET);
-        if (xSemaphoreTake(g_sem_recvedWaveData, portMAX_DELAY) == pdTRUE) {
+        if (g_protocolData.isSending & g_protocolData.isRecvedFinished) {
             HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_SET);
             vTaskSuspendAll();
             // BUSY set 
@@ -165,15 +162,9 @@ void Task_outputWave(void *argument)
             GPIO_Set_INTRPT(GPIO_PIN_SET);
             delay_us(1, 5);
             GPIO_Set_INTRPT(GPIO_PIN_RESET);
-
-            if (xSemaphoreTake(g_sem_isSending, 0) == pdTRUE) {// is sending
-                // send finished, clear flag
-                g_protocolData.isSending = false;
-                xSemaphoreGive(g_sem_isSending);
-            }
-            if (!xTaskResumeAll()) {
-                taskYIELD();
-            }
+            
+            // send finished, clear flag
+            g_protocolData.isSending = false;
         }
     }
 }

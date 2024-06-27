@@ -5,7 +5,6 @@
 #include "task.h"
 #include "freertos.h"
 #include "semphr.h"
-#include "uart_monitor.h"
 
 #define UART_NUM_TOTAL 1
 
@@ -113,16 +112,10 @@ bool UART_sendData(USART_TypeDef *usart_periph, uint8_t *str, uint16_t len)
         return false;
     }
 
-    if (xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED) {
-        HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 10);
+    if (FIFO_Writes(&uartPara->fifo.sfifo, str, len) == FALSE){
+        return HAL_UART_Transmit_DMA(uartPara->uartHandle, (uint8_t*)str, len);
     }else{
-        if (FIFO_Writes(&uartPara->fifo.sfifo, str, len) == FALSE){
-            HAL_UART_Transmit_DMA(uartPara->uartHandle, (uint8_t*)str, len);
-            //HAL_UART_Transmit(uartPara->uartHandle, (uint8_t*)str, len, 10);
-            return false;
-        }else{
-            uart_PostdMsg(false);
-        }
+        UART_sendContinue(DEBUG_UART_PERIPH);
     }
 	return true;
 }
@@ -192,11 +185,8 @@ void UART_sendContinue(USART_TypeDef *usart_periph)
         sendSize = fifo->limit - fifo->rp;
     }
 
-    //if(HAL_UART_Transmit(uartPara->uartHandle, fifo->rp, sendSize, 100) != HAL_OK )
-    if(HAL_UART_Transmit_DMA(uartPara->uartHandle, fifo->rp, sendSize)!= HAL_OK)
+    if(HAL_UART_Transmit_DMA(uartPara->uartHandle, fifo->rp, sendSize) == HAL_OK)
     {
-        uart_PostdMsg(true);
-    }else{
         uint32_t x=API_EnterCirtical();
         fifo->occupy -= sendSize;
         if (isNotTail) {

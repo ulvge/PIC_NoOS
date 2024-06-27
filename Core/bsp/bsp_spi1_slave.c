@@ -1,7 +1,5 @@
 #include "FIFO.h"
 #include "main.h"
-#include "shell_ext.h"
-#include "shell_port.h"
 #include "debug_print.h"
 #include "bsp_spi1_slave.h"
 #include "bsp_gpio.h"

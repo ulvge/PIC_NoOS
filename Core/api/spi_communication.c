@@ -68,19 +68,13 @@ inline static void SPI_ProtocolError()
  * @brief SPI 数据协议解析完成，准备发送
  * @return void
  */
-inline static void SPI_SendSemOutputWave()
+inline static void SPI_EnOutputWave()
 {
     if (g_protocolData.isSending || !g_protocolData.recvedGroupCount) {
         return;
     }
-    if (xSemaphoreTakeFromISR(g_sem_isSending, 0) == pdTRUE) {// not sending
-        g_protocolData.isSending = true;
-        xSemaphoreGiveFromISR(g_sem_isSending, &xHigherPriorityTaskWoken_NO);
-
-        xSemaphoreGiveFromISR(g_sem_recvedWaveData, &xHigherPriorityTaskWoken_YES);
-    }
+    g_protocolData.isSending = true;
 }
-
 /**
  * @brief SPI 数据协议解析
  * @return void
@@ -204,7 +198,7 @@ inline void SPI_ProtocolParsing(uint8_t val)
                 g_protocolCmd.isRecvedFinished = 1;
                 g_protocolCmd.reSendTimes = BIG_LITTLE_SWAP16(g_protocolCmd.reSendTimes);
                 g_protocol_type = PROTOCOL_TYPE_UNKNOWN;
-                SPI_SendSemOutputWave();
+                SPI_EnOutputWave();
             }
         } else {
             SPI_ProtocolError();

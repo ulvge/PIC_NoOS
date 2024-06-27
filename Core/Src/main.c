@@ -18,20 +18,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "freertos.h"
 #include "bsp_uartcomm.h"
 #include "debug_print.h"
 #include "bsp_spi1_slave.h"
 #include "bsp_gpio.h"
 #include "bsp_adc.h"
-#include "shell.h"
-#include "shell_port.h"
-#include "uart_monitor.h"
 #include "spi_communication.h"
 
 /* Private function prototypes -----------------------------------------------*/
-BaseType_t xHigherPriorityTaskWoken_YES = pdTRUE;
-BaseType_t xHigherPriorityTaskWoken_NO = pdFALSE;
 
 void SystemClock_Config(void);
 static void MPU_Config(void);
@@ -40,9 +34,6 @@ void StartDefaultTask(void *argument);
 
 TIM_HandleTypeDef g_htim5;
 int g_debugLevel = DBG_LOG;
-TaskHandle_t gp_xHandle_Task_outputWave = NULL;
-TaskHandle_t gp_xHandle_Task_uartMonitor = NULL;
-TaskHandle_t gp_xHandle_Task_shell = NULL;
 static const char *projectInfo =
     "\r\n"
     "********************************************\r\n"
@@ -113,21 +104,10 @@ int main(void)
     DebugConfig();
     LOG_RAW("init other peripherals over\r\n");
 
-    /* creation of outputWave */
-    xTaskCreate(Task_outputWave, "outputWave", 128 * 4, NULL, 48, &gp_xHandle_Task_outputWave );
-    /* creation of uartMonitor */
-    xTaskCreate(Task_uartMonitor, "uartMonitor", 128 * 4, NULL, 24, &gp_xHandle_Task_uartMonitor );
-    /* creation of shell */
-    xTaskCreate(shellTask, "shell", 128 * 2, &shell, 16, &gp_xHandle_Task_shell );
-
-    LOG_I("create all task finished and succeed\r\n");
-
-    /* Start scheduler */
-	vTaskStartScheduler();
-
     /* We should never get here as control is now taken by the scheduler */
 
     while (1) {
+        Task_outputWave();
     }
 }
 
@@ -329,11 +309,3 @@ void vPortSetupTimerInterrupt( void )
 {
 
 }
-/**
- * @brief 重启系统
- * @return void
- */
-void Reboot(void){
-    HAL_NVIC_SystemReset();
-}
-SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_MAIN) | SHELL_CMD_DISABLE_RETURN, reboot, Reboot, reboot mcu);

@@ -3,7 +3,6 @@
 #include "main.h"
 #include "Types.h"
 #include "bsp_gpio.h"
-#include "shell.h"
 #include "debug_print.h"
 
 #define GPIO_GROUP_START  GPIO_DAC_A
@@ -251,7 +250,7 @@ bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive)
   */
 static void EXTI15_10_IRQHandler_Config(void)
 {
-    /* Enable and set EXTI lines 15 to 10 Interrupt to the lowest priority */
+    /* Enable and set EXTI lines 15 to 10 Interrupt to the highest priority */
     HAL_NVIC_SetPriority(EXTI15_10_IRQn, IRQHANDLER_PRIORITY_GPIO, 0);
     HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }

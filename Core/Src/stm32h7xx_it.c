@@ -145,10 +145,6 @@ void SPI1_IRQHandler(void)
 void TIM7_IRQHandler(void)
 {
     HAL_TIM_IRQHandler_tim7TickOverWrite();
-    if(xTaskGetSchedulerState()!=taskSCHEDULER_NOT_STARTED)
-	{
-		xPortSysTickHandler();
-	}
 }
 
 /**
@@ -163,7 +159,6 @@ void DMA1_Stream1_IRQHandler(void)
 void USART2_IRQHandler(void)
 {
   HAL_UART_IRQHandler(&g_uart2Handle);
-  //UART_RxISR_8BIT(&g_uart2Handle);
 }
 
 inline void static HAL_TIM_IRQHandler_tim7TickOverWrite(void)

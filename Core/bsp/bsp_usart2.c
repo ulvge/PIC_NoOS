@@ -4,7 +4,6 @@
 #include "main.h"
 #include "FIFO.h"
 #include "bsp_uartcomm.h"
-#include "uart_monitor.h"
 #include "stm32h7xx_ll_usart.h"
 
 /**
@@ -89,7 +88,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
 	if (isrflags & USART_ISR_TC){
 		huart->gState = HAL_UART_STATE_READY;
         //发送消息，可以继续发送
-		uart_PostdMsg(false);
+        UART_sendContinue(DEBUG_UART_PERIPH);
 	}
     // 清除异常中断标记
     __HAL_UART_CLEAR_FLAG(huart, USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE | USART_ISR_RTOF | USART_ISR_TC);
