@@ -114,8 +114,6 @@ bool UART_sendData(USART_TypeDef *usart_periph, uint8_t *str, uint16_t len)
 
     if (FIFO_Writes(&uartPara->fifo.sfifo, str, len) == FALSE){
         return HAL_UART_Transmit_DMA(uartPara->uartHandle, (uint8_t*)str, len);
-    }else{
-        UART_sendContinue(DEBUG_UART_PERIPH);
     }
 	return true;
 }

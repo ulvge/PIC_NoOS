@@ -53,11 +53,7 @@ EXT_FIFO	BOOLEAN		FIFO_Empty(FIFO *fifo);
 EXT_FIFO    BOOLEAN     FIFO_Read(FIFO *fifo, INT8U *data);
 EXT_FIFO    BOOLEAN     FIFO_ReadN(FIFO *fifo, INT8U *data, INT16U dataSize, INT16U *len);
 
-extern __asm uint32_t vPortGetIPSR(void);
-#define API_EnterCirtical() \
-    (__get_IPSR() ? taskENTER_CRITICAL_FROM_ISR() : (taskENTER_CRITICAL(), 0))
-
-#define API_ExitCirtical(x) \
-    (__get_IPSR() ? taskEXIT_CRITICAL_FROM_ISR(x) : taskEXIT_CRITICAL())
+EXT_FIFO uint32_t API_EnterCirtical( void );
+EXT_FIFO void API_ExitCirtical( uint32_t x );
 
 #endif

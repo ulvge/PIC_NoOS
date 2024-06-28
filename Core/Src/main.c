@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "bsp_uartcomm.h"
+#include "bsp_usart2.h"
 #include "debug_print.h"
 #include "bsp_spi1_slave.h"
 #include "bsp_gpio.h"
@@ -107,7 +108,7 @@ int main(void)
     /* We should never get here as control is now taken by the scheduler */
 
     while (1) {
-        ;
+        UART2_monitor();
     }
 }
 

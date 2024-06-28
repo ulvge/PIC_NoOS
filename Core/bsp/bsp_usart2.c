@@ -87,11 +87,19 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
     /* UART Transmission Complete ---------------------------------------------------*/
 	if (isrflags & USART_ISR_TC){
 		huart->gState = HAL_UART_STATE_READY;
-//发送消息，可以继续发送
-        UART_sendContinue(DEBUG_UART_PERIPH);
 	}
     // 清除异常中断标记
     __HAL_UART_CLEAR_FLAG(huart, USART_ISR_PE | USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE | USART_ISR_RTOF | USART_ISR_TC);
 }
 
-
+//串口发送数据
+void UART2_monitor(void)
+{
+    if (!FIFO_Empty(&g_UARTPara.fifo.sfifo))
+    {
+        if (g_UARTPara.uartHandle->gState == HAL_UART_STATE_READY)
+        {
+            UART_sendContinue(DEBUG_UART_PERIPH);
+        }
+    }
+}

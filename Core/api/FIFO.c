@@ -132,3 +132,17 @@ BOOLEAN FIFO_ReadN(FIFO *fifo, INT8U *data, INT16U dataSize, INT16U *readLen)
     return true;
 }
 
+inline uint32_t API_EnterCirtical( void )
+{
+    uint32_t primask_bit = __get_PRIMASK();
+    __set_PRIMASK(1);
+    return primask_bit;
+}
+/*-----------------------------------------------------------*/
+
+inline void API_ExitCirtical( uint32_t x)
+{
+    __set_PRIMASK(x);
+}
+
+

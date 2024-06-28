@@ -102,8 +102,8 @@
 /*-----------------------------------------------------------*/
 
 /* Critical section management. */
-    extern void vPortEnterCritical( void );
-    extern void vPortExitCritical( void );
+//    extern void vPortEnterCritical( void );
+//    extern void vPortExitCritical( void );
 
     #define portDISABLE_INTERRUPTS()                  vPortRaiseBASEPRI()
     #define portENABLE_INTERRUPTS()                   vPortSetBASEPRI( 0 )
