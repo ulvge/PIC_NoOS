@@ -177,7 +177,16 @@ inline void static HAL_TIM_IRQHandler_tim7TickOverWrite(void)
 }
 void EXTI15_10_IRQHandler(void)
 {
-    HAL_GPIO_EXTI_IRQHandler(MCLR_PIN);
+    if (__HAL_GPIO_EXTI_GET_IT(MATCH_PIN) != 0x00U)
+    {
+        __HAL_GPIO_EXTI_CLEAR_IT(MATCH_PIN);
+        HAL_GPIO_EXTI_Callback_MATCH(MATCH_PIN);
+    }
+    if (__HAL_GPIO_EXTI_GET_IT(MCLR_PIN) != 0x00U)
+    {
+        __HAL_GPIO_EXTI_CLEAR_IT(MCLR_PIN);
+        HAL_GPIO_EXTI_Callback_MCLR(MCLR_PIN);
+    }
 }
 
 

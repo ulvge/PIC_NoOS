@@ -114,6 +114,9 @@ inline extern void GPIO_SetDAC(uint16_t val);
 int GPIO_isPinActive(GPIO_Idex idex);
 bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive);
 bool GPIO_getPinName(GPIO_Idex idex, const char **name);
+void HAL_GPIO_EXTI_Callback_MCLR(uint16_t GPIO_Pin);
+void HAL_GPIO_EXTI_Callback_MATCH(uint16_t GPIO_Pin);
+
 #ifdef __cplusplus
 }
 #endif

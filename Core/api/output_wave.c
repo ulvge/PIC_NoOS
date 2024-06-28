@@ -10,25 +10,39 @@
 #include "bsp_spi1_slave.h"
 #include "FIFO.h"
 
-//定义信号量
 /**
  * @brief EXTI中断回调函数
  * @param GPIO_Pin EXTI引脚
  */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+void HAL_GPIO_EXTI_Callback_MCLR(uint16_t GPIO_Pin)
 {
     static uint32_t oldStamp, nowStamp;
-    if (GPIO_Pin == MCLR_PIN) {
-		uint32_t x=API_EnterCirtical();
-		oldStamp = Get_dealyTimer_cnt();
-        while(GPIO_isPinActive(GPIO_MCLR) == 1){
-            nowStamp = Get_dealyTimer_cnt();
-            if ((nowStamp - oldStamp) >= OUTPUT_DELAY_4US) {
-                HAL_NVIC_SystemReset();
-            }
+	uint32_t x=API_EnterCirtical();
+
+    oldStamp = Get_dealyTimer_cnt();
+    while(GPIO_isPinActive(GPIO_MCLR) == 1){
+        nowStamp = Get_dealyTimer_cnt();
+        if ((nowStamp - oldStamp) >= OUTPUT_DELAY_4US) {
+            HAL_NVIC_SystemReset();
         }
-		API_ExitCirtical(x);
     }
+    API_ExitCirtical(x);
+}
+
+void HAL_GPIO_EXTI_Callback_MATCH(uint16_t GPIO_Pin)
+{
+    if (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)){
+        //pause
+        GPIO_Set_BUSY(GPIO_PIN_RESET);
+        GPIO_Set_PIC_LED(GPIO_PIN_RESET);
+
+        while (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)) {
+        }
+
+        //resume
+        GPIO_Set_PIC_LED(GPIO_PIN_SET);
+    }
+	Task_outputWave();
 }
 // htim5 run clok: 280M
 // Period = count 280 = 1us
@@ -74,97 +88,67 @@ inline static void output_setRunMode(uint16_t val)
 }
 
 /**
- * @brief 等待主机Ready
- * @param
- * @return
- */
-inline static void output_waitMasterBeReady(void)
-{
-    while (!GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)) {
-        GPIO_Set_PIC_LED(GPIO_PIN_RESET);
-        if (!g_protocolData.isRecvedFinished){
-            return;
-        }
-    }
-}
-
-/**
- * @brief 等待匹配信号
- * @param
- * @return
- */
-inline static void output_waitMasterMatch(void)
-{
-    static GPIO_PinState matchStatusLast = GPIO_PIN_RESET;
-    GPIO_PinState matchStatus;
-    do{
-        if (!g_protocolData.isRecvedFinished){
-            break;
-        }
-        matchStatus = HAL_GPIO_ReadPin(MATCH_PORT, MATCH_PIN);
-    } while (matchStatus == matchStatusLast);
-
-    matchStatusLast = matchStatus;
-}
-
-/**
  * @brief 输出波形的任务
  */
 void Task_outputWave(void)
 {
-    bool isFirst = true;
-    uint16_t reSendCount;
-    uint16_t slp;
-    while (1) {
+    static bool isFirst = true;
+    static uint16_t reSendCount, sendDataIndex = 0;
+
+    if (g_protocolData.SendEnable & g_protocolData.isRecvedFinished) {
+        reSendCount = 0;
+        sendDataIndex = 0;
+        // no sending 
+        GPIO_Set_BUSY(GPIO_PIN_RESET);
+        // no data need be send
         HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_RESET);
-        if (g_protocolData.isSending & g_protocolData.isRecvedFinished) {
-            HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_SET);
-            vTaskSuspendAll();
-            // BUSY set 
-            GPIO_Set_BUSY(GPIO_PIN_SET);
-            reSendCount = 0;
+        return;
+    }
 
-            isFirst = true;
-
-            while (g_protocolData.isRecvedFinished && (g_protocolCmd.reSendTimes == 0 || reSendCount < g_protocolCmd.reSendTimes)) {
-                reSendCount++;
-                for (size_t i = 0; i < g_protocolData.recvedGroupCount; i++) {
-                    // wait master ready
-                    output_waitMasterBeReady();    
-                    GPIO_Set_PIC_LED(GPIO_PIN_SET); // run normal
-
-                    slp = g_protocolData.data[i].slope;
-                    output_setRunMode(slp);
-                    if (isFirst) 
-					{
-                        // send position val
-                        GPIO_SetDAC(g_protocolData.data[i].position);
-                        HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_RESET);
-                        HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_SET);
-                        //isFirst = false;
-                    }
-                    // // send slope val
-                    output_setDirection(slp);   // send Direction
-                    GPIO_SetDAC(slp);
-                    HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_RESET);
-                    HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_SET);
-                    // wait master match
-                    output_waitMasterMatch();
-                }
-
-                delay_us(g_protocolCmd.sleepUsWave, 0);
-                delay_us(g_protocolCmd.sleepUsGroupData, 0);
-            }
-
-            // BUSY reset 
-            GPIO_Set_BUSY(GPIO_PIN_RESET);
-
-            GPIO_Set_INTRPT(GPIO_PIN_SET);
-            delay_us(1, 5);
-            GPIO_Set_INTRPT(GPIO_PIN_RESET);
-            
-            // send finished, clear flag
-            g_protocolData.isSending = false;
+    if (g_protocolCmd.reSendTimes == 0 || (reSendCount < g_protocolCmd.reSendTimes)) {
+        uint16_t slp = g_protocolData.data[sendDataIndex].slope;
+        output_setRunMode(slp);
+        if (isFirst) 
+        {
+            // send position val
+            GPIO_SetDAC(g_protocolData.data[sendDataIndex].position);
+            HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_RESET);
+            HAL_GPIO_WritePin(LD_POS_PORT, LD_POS_PIN, GPIO_PIN_SET);
+            //isFirst = false;
         }
+        // // send slope val
+        output_setDirection(slp);   // send Direction
+        GPIO_SetDAC(slp);
+        HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_SET);
+
+        if (sendDataIndex >= g_protocolData.recvedGroupCount) {
+            sendDataIndex = 0;
+            reSendCount++;
+            delay_us(g_protocolCmd.sleepUsWave, 0);
+            delay_us(g_protocolCmd.sleepUsGroupData, 0);
+        }
+        //isFirst = false;
+        
+        // is sending 
+        GPIO_Set_BUSY(GPIO_PIN_SET);
+        // run normal
+        GPIO_Set_PIC_LED(GPIO_PIN_SET); 
+        // is need send
+        HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_SET);
+        return;
+    }else{
+        // send finished, clear flag
+        g_protocolData.SendEnable--;
+
+        // send over
+        GPIO_Set_INTRPT(GPIO_PIN_SET);
+        delay_us(1, 5);
+        GPIO_Set_INTRPT(GPIO_PIN_RESET);
+        
+        // no sending 
+        GPIO_Set_BUSY(GPIO_PIN_RESET);
+        // no data need be send
+        HAL_GPIO_WritePin(LD_MSLOPE_PORT, LD_MSLOPE_PIN, GPIO_PIN_RESET);
     }
 }

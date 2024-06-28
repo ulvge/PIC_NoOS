@@ -52,10 +52,8 @@ typedef struct {
     uint8_t isRecvedFinished;   
     //是否接溢出
     uint8_t isRecvedOverflow;  
-    // 是否正在发送 
-    uint8_t isSending; 
-    // 是否发送 
-    //uint8_t isSendEn;                   
+    // 发送 使能
+    uint8_t SendEnable;                   
 //Main Body
     uint16_t count __attribute__((aligned(2)));
     struct {

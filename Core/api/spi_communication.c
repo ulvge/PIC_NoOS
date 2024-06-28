@@ -70,10 +70,10 @@ inline static void SPI_ProtocolError()
  */
 inline static void SPI_EnOutputWave()
 {
-    if (g_protocolData.isSending || !g_protocolData.recvedGroupCount) {
+    if (!g_protocolData.recvedGroupCount) {
         return;
     }
-    g_protocolData.isSending = true;
+    g_protocolData.SendEnable++;
 }
 /**
  * @brief SPI 数据协议解析

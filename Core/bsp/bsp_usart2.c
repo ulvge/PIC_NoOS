@@ -23,7 +23,7 @@ UART_HandleTypeDef g_uart2Handle = {
     .AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT,
 };
 /**
- * @brief UART2的配置 ha 层
+ * @brief UART2 配置 其它参数
  */
 static UART_PARA_STRUCT g_UARTPara = {
     .periph = USART2,
@@ -87,7 +87,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
     /* UART Transmission Complete ---------------------------------------------------*/
 	if (isrflags & USART_ISR_TC){
 		huart->gState = HAL_UART_STATE_READY;
-        //发送消息，可以继续发送
+//发送消息，可以继续发送
         UART_sendContinue(DEBUG_UART_PERIPH);
 	}
     // 清除异常中断标记
