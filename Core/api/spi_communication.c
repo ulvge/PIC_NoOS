@@ -74,6 +74,7 @@ inline static void SPI_EnOutputWave()
         return;
     }
     g_protocolData.SendEnable++;
+    Task_outputWave();
 }
 /**
  * @brief SPI 数据协议解析
@@ -159,7 +160,6 @@ inline static bool SPI_decode_TYPE_WRITEBACK(uint8_t val){
  */
 inline void SPI_ProtocolParsing(uint8_t val)
 {
-    //UART_sendByte(DEBUG_UART_PERIPH, val);
     if (g_protocol_type == PROTOCOL_TYPE_UNKNOWN) {
         switch (val)
         {

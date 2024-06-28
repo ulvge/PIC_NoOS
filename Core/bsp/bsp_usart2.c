@@ -25,7 +25,7 @@ UART_HandleTypeDef g_uart2Handle = {
 /**
  * @brief UART2 配置 其它参数
  */
-static UART_PARA_STRUCT g_UARTPara = {
+UART_PARA_STRUCT g_UARTPara2 = {
     .periph = USART2,
     .uartHandle = &g_uart2Handle,
 };
@@ -44,11 +44,8 @@ static INT8U g_buffRec[UART1_BUFF_SIZE];
 void UART2_init(void)
 {
     /* 初始化 UART 指定的 fifo */
-    FIFO_Init(&g_UARTPara.fifo.sfifo, g_buffSend, sizeof(g_buffSend));	
-    FIFO_Init(&g_UARTPara.fifo.rfifo, g_buffRec, sizeof(g_buffRec));
-	
-    /* 将 UART 注册到管理器  */
-    com_registHandler(&g_UARTPara);
+    FIFO_Init(&g_UARTPara2.fifo.sfifo, g_buffSend, sizeof(g_buffSend));	
+    FIFO_Init(&g_UARTPara2.fifo.rfifo, g_buffRec, sizeof(g_buffRec));
 
     /* 将 UART 硬件 init  */
     if (HAL_UART_Init(&g_uart2Handle) != HAL_OK) {
@@ -82,7 +79,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
     /* If no error occurs */
     /* UART in mode Receiver ---------------------------------------------------*/
     if ((isrflags & USART_ISR_RXNE_RXFNE) != 0U) {
-        FIFO_Write(&g_UARTPara.fifo.rfifo, (uint8_t)READ_REG(huart->Instance->RDR));
+        FIFO_Write(&g_UARTPara2.fifo.rfifo, (uint8_t)READ_REG(huart->Instance->RDR));
     }
     /* UART Transmission Complete ---------------------------------------------------*/
 	if (isrflags & USART_ISR_TC){
@@ -95,11 +92,11 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
 //串口发送数据
 void UART2_monitor(void)
 {
-    if (!FIFO_Empty(&g_UARTPara.fifo.sfifo))
+    if (!FIFO_Empty(&g_UARTPara2.fifo.sfifo))
     {
-        if (g_UARTPara.uartHandle->gState == HAL_UART_STATE_READY)
+        if (g_UARTPara2.uartHandle->gState == HAL_UART_STATE_READY)
         {
-            UART_sendContinue(DEBUG_UART_PERIPH);
+            UART_sendContinue();
         }
     }
 }
