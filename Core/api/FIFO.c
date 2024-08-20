@@ -4,7 +4,6 @@
 #define FIFO_GLOBALS 
 #include "FIFO.h"   
 #include "stdint.h" 
-#include "task.h"
 
 /************************************************************************************************************
    FIFO  底层接口层
@@ -73,7 +72,7 @@ BOOLEAN FIFO_Writes(FIFO *fifo, INT8U *data, INT16U dataSize)
  * @param fifo FIFO结构体指针
  * @return 如果FIFO为空，返回true，否则返回false
  */
-portINLINE  BOOLEAN FIFO_Empty(FIFO *fifo)
+inline  BOOLEAN FIFO_Empty(FIFO *fifo)
 {
     if (fifo->occupy == 0){
 		return true;

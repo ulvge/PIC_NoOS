@@ -2,9 +2,6 @@
 #include "main.h"
 #include "bsp_uartcomm.h"
 #include "bsp_usart2.h"
-#include "task.h"
-#include "freertos.h"
-#include "semphr.h"
 
 #define UART_NUM_TOTAL 1
 

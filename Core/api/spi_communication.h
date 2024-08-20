@@ -7,8 +7,6 @@
 	 
 #include <stdbool.h>
 #include <stdint.h>
-#include "freertos.h"
-#include "semphr.h"
 
 // 定义宏
 #define SPI_RECV_BUFF_GROUP_COUNT 23500

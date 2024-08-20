@@ -14,7 +14,6 @@
 					 
 #include "Types.h"
 #include "stdint.h"	
-#include "FreeRTOS.h"
 #include "stm32h7xx_hal.h"
 
 typedef enum{//FIFO_SendData

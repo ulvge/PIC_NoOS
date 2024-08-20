@@ -7,8 +7,6 @@
 	 
 #include <stdbool.h>
 #include <stdint.h>
-#include "freertos.h"
-#include "semphr.h"
 
 
 

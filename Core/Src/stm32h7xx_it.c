@@ -21,8 +21,6 @@
 #include "stm32h7xx_it.h"
 #include "main.h"
 #include "bsp_usart2.h"
-#include "freertos.h"
-#include "task.h" 
 #include "bsp_gpio.h" 
 /* Private includes ----------------------------------------------------------*/
 
