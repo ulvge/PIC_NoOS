@@ -248,8 +248,12 @@ bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive)
   * @param  None
   * @retval None
   */
-static void EXTI15_10_IRQHandler_Config(void)
+static void EXTI_IRQHandler_Config(void)
 {
+    /* Enable and set EXTI lines 9 5_IRQn Interrupt to the highest priority */
+    HAL_NVIC_SetPriority(EXTI9_5_IRQn, IRQHANDLER_PRIORITY_GPIO, 0);
+    HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
     /* Enable and set EXTI lines 15 to 10 Interrupt to the highest priority */
     HAL_NVIC_SetPriority(EXTI15_10_IRQn, IRQHANDLER_PRIORITY_GPIO, 0);
     HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
@@ -265,6 +269,6 @@ void GPIO_Init(void)
     MX_GPIO_Init();
     
     GPIO_InitGPIOs(&g_gpioConfigComm[0], ARRARY_SIZE(g_gpioConfigComm));
-    EXTI15_10_IRQHandler_Config();
+    EXTI_IRQHandler_Config();
 }
 

@@ -17,7 +17,7 @@
 #define BUSY_PIN                    GPIO_PIN_1
 
 #define GLITCH_SHUTDOWN_PORT        GPIOA
-#define GLITCH_SHUTDOWN_PIN         GPIO_PIN_10
+#define GLITCH_SHUTDOWN_PIN         GPIO_PIN_9
 
 #define SPOT_PORT                   GPIOB
 #define SPOT_PIN                    GPIO_PIN_0
@@ -114,8 +114,9 @@ inline extern void GPIO_SetDAC(uint16_t val);
 int GPIO_isPinActive(GPIO_Idex idex);
 bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive);
 bool GPIO_getPinName(GPIO_Idex idex, const char **name);
-void HAL_GPIO_EXTI_Callback_MCLR(uint16_t GPIO_Pin);
-void HAL_GPIO_EXTI_Callback_MATCH(uint16_t GPIO_Pin);
+void HAL_GPIO_EXTI_Callback_MCLR(void);
+void HAL_GPIO_EXTI_Callback_MATCH(void);
+void HAL_GPIO_EXTI_Callback_SHUTDOWN(void);
 
 #ifdef __cplusplus
 }

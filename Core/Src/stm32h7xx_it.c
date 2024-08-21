@@ -178,12 +178,20 @@ void EXTI15_10_IRQHandler(void)
     if (__HAL_GPIO_EXTI_GET_IT(MATCH_PIN) != 0x00U)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(MATCH_PIN);
-        HAL_GPIO_EXTI_Callback_MATCH(MATCH_PIN);
+        HAL_GPIO_EXTI_Callback_MATCH();
     }
     if (__HAL_GPIO_EXTI_GET_IT(MCLR_PIN) != 0x00U)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(MCLR_PIN);
-        HAL_GPIO_EXTI_Callback_MCLR(MCLR_PIN);
+        HAL_GPIO_EXTI_Callback_MCLR();
+    }
+}
+void EXTI9_5_IRQHandler(void)
+{
+    if (__HAL_GPIO_EXTI_GET_IT(GLITCH_SHUTDOWN_PIN) != 0x00U)
+    {
+        __HAL_GPIO_EXTI_CLEAR_IT(GLITCH_SHUTDOWN_PIN);
+        HAL_GPIO_EXTI_Callback_SHUTDOWN();
     }
 }
 

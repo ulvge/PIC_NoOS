@@ -10,11 +10,9 @@
 #include "bsp_spi1_slave.h"
 #include "FIFO.h"
 
-/**
- * @brief EXTI中断回调函数
- * @param GPIO_Pin EXTI引脚
- */
-void HAL_GPIO_EXTI_Callback_MCLR(uint16_t GPIO_Pin)
+/// @brief 重启 中断回调函数，用于检测MCLR引脚是否被按下
+/// @param  
+void HAL_GPIO_EXTI_Callback_MCLR(void)
 {
     static uint32_t oldStamp, nowStamp;
 	uint32_t x=API_EnterCirtical();
@@ -28,21 +26,24 @@ void HAL_GPIO_EXTI_Callback_MCLR(uint16_t GPIO_Pin)
     }
     API_ExitCirtical(x);
 }
-
-void HAL_GPIO_EXTI_Callback_MATCH(uint16_t GPIO_Pin)
+/// @brief 匹配 中断回调函数
+/// @param  
+void HAL_GPIO_EXTI_Callback_MATCH(void)
+{
+    if (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)) {
+        return;
+    }
+    Task_outputWave();
+}
+/// @brief 暂停 中断回调函数
+/// @param  
+void HAL_GPIO_EXTI_Callback_SHUTDOWN(void)
 {
     if (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)){
         //pause
         GPIO_Set_BUSY(GPIO_PIN_RESET);
         GPIO_Set_PIC_LED(GPIO_PIN_RESET);
-
-        while (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)) {
-        }
-
-        //resume
-        GPIO_Set_PIC_LED(GPIO_PIN_SET);
     }
-	Task_outputWave();
 }
 // htim5 run clok: 280M
 // Period = count 280 = 1us
