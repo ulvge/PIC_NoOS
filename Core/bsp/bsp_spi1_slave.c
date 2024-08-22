@@ -46,7 +46,6 @@ static void MX_SPI1_Init(void)
     g_hspi1.Init.MasterInterDataIdleness = SPI_MASTER_INTERDATA_IDLENESS_00CYCLE;
     g_hspi1.Init.MasterReceiverAutoSusp = SPI_MASTER_RX_AUTOSUSP_DISABLE;
     g_hspi1.Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_DISABLE;
-    g_hspi1.Init.IOSwap = SPI_IO_SWAP_ENABLE;
     g_hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
     if (HAL_SPI_Init(&g_hspi1) != HAL_OK) {
         Error_Handler();

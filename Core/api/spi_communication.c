@@ -75,8 +75,8 @@ inline static void SPI_EnOutputWave()
         return;
     }
     g_protocolData.SendEnable++;
-    GPIO_MATCH_IRQ_Config(ENABLE);
     Task_outputWave();
+    GPIO_MATCH_IRQ_Config(ENABLE);
 }
 /**
  * @brief SPI 数据协议解析

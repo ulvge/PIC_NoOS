@@ -250,6 +250,7 @@ void GPIO_MATCH_IRQ_Config(FunctionalState isActive)
         EXTI_D1->PR1 |= pin;
         EXTI_D1->IMR1 |= pin;
     }else{
+        HAL_NVIC_ClearPendingIRQ(EXTI15_10_IRQn);
         EXTI_D1->IMR1 &= ~pin;
         EXTI_D1->PR1 |= pin;
     }

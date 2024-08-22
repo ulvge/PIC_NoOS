@@ -33,7 +33,9 @@ void GPIO_EXTI_Callback_MATCH(void)
     if (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)) {
         return;
     }
+    GPIO_MATCH_IRQ_Config(DISABLE);
     Task_outputWave();
+    GPIO_MATCH_IRQ_Config(ENABLE);
 }
 /// @brief 暂停 中断回调函数
 /// @param  
@@ -123,10 +125,10 @@ void Task_outputWave(void)
         HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_RESET);
         HAL_GPIO_WritePin(LD_SLOPE_PORT, LD_SLOPE_PIN, GPIO_PIN_SET);
 
-        if (sendDataIndex >= g_protocolData.recvedGroupCount) {
+        delay_us(g_protocolCmd.sleepUsWave, 0);
+        if (++sendDataIndex >= g_protocolData.recvedGroupCount) {
             sendDataIndex = 0;
             reSendCount++;
-            delay_us(g_protocolCmd.sleepUsWave, 0);
             delay_us(g_protocolCmd.sleepUsGroupData, 0);
         }
         //isFirst = false;
