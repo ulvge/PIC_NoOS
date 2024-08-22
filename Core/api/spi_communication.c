@@ -7,6 +7,7 @@
 #include "Types.h"
 #include "bsp_uartcomm.h"
 #include "bsp_spi1_slave.h"
+#include "bsp_gpio.h"
 
 
 ProtocolCmd g_protocolCmd;
@@ -74,6 +75,7 @@ inline static void SPI_EnOutputWave()
         return;
     }
     g_protocolData.SendEnable++;
+    GPIO_MATCH_IRQ_Config(ENABLE);
     Task_outputWave();
 }
 /**

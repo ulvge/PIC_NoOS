@@ -12,7 +12,7 @@
 
 /// @brief 重启 中断回调函数，用于检测MCLR引脚是否被按下
 /// @param  
-void HAL_GPIO_EXTI_Callback_MCLR(void)
+void GPIO_EXTI_Callback_MCLR(void)
 {
     static uint32_t oldStamp, nowStamp;
 	uint32_t x=API_EnterCirtical();
@@ -28,7 +28,7 @@ void HAL_GPIO_EXTI_Callback_MCLR(void)
 }
 /// @brief 匹配 中断回调函数
 /// @param  
-void HAL_GPIO_EXTI_Callback_MATCH(void)
+void GPIO_EXTI_Callback_MATCH(void)
 {
     if (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)) {
         return;
@@ -37,7 +37,7 @@ void HAL_GPIO_EXTI_Callback_MATCH(void)
 }
 /// @brief 暂停 中断回调函数
 /// @param  
-void HAL_GPIO_EXTI_Callback_SHUTDOWN(void)
+void GPIO_EXTI_Callback_SHUTDOWN(void)
 {
     if (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)){
         //pause
@@ -96,7 +96,7 @@ void Task_outputWave(void)
     static bool isFirst = true;
     static uint16_t reSendCount, sendDataIndex = 0;
 
-    if (g_protocolData.SendEnable & g_protocolData.isRecvedFinished) {
+    if (g_protocolData.SendEnable == 0 || g_protocolData.isRecvedFinished == 0) {
         reSendCount = 0;
         sendDataIndex = 0;
         // no sending 

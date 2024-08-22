@@ -243,19 +243,32 @@ bool GPIO_setPinStatus(GPIO_Idex idex, FunctionalState isActive)
     return true;
 }
 
+void GPIO_MATCH_IRQ_Config(FunctionalState isActive)
+{
+    static uint32_t pin = MATCH_PIN;
+    if (isActive == ENABLE){
+        EXTI_D1->PR1 |= pin;
+        EXTI_D1->IMR1 |= pin;
+    }else{
+        EXTI_D1->IMR1 &= ~pin;
+        EXTI_D1->PR1 |= pin;
+    }
+}
 /**
   * @brief  Configures EXTI lines 15 to 10 (connected to PC.13 pin) in interrupt mode
   * @param  None
   * @retval None
   */
-static void EXTI_IRQHandler_Config(void)
+static void GPIO_IRQHandler_Config(void)
 {
     /* Enable and set EXTI lines 9 5_IRQn Interrupt to the highest priority */
     HAL_NVIC_SetPriority(EXTI9_5_IRQn, IRQHANDLER_PRIORITY_GPIO, 0);
+	HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
     HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
     /* Enable and set EXTI lines 15 to 10 Interrupt to the highest priority */
     HAL_NVIC_SetPriority(EXTI15_10_IRQn, IRQHANDLER_PRIORITY_GPIO, 0);
+	HAL_NVIC_ClearPendingIRQ(EXTI15_10_IRQn);
     HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
@@ -267,8 +280,9 @@ static void EXTI_IRQHandler_Config(void)
 void GPIO_Init(void)
 {
     MX_GPIO_Init();
-    
+
     GPIO_InitGPIOs(&g_gpioConfigComm[0], ARRARY_SIZE(g_gpioConfigComm));
-    EXTI_IRQHandler_Config();
+    GPIO_MATCH_IRQ_Config(DISABLE);
+    GPIO_IRQHandler_Config();
 }
 
