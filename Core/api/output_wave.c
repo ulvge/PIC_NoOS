@@ -30,9 +30,9 @@ void GPIO_EXTI_Callback_MCLR(void)
 /// @param  
 void GPIO_EXTI_Callback_MATCH(void)
 {
-    if (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)) {
-        return;
-    }
+//    if (GPIO_isPinActive(GPIO_GLITCH_SHUTDOWN)) {
+//        return;
+//    }
     GPIO_MATCH_IRQ_Config(DISABLE);
     Task_outputWave();
     GPIO_MATCH_IRQ_Config(ENABLE);
