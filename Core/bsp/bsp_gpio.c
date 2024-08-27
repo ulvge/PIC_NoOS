@@ -59,20 +59,6 @@ inline static void HAL_GPIO_SetGroupPin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, 
 }
 
 /**
- * @brief 反转二进制位
- * @param num 要反转的16位无符号整数
- * @return 返回反转后的16位无符号整数
- */
-inline static uint16_t reverseBits(uint16_t num) {
-    uint16_t result = 0;
-    for(int i = 0; i < 12; i++) {
-        result <<= 1;
-        result |= (num & 1);
-        num >>= 1;
-    }
-    return result;
-}
-/**
  * @brief  DAC val, 赋值到对应的引脚
  * 
  * @param DAC val 
@@ -85,7 +71,7 @@ inline void GPIO_SetDAC(uint16_t val)
     static const GPIO_InitTypeDef *p_gpioCfgB = &g_gpioConfigComm[GPIO_DAC_B];
 	static uint16_t bitVal;
 
-    val = reverseBits(val);
+    val = __RBIT(val) >> 20;
     // PB9~3 PD2   PC12 ~ PC10            PA15
 	bitVal = val & BITS(5, 11);
     HAL_GPIO_SetGroupPin(p_gpioCfgB->PORT, p_gpioCfgB->Pin, bitVal >> 2); // PB9~3;
